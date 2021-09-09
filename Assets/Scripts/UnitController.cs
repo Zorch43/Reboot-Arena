@@ -3,6 +3,7 @@ using Assets.Scripts.Data_Templates;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class UnitController : MonoBehaviour
 {
@@ -14,9 +15,10 @@ public class UnitController : MonoBehaviour
     public SpriteRenderer TeamColorRenderer;
     public GameObject UnitEffects;
     public SpriteRenderer Selector;
+    public NavMeshAgent Agent;
     #endregion
     #region private fields
-
+    private Quaternion initialRotation;
     #endregion
     #region properties
     public UnitModel Data { get; set; }
@@ -27,6 +29,7 @@ public class UnitController : MonoBehaviour
     {
         //TEMP: initialize data model
         Data = new UnitModel(UnitClassTemplates.GetTrooperClass());
+        initialRotation = UnitEffects.transform.rotation;
     }
 
     // Update is called once per frame
@@ -35,34 +38,51 @@ public class UnitController : MonoBehaviour
         float elapsedTime = Time.deltaTime;
         //update selection state
         Selector.gameObject.SetActive(Data.IsSelected);
-        
-        //move towards next waypoint
-        if (Data.IsMoving)
+        //manual turning
+        if (Agent.hasPath)
         {
-            var vector = Data.WayPoints[0] - (Vector2)transform.position;
-            var moveVector = vector.normalized * elapsedTime * Data.UnitClass.MoveSpeed;
+            //var wayPoint = Agent.nextPosition;
+
+            //var vector = wayPoint - transform.position;
+
+            ////if not also attacking, turn towards the next waypoint
+            //float angle = Mathf.Atan2(vector.z, vector.x) * Mathf.Rad2Deg - 90;
+            //Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+            //UnitAppearance.transform.rotation = Quaternion.Slerp(UnitAppearance.transform.rotation, q, Time.deltaTime * Data.UnitClass.TurnSpeed);
             
-            if(moveVector.magnitude >= vector.magnitude)
+            if (Data.IsAttacking)
             {
-                transform.position = Data.WayPoints[0];
-                Data.WayPoints.RemoveAt(0);
-                if(Data.WayPoints.Count < 1)
-                {
-                    Data.IsMoving = false;
-                }
+                //TODO: override facing
             }
-            else
-            {
-                transform.position += (Vector3)moveVector;
-            }
-            //if not also attacking, turn towards the next waypoint
-            if (!Data.IsAttacking)
-            {
-                float angle = Mathf.Atan2(vector.y, vector.x) * Mathf.Rad2Deg - 90;
-                Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-                UnitAppearance.transform.rotation = Quaternion.Slerp(UnitAppearance.transform.rotation, q, Time.deltaTime * Data.UnitClass.TurnSpeed);
-            }
+            UnitEffects.transform.rotation = initialRotation;
         }
+        ////move towards next waypoint
+        //if (Data.IsMoving)
+        //{
+        //    var vector = Data.WayPoints[0] - (Vector2)transform.position;
+        //    var moveVector = vector.normalized * elapsedTime * Data.UnitClass.MoveSpeed;
+
+        //    if(moveVector.magnitude >= vector.magnitude)
+        //    {
+        //        transform.position = Data.WayPoints[0];
+        //        Data.WayPoints.RemoveAt(0);
+        //        if(Data.WayPoints.Count < 1)
+        //        {
+        //            Data.IsMoving = false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        transform.position += (Vector3)moveVector;
+        //    }
+        //    //if not also attacking, turn towards the next waypoint
+        //    if (!Data.IsAttacking)
+        //    {
+        //        float angle = Mathf.Atan2(vector.y, vector.x) * Mathf.Rad2Deg - 90;
+        //        Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
+        //        UnitAppearance.transform.rotation = Quaternion.Slerp(UnitAppearance.transform.rotation, q, Time.deltaTime * Data.UnitClass.TurnSpeed);
+        //    }
+        //}
     }
     #endregion
     #region public methods

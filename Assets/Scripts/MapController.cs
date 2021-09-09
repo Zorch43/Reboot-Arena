@@ -10,27 +10,27 @@ public class MapController : MonoBehaviour
     public const string TERRAIN_SPRITE_PATH = "Sprites/Terrain";
     #endregion
     #region public fields
-    public SpriteRenderer TilePrototype;
-    public Vector2 Size;
+    public GameObject Terrain;
     #endregion
     #region private fields
     List<List<SpriteRenderer>> mapTiles = new List<List<SpriteRenderer>>();
     #endregion
     #region properties
-    public MapModel LoadedMap { get; set; }
+    public Vector2 Size
+    {
+        get
+        {
+            var box = Terrain.GetComponent<BoxCollider>();
+            return new Vector2(box.size.x, box.size.y);
+        }
+    }
     #endregion
     #region unity methods
 
     // Start is called before the first frame update
     void Start()
     {
-        //build map from data
-        //create demo map
-        //LoadedMap = MapTemplates.getBasicRandomMap(20, 20, 0.20);
-        //UpdateMap();
-        var collider = GetComponent<BoxCollider>();
-        collider.size = Size;
-        collider.center = Size / 2;
+
     }
 
     // Update is called once per frame
@@ -63,49 +63,24 @@ public class MapController : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 var mapPoint = hit.point;
-                Debug.Log(string.Format("Right-Clicked on map: world coordinates [{0},{1}", mapPoint.x, mapPoint.y));
+                Debug.Log(string.Format("Right-Clicked on map: world coordinates [{0},{1}", mapPoint.x, mapPoint.z));
                 //TODO: action
                 var allUnits = GetComponentsInChildren<UnitController>();
                 foreach(var u in allUnits)
                 {
-                    if (u.Data.IsSelected)
-                    {
-                        u.Data.WayPoints = new List<Vector2>() { mapPoint };
-                        u.Data.IsMoving = true;
-                    }
+                    //if (u.Data.IsSelected)
+                    //{
+                    //    u.Data.WayPoints = new List<Vector2>() { mapPoint };
+                    //    u.Data.IsMoving = true;
+                    //}
+                    u.Agent.destination = mapPoint;
                 }
             }
         }
     }
     #endregion
     #region public methods
-    public void UpdateMap()
-    {
-        //clear old map tiles
-        foreach(var r in mapTiles)
-        {
-            foreach(var t in r)
-            {
-                Destroy(t);
-            }
-        }
-        mapTiles.Clear();
-
-        //render new map
-        for(int x = 0; x < LoadedMap.MapTiles.Count; x++)
-        {
-            mapTiles.Add(new List<SpriteRenderer>());
-            for(int y = 0; y <LoadedMap.MapTiles[x].Count; y++)
-            {
-                var tile = Instantiate(TilePrototype, transform);
-                tile.transform.position = new Vector2(x*0.32f, y*0.32f);
-                //assign sprite
-                var loadedSprite = Resources.Load(System.IO.Path.Combine(TERRAIN_SPRITE_PATH, LoadedMap.MapTiles[x][y].SpriteName));
-                tile.sprite = Sprite.Create(loadedSprite as Texture2D, tile.sprite.rect, tile.sprite.pivot);
-                mapTiles[x].Add(tile);
-            }
-        }
-    }
+   
     public void SelectUnits(List<UnitController> units, bool replace = true)
     {
         var allUnits = GetComponentsInChildren<UnitController>();
