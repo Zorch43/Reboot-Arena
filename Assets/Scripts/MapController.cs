@@ -52,7 +52,9 @@ public class MapController : MonoBehaviour
                 var selection = hit.transform.GetComponent<UnitController>();
                 if (selection != null)
                 {
-                    SelectUnits(new List<UnitController>() { selection });
+                    bool shift = Input.GetKey(KeyCode.LeftShift);
+ 
+                    SelectUnits(new List<UnitController>() { selection }, shift);
                 }
             }
         }
@@ -63,17 +65,18 @@ public class MapController : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 var mapPoint = hit.point;
-                Debug.Log(string.Format("Right-Clicked on map: world coordinates [{0},{1}", mapPoint.x, mapPoint.z));
                 //TODO: action
                 var allUnits = GetComponentsInChildren<UnitController>();
                 foreach(var u in allUnits)
                 {
-                    //if (u.Data.IsSelected)
-                    //{
-                    //    u.Data.WayPoints = new List<Vector2>() { mapPoint };
-                    //    u.Data.IsMoving = true;
-                    //}
-                    u.Agent.destination = mapPoint;
+                    if (u.Data.IsSelected)
+                    {
+                        //u.Data.WayPoints = new List<Vector2>() { mapPoint };
+                        //u.Data.IsMoving = true;
+                        //u.SetDestination(mapPoint);
+                        u.Agent.destination = mapPoint;
+                    }
+                    
                 }
             }
         }
@@ -81,10 +84,10 @@ public class MapController : MonoBehaviour
     #endregion
     #region public methods
    
-    public void SelectUnits(List<UnitController> units, bool replace = true)
+    public void SelectUnits(List<UnitController> units, bool addToSelection = false)
     {
         var allUnits = GetComponentsInChildren<UnitController>();
-        if (replace)
+        if (!addToSelection)
         {
             foreach(var u in allUnits)
             {
@@ -93,7 +96,7 @@ public class MapController : MonoBehaviour
         }
         foreach(var u in units)
         {
-            u.Data.IsSelected = true;
+            u.Data.IsSelected = !addToSelection || !u.Data.IsSelected;
         }
     }
     #endregion

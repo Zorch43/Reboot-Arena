@@ -43,6 +43,8 @@ GameObject:
   - component: {fileID: 3478830458567553939}
   - component: {fileID: 3478830458567553940}
   - component: {fileID: 3478830458567553941}
+  - component: {fileID: 7810740817907385445}
+  - component: {fileID: 2873676057072562150}
   m_Layer: 0
   m_Name: UnitAgent
   m_TagString: Untagged
@@ -118,6 +120,39 @@ MonoBehaviour:
   UnitEffects: {fileID: 1588704434486824535}
   Selector: {fileID: 378109648812462425}
   Agent: {fileID: 3478830458567553940}
+  Obstacle: {fileID: 2873676057072562150}
+--- !u!54 &7810740817907385445
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2823848731450113966}
+  serializedVersion: 2
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 116
+  m_CollisionDetection: 0
+--- !u!208 &2873676057072562150
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2823848731450113966}
+  m_Enabled: 0
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.1125, y: 0.16, z: 0.1125}
+  m_MoveThreshold: 0.1
+  m_Carve: 0
+  m_CarveOnlyStationary: 1
+  m_Center: {x: 0, y: 0, z: 0}
+  m_TimeToStationary: 0.5
 --- !u!1 &3313675636286896483
 GameObject:
   m_ObjectHideFlags: 0
