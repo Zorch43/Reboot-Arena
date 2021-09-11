@@ -18,6 +18,8 @@ public class UnitController : MonoBehaviour
     public SpriteRenderer Selector;
     public NavMeshAgent Agent;
     public NavMeshObstacle Obstacle;
+    public ResourceBarController HealthBar;
+    public ResourceBarController AmmoBar;
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -36,8 +38,11 @@ public class UnitController : MonoBehaviour
     {
         //TEMP: initialize data model
         Data = new UnitModel(UnitClassTemplates.GetTrooperClass());
-        initialRotation = UnitEffects.transform.rotation;        
-        
+        initialRotation = UnitEffects.transform.rotation;
+        //TEMP: randomize health and ammo
+        Data.HP = (int)(Random.value * Data.UnitClass.MaxHP);
+        Data.MP = (int)(Random.value * Data.UnitClass.MaxMP);
+
     }
 
     // Update is called once per frame
@@ -82,6 +87,9 @@ public class UnitController : MonoBehaviour
         //TODO; move unit status elements to UI layer
         //keep unit effects on unit (maybe as partical effects?)
         UnitEffects.transform.rotation = initialRotation;//reset rotation of unit effect sprites
+        //update resource bars
+        HealthBar.UpdateBar(Data.UnitClass.MaxHP, Data.HP);
+        AmmoBar.UpdateBar(Data.UnitClass.MaxMP, Data.MP);
         ////move towards next waypoint
         //if (Data.IsMoving)
         //{
