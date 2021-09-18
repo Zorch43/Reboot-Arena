@@ -22,7 +22,7 @@ public class ResourceBarController : MonoBehaviour
     #region public methods
     public void UpdateBar(float max, float current)
     {
-        float fillPercent = Math.Min(current / max, 1);
+        float fillPercent = Math.Min(Math.Max(current / max, 0), 1);
         
         Filling.size = new Vector2(BAR_WIDTH * fillPercent, Filling.size.y);
     }

@@ -238,9 +238,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3899abfffb0cf543ba0c202e312a245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 3}
-  hiddenSurface: {fileID: 1956460255}
-  meshFilter: {fileID: 0}
 --- !u!4 &277940367 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2823848731450113967, guid: e3dd6a27ea46f0e4e837b208047824dc, type: 3}
@@ -531,8 +528,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46713c83c692f8b4195ff2081721db8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subscribed: 0
-  customSurface: {fileID: 1854035841}
 --- !u!1 &544829688
 GameObject:
   m_ObjectHideFlags: 0
@@ -1084,7 +1079,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8423262, g: 1, b: 0.7971698, a: 0.392}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1204,8 +1199,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46713c83c692f8b4195ff2081721db8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subscribed: 0
-  customSurface: {fileID: 2090808516}
 --- !u!1001 &1358315824
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1626,9 +1619,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3899abfffb0cf543ba0c202e312a245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 3}
-  hiddenSurface: {fileID: 451019684}
-  meshFilter: {fileID: 0}
 --- !u!4 &1898969873 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2823848731450113967, guid: e3dd6a27ea46f0e4e837b208047824dc, type: 3}
@@ -1729,8 +1719,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46713c83c692f8b4195ff2081721db8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  subscribed: 0
-  customSurface: {fileID: 55855532}
 --- !u!1 &2090808511
 GameObject:
   m_ObjectHideFlags: 0
@@ -1841,9 +1829,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3899abfffb0cf543ba0c202e312a245, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 3}
-  hiddenSurface: {fileID: 1351426446}
-  meshFilter: {fileID: 0}
 --- !u!1001 &2092048480
 PrefabInstance:
   m_ObjectHideFlags: 0

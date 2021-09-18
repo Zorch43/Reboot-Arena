@@ -14,10 +14,12 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitClassModel()
             {
                 Name = "Trooper",
-                MaxHP = 200,
+                MaxHP = 400,
                 MaxMP = 100,
                 MoveSpeed = 0.64f,
-                TurnSpeed = 6
+                TurnSpeed = 6,
+                PrimaryWeapon = WeaponTemplates.CreateAssaultRifle(),
+                SecondaryWeapon = WeaponTemplates.CreateGrenadeLauncher()
             };
             return template;
         }

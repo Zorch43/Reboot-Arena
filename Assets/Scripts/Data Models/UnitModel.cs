@@ -12,10 +12,11 @@ namespace Assets.Scripts.Data_Models
         #region properties
         public UnitClassModel UnitClass { get; set; }
         public int Team { get; set; }//team ID
-        public int HP { get; set; }//current health points
-        public int MP { get; set; }//current munition points
+        public float HP { get; set; }//current health points
+        public float MP { get; set; }//current munition points
         public bool IsMoving { get; set; }
-        public bool IsAttacking { get; set; }
+        public bool IsActing { get; set; }
+        public float ActionCooldown { get; set; }//time until another action can be performed
         public bool IsSelected { get; set; }
         public Vector2 Position { get; set; }//current position on map
         public List<Vector2> WayPoints { get; set; }//current movement path

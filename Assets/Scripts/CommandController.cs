@@ -79,9 +79,17 @@ public class CommandController : MonoBehaviour
                         //u.Data.WayPoints = new List<Vector2>() { mapPoint };
                         //u.Data.IsMoving = true;
                         //u.SetDestination(mapPoint);
-                        u.Agent.destination = mapPoint;
+                        var unit = hit.collider.GetComponent<UnitController>();
+                        if (unit != null)
+                        {
+                            u.CommandTarget = unit;
+                        }
+                        else
+                        {
+                            u.Agent.destination = mapPoint;
+                            u.CommandTarget = null;
+                        }
                     }
-
                 }
             }
         }
