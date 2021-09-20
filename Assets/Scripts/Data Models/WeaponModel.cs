@@ -36,7 +36,9 @@ namespace Assets.Scripts.Data_Models
         public float Cooldown { get; set; }//time between attacks
         public float Damage { get; set; }//damage per attack
         public float AmmoCost { get; set; }//ammo cost, if any, to fire this weapon
-                                           //TODO: what effects to apply on hit
+        //TODO: what effects to apply on hit
+        public bool FireWhileMoving { get; set; }//whether this weapon can be fired while moving
+        public bool CanAutoAttack { get; set; }//whether this weapon can be used on autoattack targets
         #endregion
         #region dynamic properties
 
@@ -62,6 +64,10 @@ namespace Assets.Scripts.Data_Models
         public bool IsCooledDown()
         {
             return RemainingCooldown <= 0;
+        }
+        public bool NeedsLineOfSight()
+        {
+            return !(ArcingAttack || WeaponAOE == AttackArea.Line || WeaponAOE == AttackArea.Cone);
         }
         #endregion
     }

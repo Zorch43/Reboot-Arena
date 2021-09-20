@@ -16,7 +16,7 @@ namespace Assets.Scripts.Data_Templates
                 Name = "Trooper",
                 MaxHP = 400,
                 MaxMP = 100,
-                MoveSpeed = 0.64f,
+                MoveSpeed = 1,
                 TurnSpeed = 6,
                 PrimaryWeapon = WeaponTemplates.CreateAssaultRifle(),
                 SecondaryWeapon = WeaponTemplates.CreateGrenadeLauncher()

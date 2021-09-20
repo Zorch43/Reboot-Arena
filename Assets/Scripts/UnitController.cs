@@ -21,6 +21,7 @@ public class UnitController : MonoBehaviour
     public ResourceBarController HealthBar;
     public ResourceBarController AmmoBar;
     public WeaponController WeaponMount;
+    public int Team;//TEMP
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -42,11 +43,13 @@ public class UnitController : MonoBehaviour
         //TEMP: initialize data model
         Data = new UnitModel(UnitClassTemplates.GetTrooperClass());
         initialRotation = UnitEffects.transform.rotation;
-        //TEMP: randomize health and ammo
-        //Data.HP = (int)(Random.value * Data.UnitClass.MaxHP);
-        //Data.MP = (int)(Random.value * Data.UnitClass.MaxMP);
-        //TEMP: randomize team
-        Data.Team = Random.Range(0, 2);
+
+        //set agent speed
+        Agent.speed = Data.UnitClass.MoveSpeed;
+
+        //TEMP: set team from public property
+        Data.Team = Team;
+        //TEMP: set teamcolor
         if(Data.Team > 0)
         {
             TeamColorRenderer.color = new Color(0.5f, 0, 0);
@@ -61,21 +64,10 @@ public class UnitController : MonoBehaviour
         var collider = GetComponent<SphereCollider>();
         //update selection state
         Selector.gameObject.SetActive(Data.IsSelected);
-        //TODO: manual turning
+
         if (Agent.hasPath)
         {
-            
-            collider.radius = hitBoxSize + PERSONAL_SPACE;
-            
-            //var wayPoint = Agent.nextPosition;
-
-            //var vector = wayPoint - transform.position;
-
-            ////if not also attacking, turn towards the next waypoint
-            //float angle = Mathf.Atan2(vector.z, vector.x) * Mathf.Rad2Deg - 90;
-            //Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-            //UnitAppearance.transform.rotation = Quaternion.Slerp(UnitAppearance.transform.rotation, q, Time.deltaTime * Data.UnitClass.TurnSpeed);
- 
+            collider.radius = hitBoxSize + PERSONAL_SPACE; 
         }
         else
         {
@@ -84,11 +76,7 @@ public class UnitController : MonoBehaviour
         }
         DoWeaponCooldown(elapsedTime);
         DoUnitAction();
-        //if (!Obstacle.enabled && !Agent.enabled)
-        //{
-        //    Agent.enabled = true;
-        //    Agent.destination = pendingDestination;
-        //}
+
         //TODO; move unit status elements to UI layer
         //keep unit effects on unit (maybe as partical effects?)
         UnitEffects.transform.rotation = initialRotation;//reset rotation of unit effect sprites
@@ -99,56 +87,8 @@ public class UnitController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        ////move towards next waypoint
-        //if (Data.IsMoving)
-        //{
-        //    var vector = Data.WayPoints[0] - (Vector2)transform.position;
-        //    var moveVector = vector.normalized * elapsedTime * Data.UnitClass.MoveSpeed;
-
-        //    if(moveVector.magnitude >= vector.magnitude)
-        //    {
-        //        transform.position = Data.WayPoints[0];
-        //        Data.WayPoints.RemoveAt(0);
-        //        if(Data.WayPoints.Count < 1)
-        //        {
-        //            Data.IsMoving = false;
-        //        }
-        //    }
-        //    else
-        //    {
-        //        transform.position += (Vector3)moveVector;
-        //    }
-        //    //if not also attacking, turn towards the next waypoint
-        //    if (!Data.IsAttacking)
-        //    {
-        //        float angle = Mathf.Atan2(vector.y, vector.x) * Mathf.Rad2Deg - 90;
-        //        Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-        //        UnitAppearance.transform.rotation = Quaternion.Slerp(UnitAppearance.transform.rotation, q, Time.deltaTime * Data.UnitClass.TurnSpeed);
-        //    }
-        //}
-        //if(SpacingVector.magnitude > 0)
-        //{
-        //    backingOff = true;
-        //    Agent.destination = (transform.position + SpacingVector).normalized * PERSONAL_SPACE;
-        //    SpacingVector = new Vector3();
-        //}
     }
-    private void OnCollisionEnter(Collision collision)
-    {
-        //whenever this unit collides with another unit,
-        //check this unit's destination.
-        //var unit = collision.collider.GetComponent<UnitController>();
-        //if (Agent.hasPath && unit != null && !unit.Agent.hasPath && collision.collider.bounds.Contains(Agent.destination))
-        //{
-        //    //if the destination is covered by that (stationary) unit, stop moving.
-        //    //Agent.ResetPath();
-        //    //back up a little bit so that units are not in constant collision (personal space)
-        //    var backOffVector = (transform.position - unit.transform.position).normalized * PERSONAL_SPACE;
-            
-        //    Agent.SetDestination(transform.position + backOffVector);
-        //}
 
-    }
     private void OnCollisionStay(Collision collision)
     {
         var unit = collision.collider.GetComponent<UnitController>();
@@ -167,10 +107,7 @@ public class UnitController : MonoBehaviour
             }
         } 
     }
-    private void OnCollisionExit(Collision collision)
-    {
-        
-    }
+
     #endregion
     #region public methods
     
@@ -180,69 +117,144 @@ public class UnitController : MonoBehaviour
     //when right-clicking on a unit
     private void DoUnitAction()
     {
+        bool hasCommandTarget = false;
         if(CommandTarget == null)
         {
             //autoattack
             
         }
-        if(Data.Team == CommandTarget.Data.Team)
+        else if(Data.Team == CommandTarget.Data.Team)
         {
-            //perform friendly action (if it exists)
+            //perform support action (if it exists)
             //else clear unit as target
             CommandTarget = null;
         }
         else
         {
-            //perform attack action on unit
-            //if can attack (not counting cooldowns), do so
-            var activeWeapon = GetActiveWeapon();
-            if(activeWeapon != null)
-            {
-                //turn towards target
-                var targetRotation = Quaternion.LookRotation(CommandTarget.transform.position - transform.position);
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
-                if (Quaternion.Angle(targetRotation, transform.rotation) < 5)
-                {
-                    //once facing target, fire weapon
-                    DoAttack(activeWeapon);
-                    Agent.ResetPath();//stop moving //TODO: fire on the move if unit can strafe
-                }
-                
-            }
-            else
-            {
-                //move into position
-                Agent.SetDestination(CommandTarget.transform.position);
+           hasCommandTarget =  DoCommandAttack();
+        }
 
-                //TODO: get line-of-sight
-            }
-            
+        if (!hasCommandTarget)
+        {
+            //autoattack
+            DoAutoAttack();
         }
     }
-    private void DoAttack(WeaponModel activeWeapon)
+    //if the command target is within range, attack it.
+    //if command target is outside the primary weapon's range, move to engage
+    private bool DoCommandAttack()
+    {
+        //perform attack action on unit
+        //if can attack (not counting cooldowns), do so
+        var activeWeapon = GetActiveWeapon(CommandTarget, false, false);
+        if (activeWeapon != null)
+        {
+            //turn towards target
+            var targetRotation = Quaternion.LookRotation(CommandTarget.transform.position - transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
+            if (Quaternion.Angle(targetRotation, transform.rotation) < 5)
+            {
+                //once facing target, fire weapon
+                DoAttack(activeWeapon, CommandTarget);
+                Agent.ResetPath();//stop moving
+            }
+            return true;
+        }
+        else//move to engage
+        {
+            //move into position
+            Agent.SetDestination(CommandTarget.transform.position);
+            return false;
+        }
+    }
+    private void DoAutoAttack()
+    {
+        
+        //get weapon to attack with
+        var activeWeapon = GetActiveWeapon(AutoTarget, Agent.hasPath, true);
+        //check existing autoattack target
+        //if invalid, get new target
+        if (activeWeapon == null)
+        {
+            AutoTarget = GetAutoAttackTarget();
+            activeWeapon = GetActiveWeapon(AutoTarget, Agent.hasPath, true);
+        }
+        if(activeWeapon != null)
+        {
+            //turn towards target
+            var targetRotation = Quaternion.LookRotation(AutoTarget.transform.position - transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
+            if (Quaternion.Angle(targetRotation, transform.rotation) < 5)
+            {
+                //once facing target, fire weapon
+                DoAttack(activeWeapon, AutoTarget);
+            }
+            //disable agent turning
+            Agent.angularSpeed = 0;
+        }
+        else
+        {
+            //var units = transform.parent.GetComponentsInChildren<UnitController>();
+            //UnitController otherUnit = null;
+            //foreach(var u in units)
+            //{
+            //    if(u != this)
+            //    {
+            //        otherUnit = u;
+            //    }
+            //}
+            //if(otherUnit != null)
+            //{
+            //    Debug.Log(string.Format("{0} did not activate auto-attack at range {1}.  (Max range {2})",
+            //        gameObject.name, Vector3.Distance(transform.position, otherUnit.transform.position), Data.UnitClass.PrimaryWeapon.Range));
+            //}
+            //enable agent turning
+            Agent.angularSpeed = Data.UnitClass.TurnSpeed/Mathf.PI * 180;
+        }
+
+    }
+    private void DoAttack(WeaponModel activeWeapon, UnitController target)
     {
         if(activeWeapon != null && activeWeapon.IsCooledDown())
         {
             //TODO: spawn attack projectile instead
             //CurrentTarget.Data.HP -= activeWeapon.Damage;//do damage
-            WeaponMount.Fire(CommandTarget, activeWeapon);
+            WeaponMount.Fire(target, activeWeapon);
             activeWeapon.StartCooldown();
             Data.MP -= activeWeapon.AmmoCost;
+            //Debug.Log(string.Format("{0} attacks {1} with {2} at range {3} (max range {4})",
+            //    gameObject.name,target.gameObject.name,activeWeapon.Name, 
+            //    Vector3.Distance(transform.position, target.transform.position), activeWeapon.Range));
         }
     }
-    private int CanAttackWithWeapon(WeaponModel weapon)
+    private int CanAttackWithWeapon(WeaponModel weapon, UnitController target, bool isMoving, bool isAutoAttack)
     {
         //reason code:
         //0: can attack as normal
         //1: on cooldown
-        //2: out of range
-        //3: out of ammo
+        //2: no line-of-sight
+        //3: out of range
+        //4: out of ammo
+        //5: can't auto-attack
+        //6: can't attack while moving
         int reason = 0;
-        if(weapon.AmmoCost > Data.MP)
+        if(isMoving && !weapon.FireWhileMoving)
         {
+            reason = 6;
+        }
+        else if(isAutoAttack && !weapon.CanAutoAttack)
+        {
+            reason = 5;
+        }
+        else if(weapon.AmmoCost > Data.MP)
+        {
+            reason = 4;
+        }
+        else if(weapon.Range < Vector3.Distance(transform.position, target.transform.position)){
             reason = 3;
         }
-        else if(weapon.Range < Vector3.Distance(transform.position, CommandTarget.transform.position)){
+        else if(weapon.NeedsLineOfSight() && !HasLineOfSight(target.transform.position))
+        {
             reason = 2;
         }
         else if (!weapon.IsCooledDown())
@@ -252,18 +264,21 @@ public class UnitController : MonoBehaviour
 
         return reason;
     }
-    private WeaponModel GetActiveWeapon()
+    private WeaponModel GetActiveWeapon(UnitController target, bool isMoving, bool isAutoAttack)
     {
-        int primaryReason = CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon);
-        if(primaryReason == 0 || primaryReason == 1)
+        if(target != null)
         {
-            return Data.UnitClass.PrimaryWeapon;
-        }
+            int primaryReason = CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon, target, isMoving, isAutoAttack);
+            if (primaryReason == 0 || primaryReason == 1)
+            {
+                return Data.UnitClass.PrimaryWeapon;
+            }
 
-        int secondaryReason = CanAttackWithWeapon(Data.UnitClass.SecondaryWeapon);
-        if (secondaryReason == 0 || secondaryReason == 1)
-        {
-            return Data.UnitClass.SecondaryWeapon;
+            int secondaryReason = CanAttackWithWeapon(Data.UnitClass.SecondaryWeapon, target, isMoving, isAutoAttack);
+            if (secondaryReason == 0 || secondaryReason == 1)
+            {
+                return Data.UnitClass.SecondaryWeapon;
+            }
         }
         return null; ;
     }
@@ -276,24 +291,59 @@ public class UnitController : MonoBehaviour
     private UnitController GetAutoAttackTarget()
     {
         UnitController target = null;
+        UnitController bestTarget = null;
         //get the nearest valid target and attack it
         var map = transform.parent.gameObject;
         var units = map.GetComponentsInChildren<UnitController>();
-        UnitController autoTarget = null;
         float bestDistance = 0;
         foreach(var u in units)
         {
             if(u.Data.Team != Data.Team)
             {
-                //TODO: make sure that line-of-sight exists
+                //choose closest target in line-of-sight
                 var distance = Vector3.Distance(u.transform.position, transform.position);
-                if(autoTarget == null || distance < bestDistance)
+                if(target == null || distance < bestDistance)
                 {
+                    //prefer units in line-of-sight
                     bestDistance = distance;
+                    target = u;
+                    if ((!Data.UnitClass.PrimaryWeapon.NeedsLineOfSight() && Data.UnitClass.PrimaryWeapon.CanAutoAttack)
+                        || (!Data.UnitClass.SecondaryWeapon.NeedsLineOfSight() && Data.UnitClass.SecondaryWeapon.CanAutoAttack)
+                        || HasLineOfSight(u.transform.position))
+                    {
+                        bestTarget = u;
+                    }
                 }
             }
         }
-        return target;
+        if(bestTarget == null)
+        {
+            return target;
+        }
+        else
+        {
+            return bestTarget;
+        }
+    }
+    private bool HasLineOfSight(Vector3 target)
+    {
+        var pos = transform.position;
+
+        var hits = Physics.RaycastAll(pos, target - pos, Vector3.Distance(pos, target));
+        foreach (var h in hits)
+        {
+            var obj = h.collider.GetComponent<UnitController>();
+            if (obj == null)
+            {
+                return false;
+            }
+        }
+        return true;
+        //if(hits.Length > 0)
+        //{
+
+        //}
+        //return false;
     }
     #endregion
 

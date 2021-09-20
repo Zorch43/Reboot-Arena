@@ -59,10 +59,27 @@ public class ProjectileController : MonoBehaviour
         {
             if(!damageDealt)
             {
-                Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (targetPos - transform.position).magnitude) });
-                //do weapon damage to target
-                Target.Data.HP -= Weapon.Damage;
-                damageDealt = true;
+
+                //do weapon damage to first enemy in path to target
+                var hits = Physics.RaycastAll(transform.position, firingVector, Vector3.Distance(transform.position, targetPos));
+                foreach (var h in hits)
+                {
+                    var obj = h.collider.GetComponent<UnitController>();
+                    if (obj?.Data.Team == Target.Team)//TODO: hit any kind of enemy
+                    {
+                        Target.Data.HP -= Weapon.Damage;
+                        //draw line to first enemy in path to target
+                        Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (obj.transform.position - transform.position).magnitude) });
+                        damageDealt = true;
+                    }
+                }
+                if (!damageDealt)
+                {
+                    //draw line to target
+                    Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (targetPos - transform.position).magnitude) });
+                    Target.Data.HP -= Weapon.Damage;
+                    damageDealt = true;
+                }
             }
             
             currentBeamDuration += elapsedTime;

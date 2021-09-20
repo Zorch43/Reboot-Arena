@@ -14,10 +14,12 @@ namespace Assets.Scripts.Data_Templates
             var weapon = new WeaponModel()
             {
                 Name = "Assault Rifle",
-                Cooldown = 0.2f,
-                Damage = 8,
+                Cooldown = 1f,
+                Damage = 40,
                 DamageFalloff = 0.25f,
-                Range = WeaponModel.WEAPON_RANGE_MEDIUM
+                Range = WeaponModel.WEAPON_RANGE_MEDIUM,
+                CanAutoAttack = true,
+                FireWhileMoving = true
             };
             return weapon;
         }
