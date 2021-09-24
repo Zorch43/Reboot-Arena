@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,8 @@ public class ProjectileController : MonoBehaviour
     private float maxBeamDuration;
     private float currentBeamDuration;
     private bool damageDealt;
+    private bool trajectoryCalculated;
+    private Vector3 initialVelocity;
     #endregion
     #region properties
     public WeaponModel Weapon { get; set; }
@@ -34,6 +37,10 @@ public class ProjectileController : MonoBehaviour
         firingVector = (targetPos - transform.position).normalized;
         transform.forward = firingVector;
         maxBeamDuration = Mathf.Min(MAX_BEAM_DURATION, Weapon.Cooldown/2);
+        if (Weapon.ArcingAttack)
+        {
+            initialVelocity = TrajectoryTools.GetInitialVelocity(transform.position, Target.transform.position, TrajectoryTools.MIN_ARC_HEIGHT, -Physics.gravity.y);
+        }
     }
 
     // Update is called once per frame
@@ -44,15 +51,27 @@ public class ProjectileController : MonoBehaviour
 
         //travel towards target position
         //distance determined by projectile speed
-        if (Weapon.ProjectileSpeed > 0)
+        if (Weapon.ArcingAttack)
+        {
+            transform.position += initialVelocity * elapsedTime;
+            initialVelocity += Physics.gravity * elapsedTime;
+
+            //projectile will destroy itself when it hits a unit, an obstacle, or the ground
+        }
+        else if (Weapon.ProjectileSpeed > 0)
         {
             transform.position += firingVector * Weapon.ProjectileSpeed * elapsedTime;
             //check for hit on any unit
 
-            //if hit detected, do damage (if hitting a unit), and destroy the projectile
+            //if hit detected, do damage (if hitting a unit), and destroy the projectile (handled in OnCOllisionEnter)
 
             //update total distance travelled.
+            distanceTravelled += (firingVector * Weapon.ProjectileSpeed * elapsedTime).magnitude;
             //if distance exceeds weapon range, destroy this projectile
+            if(distanceTravelled > Weapon.Range)
+            {
+                Destroy(gameObject);
+            }
         }
         //if projectile speed is 0, it's instant, draw a beam to the target
         else
@@ -91,11 +110,28 @@ public class ProjectileController : MonoBehaviour
             }
         } 
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        var unit = other.gameObject.GetComponent<UnitController>();
+        if (unit == null)
+        {
+            Destroy(gameObject);
+        }
+        else if (unit.Data.Team == Target.Team)
+        {
+            unit.Data.HP -= Weapon.Damage;
+            Destroy(gameObject);
+        }
+    }
+
     #endregion
     #region public methods
 
     #endregion
     #region private methods
+    //private float GetInitialVelocityForHeight(float desiredHeight)
+    //{
 
+    //}
     #endregion
 }

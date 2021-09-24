@@ -14,12 +14,13 @@ namespace Assets.Scripts.Data_Templates
             var weapon = new WeaponModel()
             {
                 Name = "Assault Rifle",
-                Cooldown = 1f,
-                Damage = 40,
+                Cooldown = .2f,
+                Damage = 4,
                 DamageFalloff = 0.25f,
-                Range = WeaponModel.WEAPON_RANGE_MEDIUM,
+                Range = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
                 CanAutoAttack = true,
-                FireWhileMoving = true
+                FireWhileMoving = true,
+                ProjectileSpeed = 6.4f
             };
             return weapon;
         }
@@ -30,7 +31,7 @@ namespace Assets.Scripts.Data_Templates
                 Name = "Grenade Launcher",
                 Cooldown = 2,
                 Damage = 80,
-                Range = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
+                Range = WeaponModel.WEAPON_RANGE_MEDIUM_LONG,
                 WeaponAOE = WeaponModel.AttackArea.Blast,
                 WeaponAOESize = 0.64f,
                 ArcingAttack = true,
