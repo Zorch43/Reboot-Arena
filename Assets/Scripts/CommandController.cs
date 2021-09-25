@@ -33,7 +33,7 @@ public class CommandController : MonoBehaviour
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
             UnitController selectedUnit = null;
-            if (Physics.Raycast(ray, out hit))
+            if (GetRayHit(ray, out hit))
             {
                 selectedUnit = hit.transform.GetComponent<UnitController>();
                 if (selectedUnit != null)
@@ -67,7 +67,7 @@ public class CommandController : MonoBehaviour
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            if (GetRayHit(ray, out hit))
             {
                 var mapPoint = hit.point;
                 //TODO: action
@@ -127,6 +127,22 @@ public class CommandController : MonoBehaviour
             }
         }
         SelectUnits(selectedUnits, false);
+    }
+    private bool GetRayHit(Ray ray, out RaycastHit hit)
+    {
+        var hits = Physics.RaycastAll(ray);
+
+        hit = hits[0];
+        foreach (var h in hits)
+        {
+            if (h.collider.gameObject.GetComponent<UnitController>() != null)
+            {
+                hit = h;
+                break;
+            }
+        }
+
+        return hits.Length > 0;
     }
     #endregion
 }

@@ -1,5 +1,6 @@
 using Assets.Scripts.Data_Models;
 using Assets.Scripts.Data_Templates;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,10 +51,7 @@ public class UnitController : MonoBehaviour
         //TEMP: set team from public property
         Data.Team = Team;
         //TEMP: set teamcolor
-        if(Data.Team > 0)
-        {
-            TeamColorRenderer.color = new Color(0.5f, 0, 0);
-        }
+        TeamColorRenderer.color = TeamTools.GetTeamColor(Data.Team);
 
     }
 
