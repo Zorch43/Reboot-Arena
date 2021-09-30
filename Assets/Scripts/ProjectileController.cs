@@ -84,7 +84,7 @@ public class ProjectileController : MonoBehaviour
                 foreach (var h in hits)
                 {
                     var obj = h.collider.GetComponent<UnitController>();
-                    if (obj?.Data.Team == Target.Team)//TODO: hit any kind of enemy
+                    if (obj?.Data.Team == Target.Data.Team)//TODO: hit any kind of enemy
                     {
                         Target.Data.HP -= Weapon.Damage;
                         //draw line to first enemy in path to target
@@ -113,11 +113,11 @@ public class ProjectileController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         var unit = other.gameObject.GetComponent<UnitController>();
-        if (unit == null)
+        if (!other.isTrigger && unit == null)
         {
             Destroy(gameObject);
         }
-        else if (unit.Data.Team == Target.Team)
+        else if (unit.Data.Team == Target.Data.Team)
         {
             unit.Data.HP -= Weapon.Damage;
             Destroy(gameObject);

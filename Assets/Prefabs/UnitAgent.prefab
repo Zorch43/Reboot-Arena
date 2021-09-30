@@ -208,7 +208,7 @@ MonoBehaviour:
   HealthBar: {fileID: 3106424216852107998}
   AmmoBar: {fileID: 760662416690290609}
   WeaponMount: {fileID: 7914443538995578028}
-  Team: 0
+  Team: -1
 --- !u!54 &7810740817907385445
 Rigidbody:
   m_ObjectHideFlags: 0

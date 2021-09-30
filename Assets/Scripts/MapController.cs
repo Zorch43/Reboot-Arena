@@ -27,6 +27,7 @@ public class MapController : MonoBehaviour
             return new Vector2(box.size.x, box.size.y);
         }
     }
+    public List<SpawnPointController> SpawnPoints { get; set; }
     #endregion
     #region unity methods
 
@@ -39,79 +40,11 @@ public class MapController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ////mouse interface
-        ////move camera if mouse is near the edge of the viewport
-        
-        ////get map position of mouse click
-        //if (Input.GetMouseButtonDown(0))
-        //{
-        //    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //    RaycastHit hit;
-        //    if (Physics.Raycast(ray, out hit))
-        //    {
-        //        //var mapPoint = hit.point;
-        //        //Debug.Log(string.Format("Left-Clicked on map: world coordinates [{0},{1}", mapPoint.x, mapPoint.y));
-        //        //TODO: selection
-        //        var selection = hit.transform.GetComponent<UnitController>();
-        //        if (selection != null)
-        //        {
-        //            bool shift = Input.GetKey(KeyCode.LeftShift);
- 
-        //            SelectUnits(new List<UnitController>() { selection }, shift);
-        //        }
-        //    }
-        //}
-        //else if (Input.GetMouseButtonDown(1))
-        //{
-        //    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        //    RaycastHit hit;
-        //    if (Physics.Raycast(ray, out hit))
-        //    {
-        //        var mapPoint = hit.point;
-        //        //TODO: action
-        //        var allUnits = GetComponentsInChildren<UnitController>();
-        //        foreach(var u in allUnits)
-        //        {
-        //            if (u.Data.IsSelected)
-        //            {
-        //                //u.Data.WayPoints = new List<Vector2>() { mapPoint };
-        //                //u.Data.IsMoving = true;
-        //                //u.SetDestination(mapPoint);
-        //                u.Agent.destination = mapPoint;
-        //            }
-                    
-        //        }
-        //    }
-        //}
-        //else if (Input.GetMouseButton(0) && !makingRectSelection)
-        //{
-        //    rectSelectStart = Input.mousePosition;
-        //    makingRectSelection = true;
-        //}
-        //else if(Input.GetMouseButtonUp(0) && makingRectSelection)
-        //{
-        //    rectSelectEnd = Input.mousePosition;
-        //    makingRectSelection = false;
-        //}
+
     }
     #endregion
     #region public methods
-   
-    //public void SelectUnits(List<UnitController> units, bool addToSelection = false)
-    //{
-    //    var allUnits = GetComponentsInChildren<UnitController>();
-    //    if (!addToSelection)
-    //    {
-    //        foreach(var u in allUnits)
-    //        {
-    //            u.Data.IsSelected = false;
-    //        }
-    //    }
-    //    foreach(var u in units)
-    //    {
-    //        u.Data.IsSelected = !addToSelection || !u.Data.IsSelected;
-    //    }
-    //}
+
     #endregion
     #region private methods
     

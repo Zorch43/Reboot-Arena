@@ -17,7 +17,7 @@ namespace Assets.Scripts.Data_Templates
                 Cooldown = .2f,
                 Damage = 4,
                 DamageFalloff = 0.25f,
-                Range = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
+                Range = WeaponModel.WEAPON_RANGE_MEDIUM,
                 CanAutoAttack = true,
                 FireWhileMoving = true,
                 ProjectileSpeed = 6.4f
@@ -31,7 +31,7 @@ namespace Assets.Scripts.Data_Templates
                 Name = "Grenade Launcher",
                 Cooldown = 2,
                 Damage = 80,
-                Range = WeaponModel.WEAPON_RANGE_MEDIUM_LONG,
+                Range = WeaponModel.WEAPON_RANGE_MEDIUM,
                 WeaponAOE = WeaponModel.AttackArea.Blast,
                 WeaponAOESize = 0.64f,
                 ArcingAttack = true,

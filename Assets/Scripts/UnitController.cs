@@ -1,6 +1,7 @@
 using Assets.Scripts.Data_Models;
 using Assets.Scripts.Data_Templates;
 using Assets.Scripts.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,11 +19,10 @@ public class UnitController : MonoBehaviour
     public GameObject UnitEffects;
     public SpriteRenderer Selector;
     public NavMeshAgent Agent;
-    public NavMeshObstacle Obstacle;
     public ResourceBarController HealthBar;
     public ResourceBarController AmmoBar;
     public WeaponController WeaponMount;
-    public int Team;//TEMP
+    public int Team = -1;//TEMP
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -36,23 +36,32 @@ public class UnitController : MonoBehaviour
     public UnitModel Data { get; set; }
     public UnitController CommandTarget { get; set; }
     public UnitController AutoTarget { get; set; }
+    public UnitSlotController SpawnSlot { get; set; }
+    public List<Action> DeathActions { get; set; } = new List<Action>();
     #endregion
     #region unity methods
     // Start is called before the first frame update
     void Start()
     {
         //TEMP: initialize data model
-        Data = new UnitModel(UnitClassTemplates.GetTrooperClass());
+        if(Data == null)
+        {
+            Data = new UnitModel(UnitClassTemplates.GetTrooperClass());
+        }
+        
         initialRotation = UnitEffects.transform.rotation;
 
         //set agent speed
         Agent.speed = Data.UnitClass.MoveSpeed;
 
         //TEMP: set team from public property
-        Data.Team = Team;
+        if(Team >= 0)
+        {
+            Data.Team = Team;
+        }
+        
         //TEMP: set teamcolor
         TeamColorRenderer.color = TeamTools.GetTeamColor(Data.Team);
-
     }
 
     // Update is called once per frame
@@ -83,7 +92,7 @@ public class UnitController : MonoBehaviour
         AmmoBar.UpdateBar(Data.UnitClass.MaxMP, Data.MP);
         if(Data.HP <= 0)
         {
-            Destroy(gameObject);
+            Kill();
         }
     }
 
@@ -97,7 +106,6 @@ public class UnitController : MonoBehaviour
             {
                 Agent.ResetPath();
                 zoneMultiplier = 1;
-                
             }
             else
             {
@@ -108,7 +116,25 @@ public class UnitController : MonoBehaviour
 
     #endregion
     #region public methods
-    
+    public void Kill()
+    {
+        foreach(var d in DeathActions)
+        {
+            d.Invoke();
+        }
+        Destroy(gameObject);
+    }
+    public void SpawnSetup(Vector3 position, int team, UnitSlotController slot)
+    {
+        Data = new UnitModel(UnitClassTemplates.GetTrooperClass());//TEMP: decide on either model-firt or gameobject first
+        Data.Team = team;
+        transform.position = position;
+        SpawnSlot = slot;
+        DeathActions.Add(() =>
+        {
+            SpawnSlot.RespawnProgress = 0;
+        });
+    }
     
     #endregion
     #region private methods
@@ -331,7 +357,7 @@ public class UnitController : MonoBehaviour
         foreach (var h in hits)
         {
             var obj = h.collider.GetComponent<UnitController>();
-            if (obj == null)
+            if (!h.collider.isTrigger && obj == null)
             {
                 return false;
             }
