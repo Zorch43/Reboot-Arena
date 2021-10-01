@@ -14,15 +14,16 @@ public class CapturePointController : MonoBehaviour
     public SpriteRenderer OwnerIndicator;
     #endregion
     #region private fields
-    int nextOwner = -1;//the next owner of the point, if current capture attempt succeeds
-    int currOwner = -1;//current owner of the point
+   
     List<UnitController> units = new List<UnitController>();
-    float captureProgress = 0;
+    
     float decayTimer = 0;
     float maxProgressSize;
     #endregion
     #region properties
-
+    public int NextOwner { get; set; } = -1;//the next owner of the point, if current capture attempt succeeds
+    public int CurrOwner { get; set; } = -1;//current owner of the point
+    public float CaptureProgress { get; set; } = 0;
     #endregion
     #region unity methods
     // Start is called before the first frame update
@@ -57,40 +58,40 @@ public class CapturePointController : MonoBehaviour
         if(teams.Count == 1)
         {
             //if the point is neutral, advance capture progress for this team
-            if (currOwner == -1)
+            if (CurrOwner == -1)
             {
                 //if another team has progress, revert progress at an accelerated rate
-                if(nextOwner != teams[0] && captureProgress > 0)
+                if(NextOwner != teams[0] && CaptureProgress > 0)
                 {
-                    captureProgress -= (units.Count * CAPTURE_RATE + DECAY_RATE) * Time.deltaTime;
+                    CaptureProgress -= (units.Count * CAPTURE_RATE + DECAY_RATE) * Time.deltaTime;
                 }
                 //advance progress
                 else
                 {
-                    nextOwner = teams[0];
-                    captureProgress += units.Count * CAPTURE_RATE * Time.deltaTime;
-                    if(captureProgress >= 1)
+                    NextOwner = teams[0];
+                    CaptureProgress += units.Count * CAPTURE_RATE * Time.deltaTime;
+                    if(CaptureProgress >= 1)
                     {
                         //complete capture
-                        currOwner = teams[0];
+                        CurrOwner = teams[0];
                     }
                     //reset decay timer;
                     decayTimer = 0;
                 }
             }
             //if the point is already captured, advance capture progress at an accelerated rate
-            else if (currOwner == teams[0] && captureProgress < 1)
+            else if (CurrOwner == teams[0] && CaptureProgress < 1)
             {
-                captureProgress += (units.Count * CAPTURE_RATE + DECAY_RATE) * Time.deltaTime;
+                CaptureProgress += (units.Count * CAPTURE_RATE + DECAY_RATE) * Time.deltaTime;
             }
             //if the point is currently owned by another team, revert capture progress to neutral
             else
             {
-                captureProgress -= units.Count * CAPTURE_RATE * Time.deltaTime;
-                if(captureProgress <= 0)
+                CaptureProgress -= units.Count * CAPTURE_RATE * Time.deltaTime;
+                if(CaptureProgress <= 0)
                 {
                     //complete reversion
-                    currOwner = -1;
+                    CurrOwner = -1;
                 }
                 //reset decay timer
                 decayTimer = 0;
@@ -106,25 +107,25 @@ public class CapturePointController : MonoBehaviour
             {
                 decayTimer = DECAY_DELAY;
                 //if the point is neutral, but has capture progress, decay progress to empty
-                if(currOwner == -1 && captureProgress > 0)
+                if(CurrOwner == -1 && CaptureProgress > 0)
                 {
-                    captureProgress -= DECAY_RATE * Time.deltaTime;
+                    CaptureProgress -= DECAY_RATE * Time.deltaTime;
                 }
                 //if the point is owned by a team, but is partially reverted, decay progress to full
-                else if(captureProgress < 1)
+                else if(CaptureProgress < 1)
                 {
-                    captureProgress += DECAY_RATE * Time.deltaTime;
+                    CaptureProgress += DECAY_RATE * Time.deltaTime;
                 }
             }
         }
 
         //clamp progress value
-        captureProgress = Mathf.Clamp(captureProgress, 0, 1);
+        CaptureProgress = Mathf.Clamp(CaptureProgress, 0, 1);
 
         //update ownership visual
-        var teamColor = TeamTools.GetTeamColor(nextOwner);
-        OwnerIndicator.gameObject.SetActive(nextOwner != -1 && captureProgress > 0);
-        OwnerIndicator.gameObject.transform.localScale = new Vector3(maxProgressSize * captureProgress, maxProgressSize * captureProgress, 1);
+        var teamColor = TeamTools.GetTeamColor(NextOwner);
+        OwnerIndicator.gameObject.SetActive(NextOwner != -1 && CaptureProgress > 0);
+        OwnerIndicator.gameObject.transform.localScale = new Vector3(maxProgressSize * CaptureProgress, maxProgressSize * CaptureProgress, 1);
         OwnerIndicator.color = teamColor;
         
         //clear list of units

@@ -38,8 +38,6 @@ public class SelectionRectController : MonoBehaviour
             rect.sizeDelta = selectionRect.size;
             if (Input.GetMouseButtonUp(0))
             {
-                Debug.Log("Rectangular selection finished");
-                
                 callback(selectionRect);
                 ClearSelection();
             }
