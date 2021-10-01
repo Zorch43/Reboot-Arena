@@ -68,7 +68,10 @@ public class GameObjectiveController : MonoBehaviour
     }
     #endregion
     #region public methods
-
+    public Vector3 GetAIObjective()
+    {
+        return Objective.transform.position;
+    }
     #endregion
     #region private methods
 

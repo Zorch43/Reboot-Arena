@@ -5,7 +5,7 @@ using UnityEngine;
 public class TeamController : MonoBehaviour
 {
     #region constants
-    public const float BASE_RESPAWN_TIME = 10;
+    public const float BASE_RESPAWN_TIME = 30;
     #endregion
     #region public fields
     public UnitSlotController[] UnitSlots;//9-12 unit slots
@@ -30,7 +30,7 @@ public class TeamController : MonoBehaviour
         {
             var s = UnitSlots[i];
             s.NextUnitClass = TeamUnits[0];
-            s.RespawnProgress = 0.9f - i * 0.1f;
+            s.RespawnProgress = 0.99f - i * 0.25f/BASE_RESPAWN_TIME;
         }
     }
 

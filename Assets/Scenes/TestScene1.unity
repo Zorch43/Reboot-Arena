@@ -863,7 +863,7 @@ GameObject:
   - component: {fileID: 407194585}
   - component: {fileID: 407194584}
   m_Layer: 0
-  m_Name: GameObjectiveController
+  m_Name: GameController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1307,7 +1307,7 @@ Light:
   serializedVersion: 10
   m_Type: 1
   m_Shape: 0
-  m_Color: {r: 1, g: 0.6859201, b: 0.2028302, a: 1}
+  m_Color: {r: 0.6981132, g: 0.4736061, b: 0.1284265, a: 1}
   m_Intensity: 0.4
   m_Range: 10
   m_SpotAngle: 30
@@ -1585,6 +1585,7 @@ GameObject:
   m_Component:
   - component: {fileID: 908268095}
   - component: {fileID: 908268094}
+  - component: {fileID: 908268096}
   m_Layer: 0
   m_Name: AIController
   m_TagString: Untagged
@@ -1641,6 +1642,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &908268096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 908268093}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b6f879261141ae40a092a744db07495, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Team: {fileID: 908268094}
+  GameObjective: {fileID: 407194584}
+  CommandInterface: {fileID: 544829689}
+  Map: {fileID: 373370371}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

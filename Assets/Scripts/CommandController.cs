@@ -15,7 +15,7 @@ public class CommandController : MonoBehaviour
 
     #endregion
     #region properties
-
+    public int AITeam { get; set; } = 1;
     #endregion
     #region unity methods
     // Start is called before the first frame update
@@ -27,7 +27,7 @@ public class CommandController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //single selection
+        //selection
         if (Input.GetMouseButtonDown(0))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -47,20 +47,6 @@ public class CommandController : MonoBehaviour
             {
                 SelectionRect.StartSelection(Input.mousePosition, SelectUnitsInRect);
             }
-            
-
-            //var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            //RaycastHit hit;
-            //if (Physics.Raycast(ray, out hit))
-            //{
-            //    var selection = hit.transform.GetComponent<UnitController>();
-            //    if (selection != null)
-            //    {
-            //        bool shift = Input.GetKey(KeyCode.LeftShift);
-
-            //        SelectUnits(new List<UnitController>() { selection }, shift);
-            //    }
-            //}
         }
         //perform contextual action
         else if (Input.GetMouseButtonDown(1))
@@ -70,7 +56,7 @@ public class CommandController : MonoBehaviour
             if (GetRayHit(ray, out hit))
             {
                 var mapPoint = hit.point;
-                //TODO: action
+                //action
                 var allUnits = Map.GetComponentsInChildren<UnitController>();
                 foreach (var u in allUnits)
                 {
@@ -82,12 +68,11 @@ public class CommandController : MonoBehaviour
                         var unit = hit.collider.GetComponent<UnitController>();
                         if (unit != null)
                         {
-                            u.CommandTarget = unit;
+                            GiveUnitOrder(u, unit);
                         }
                         else
                         {
-                            u.Agent.destination = mapPoint;
-                            u.CommandTarget = null;
+                            GiveUnitOrder(u, mapPoint);
                         }
                     }
                 }
@@ -108,8 +93,17 @@ public class CommandController : MonoBehaviour
         }
         foreach (var u in units)
         {
-            u.Data.IsSelected = !addToSelection || !u.Data.IsSelected;
+            u.Data.IsSelected = AITeam != u.Data.Team && (!addToSelection || !u.Data.IsSelected);
         }
+    }
+    public void GiveUnitOrder(UnitController selectedUnit, UnitController targetUnit)
+    {
+        selectedUnit.CommandTarget = targetUnit;
+    }
+    public void GiveUnitOrder(UnitController selectedUnit, Vector3 targetLocation)
+    {
+        selectedUnit.Agent.destination = targetLocation;
+        selectedUnit.CommandTarget = null;
     }
     #endregion
     #region private methods
@@ -131,8 +125,14 @@ public class CommandController : MonoBehaviour
     private bool GetRayHit(Ray ray, out RaycastHit hit)
     {
         var hits = Physics.RaycastAll(ray);
-
-        hit = hits[0];
+        if(hits.Length > 0)
+        {
+            hit = hits[0];
+        }
+        else
+        {
+            hit = new RaycastHit();
+        }
         foreach (var h in hits)
         {
             if (h.collider.gameObject.GetComponent<UnitController>() != null)

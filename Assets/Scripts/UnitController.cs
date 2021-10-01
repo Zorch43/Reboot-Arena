@@ -130,6 +130,7 @@ public class UnitController : MonoBehaviour
         Data.Team = team;
         transform.position = position;
         SpawnSlot = slot;
+        SpawnSlot.CurrentUnit = this;
         DeathActions.Add(() =>
         {
             SpawnSlot.RespawnProgress = 0;
@@ -218,21 +219,6 @@ public class UnitController : MonoBehaviour
         }
         else
         {
-            //var units = transform.parent.GetComponentsInChildren<UnitController>();
-            //UnitController otherUnit = null;
-            //foreach(var u in units)
-            //{
-            //    if(u != this)
-            //    {
-            //        otherUnit = u;
-            //    }
-            //}
-            //if(otherUnit != null)
-            //{
-            //    Debug.Log(string.Format("{0} did not activate auto-attack at range {1}.  (Max range {2})",
-            //        gameObject.name, Vector3.Distance(transform.position, otherUnit.transform.position), Data.UnitClass.PrimaryWeapon.Range));
-            //}
-            //enable agent turning
             Agent.angularSpeed = Data.UnitClass.TurnSpeed/Mathf.PI * 180;
         }
 
@@ -241,8 +227,6 @@ public class UnitController : MonoBehaviour
     {
         if(activeWeapon != null && activeWeapon.IsCooledDown())
         {
-            //TODO: spawn attack projectile instead
-            //CurrentTarget.Data.HP -= activeWeapon.Damage;//do damage
             WeaponMount.Fire(target, activeWeapon);
             activeWeapon.StartCooldown();
             Data.MP -= activeWeapon.AmmoCost;
