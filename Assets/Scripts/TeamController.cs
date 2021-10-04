@@ -1,3 +1,4 @@
+using Assets.Scripts.Data_Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,8 +9,8 @@ public class TeamController : MonoBehaviour
     public const float BASE_RESPAWN_TIME = 30;
     #endregion
     #region public fields
-    public UnitSlotController[] UnitSlots;//9-12 unit slots
-    public UnitController[] TeamUnits;//unit templates avaialable to spawn (6-9)
+    public UnitSlotManager UnitSlotManager;//9-12 unit slots
+    public UnitController[] UnitTemplates;//unit templates avaialable to spawn (6-9)
     public SpawnPointController DefaultSpawnPoint;//starting spawnpoint
     public int Team;
     #endregion
@@ -18,6 +19,7 @@ public class TeamController : MonoBehaviour
     #endregion
     #region properties
     public SpawnPointController SpawnPoint { get; set; }//current spawnpoint
+    public List<UnitSlotModel> UnitSlots { get; set; } = new List<UnitSlotModel>();//unit slots
     #endregion
     #region unity methods
     // Start is called before the first frame update
@@ -25,12 +27,26 @@ public class TeamController : MonoBehaviour
     {
         SpawnPoint = DefaultSpawnPoint;
         SpawnPoint.ControllingTeam = Team;
-        //fill slots with first unit and spawn all slots
-        for(int i = 0; i < UnitSlots.Length; i++)
+        if(UnitSlotManager != null)
         {
-            var s = UnitSlots[i];
-            s.NextUnitClass = TeamUnits[0];
-            s.RespawnProgress = 0.99f - i * 0.25f/BASE_RESPAWN_TIME;
+            //fill slots with first unit and spawn all slots
+            for (int i = 0; i < UnitSlotManager.UnitSlots.Count; i++)
+            {
+                var s = UnitSlotManager.UnitSlots[i];
+                UnitSlots.Add(s.Data);
+                s.Data.NextUnitClass = UnitTemplates[0];
+                s.Data.RespawnProgress = 0.99f - i * 0.25f / BASE_RESPAWN_TIME;
+            }
+        }
+        else
+        {
+            for(int i = 0; i < 9; i++)
+            {
+                var slot = new UnitSlotModel();
+                UnitSlots.Add(slot);
+                slot.NextUnitClass = UnitTemplates[0];
+                slot.RespawnProgress = 0.99f - i * 0.25f / BASE_RESPAWN_TIME;
+            }
         }
     }
 

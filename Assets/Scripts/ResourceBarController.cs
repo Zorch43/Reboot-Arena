@@ -25,6 +25,7 @@ public class ResourceBarController : MonoBehaviour
         float fillPercent = Math.Min(Math.Max(current / max, 0), 1);
         
         Filling.size = new Vector2(BAR_WIDTH * fillPercent, Filling.size.y);
+        Filling.transform.localPosition = new Vector3(-BAR_WIDTH * (1-fillPercent) / 2, Filling.transform.localPosition.y, Filling.transform.localPosition.z);
     }
     #endregion
 }

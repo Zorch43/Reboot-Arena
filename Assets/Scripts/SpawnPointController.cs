@@ -1,3 +1,4 @@
+using Assets.Scripts.Data_Models;
 using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
@@ -54,7 +55,7 @@ public class SpawnPointController : MonoBehaviour
     }
     #endregion
     #region public methods
-    public void SpawnUnit(UnitSlotController unitSlot)
+    public void SpawnUnit(UnitSlotModel unitSlot)
     {
         //instantiate the unit on the map in an empty space in the respawn zone
 

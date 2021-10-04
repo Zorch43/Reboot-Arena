@@ -83,11 +83,11 @@ public class AIController : MonoBehaviour
     public UnitController GetRandomUnit()
     {
         var livingUnits = new List<UnitController>();
-        foreach(var u in Team.UnitSlots)
+        foreach(var u in Team.UnitSlotManager.UnitSlots)
         {
-            if (u.CurrentUnit != null)
+            if (u.Data.CurrentUnit != null)
             {
-                livingUnits.Add(u.CurrentUnit);
+                livingUnits.Add(u.Data.CurrentUnit);
             }
         }
         if(livingUnits.Count > 0)

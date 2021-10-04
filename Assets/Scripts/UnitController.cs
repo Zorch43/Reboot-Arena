@@ -23,6 +23,8 @@ public class UnitController : MonoBehaviour
     public ResourceBarController AmmoBar;
     public WeaponController WeaponMount;
     public int Team = -1;//TEMP
+    public Sprite Portrait;
+    public Sprite Symbol;
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -36,7 +38,7 @@ public class UnitController : MonoBehaviour
     public UnitModel Data { get; set; }
     public UnitController CommandTarget { get; set; }
     public UnitController AutoTarget { get; set; }
-    public UnitSlotController SpawnSlot { get; set; }
+    public UnitSlotModel SpawnSlot { get; set; }
     public List<Action> DeathActions { get; set; } = new List<Action>();
     #endregion
     #region unity methods
@@ -124,16 +126,16 @@ public class UnitController : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    public void SpawnSetup(Vector3 position, int team, UnitSlotController slot)
+    public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot)
     {
-        Data = new UnitModel(UnitClassTemplates.GetTrooperClass());//TEMP: decide on either model-firt or gameobject first
+        Data = new UnitModel(UnitClassTemplates.GetTrooperClass());//TEMP: decide on either model-first or gameobject first
         Data.Team = team;
         transform.position = position;
         SpawnSlot = slot;
         SpawnSlot.CurrentUnit = this;
         DeathActions.Add(() =>
         {
-            SpawnSlot.RespawnProgress = 0;
+            SpawnSlot.DoUnitDeath();
         });
     }
     

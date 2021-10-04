@@ -10,6 +10,7 @@ public class CommandController : MonoBehaviour
     #region public fields
     public SelectionRectController SelectionRect;
     public GameObject Map;
+    
     #endregion
     #region private fields
 
@@ -43,7 +44,7 @@ public class CommandController : MonoBehaviour
                     SelectUnits(new List<UnitController>() { selectedUnit }, shift);
                 }
             }
-            if(selectedUnit == null)
+            if (selectedUnit == null)
             {
                 SelectionRect.StartSelection(Input.mousePosition, SelectUnitsInRect);
             }
@@ -111,16 +112,18 @@ public class CommandController : MonoBehaviour
     {
         var allUnits = Map.GetComponentsInChildren<UnitController>();
         var selectedUnits = new List<UnitController>();
-        
-        foreach (var u in allUnits)
+        if(rect.width >= 32 || rect.height >= 32)
         {
-            var unitPoint = Camera.main.WorldToScreenPoint(u.transform.position);
-            if (rect.Contains(unitPoint))
+            foreach (var u in allUnits)
             {
-                selectedUnits.Add(u);
+                var unitPoint = Camera.main.WorldToScreenPoint(u.transform.position);
+                if (rect.Contains(unitPoint))
+                {
+                    selectedUnits.Add(u);
+                }
             }
+            SelectUnits(selectedUnits, false);
         }
-        SelectUnits(selectedUnits, false);
     }
     private bool GetRayHit(Ray ray, out RaycastHit hit)
     {
