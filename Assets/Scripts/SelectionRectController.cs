@@ -9,7 +9,7 @@ public class SelectionRectController : MonoBehaviour
 
     #endregion
     #region public fields
-
+    public GameObject SelectionRect;
     #endregion
     #region private fields
     Action<Rect> callback;
@@ -32,15 +32,17 @@ public class SelectionRectController : MonoBehaviour
         if (IsDrawingSelection)
         {
             EndingPoint = Input.mousePosition;
-            var rect = transform as RectTransform;
+            var rect = SelectionRect.transform as RectTransform;
             var selectionRect = CreateRectArea(StartingPoint, EndingPoint);
             rect.position = selectionRect.position;
             rect.sizeDelta = selectionRect.size;
+            SelectionRect.SetActive(true);
             if (Input.GetMouseButtonUp(0))
             {
                 callback(selectionRect);
                 ClearSelection();
             }
+            
         }
     }
     #endregion
@@ -48,14 +50,13 @@ public class SelectionRectController : MonoBehaviour
     public void StartSelection(Vector2 startPoint, Action<Rect> callback)
     {
         IsDrawingSelection = true;
-        gameObject.SetActive(true);
         StartingPoint = startPoint;
         this.callback = callback;
     }
     public void ClearSelection()
     {
         IsDrawingSelection = false;
-        gameObject.SetActive(false);
+        SelectionRect.SetActive(false);
         StartingPoint = new Vector2();
         EndingPoint = new Vector2();
     }
