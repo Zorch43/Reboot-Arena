@@ -24,7 +24,7 @@ public class MapController : MonoBehaviour
         get
         {
             var box = Terrain.GetComponent<BoxCollider>();
-            return new Vector2(box.size.x, box.size.y);
+            return new Vector2(box.bounds.size.x, box.bounds.size.z)/2;
         }
     }
     public List<SpawnPointController> SpawnPoints { get; set; }

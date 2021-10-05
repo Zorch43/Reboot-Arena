@@ -4,6 +4,7 @@ using Assets.Scripts.Utility;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -16,6 +17,9 @@ public class UnitController : MonoBehaviour
     #region public fields
     public GameObject UnitAppearance;
     public SpriteRenderer TeamColorRenderer;
+    public SpriteRenderer MiniMapIcon;
+    public TextMeshPro MinimapNumber;
+    public TextMeshPro UnitNumber;
     public GameObject UnitEffects;
     public SpriteRenderer Selector;
     public NavMeshAgent Agent;
@@ -64,6 +68,7 @@ public class UnitController : MonoBehaviour
         
         //TEMP: set teamcolor
         TeamColorRenderer.color = TeamTools.GetTeamColor(Data.Team);
+        MiniMapIcon.color = TeamColorRenderer.color;
     }
 
     // Update is called once per frame
@@ -133,6 +138,8 @@ public class UnitController : MonoBehaviour
         transform.position = position;
         SpawnSlot = slot;
         SpawnSlot.CurrentUnit = this;
+        MinimapNumber.text = slot.SlotNumber.ToString();
+        UnitNumber.text = slot.SlotNumber.ToString();
         DeathActions.Add(() =>
         {
             SpawnSlot.DoUnitDeath();

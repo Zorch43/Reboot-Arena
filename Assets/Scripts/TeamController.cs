@@ -34,6 +34,7 @@ public class TeamController : MonoBehaviour
             {
                 var s = UnitSlotManager.UnitSlots[i];
                 UnitSlots.Add(s.Data);
+                s.Data.SlotNumber = i + 1;
                 s.Data.NextUnitClass = UnitTemplates[0];
                 s.Data.RespawnProgress = 0.99f - i * 0.25f / BASE_RESPAWN_TIME;
             }
@@ -44,6 +45,7 @@ public class TeamController : MonoBehaviour
             {
                 var slot = new UnitSlotModel();
                 UnitSlots.Add(slot);
+                slot.SlotNumber = i + 1;
                 slot.NextUnitClass = UnitTemplates[0];
                 slot.RespawnProgress = 0.99f - i * 0.25f / BASE_RESPAWN_TIME;
             }

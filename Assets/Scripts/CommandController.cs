@@ -52,32 +52,7 @@ public class CommandController : MonoBehaviour
         //perform contextual action
         else if (Input.GetMouseButtonDown(1))
         {
-            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (GetRayHit(ray, out hit))
-            {
-                var mapPoint = hit.point;
-                //action
-                var allUnits = Map.GetComponentsInChildren<UnitController>();
-                foreach (var u in allUnits)
-                {
-                    if (u.Data.IsSelected)
-                    {
-                        //u.Data.WayPoints = new List<Vector2>() { mapPoint };
-                        //u.Data.IsMoving = true;
-                        //u.SetDestination(mapPoint);
-                        var unit = hit.collider.GetComponent<UnitController>();
-                        if (unit != null)
-                        {
-                            GiveUnitOrder(u, unit);
-                        }
-                        else
-                        {
-                            GiveUnitOrder(u, mapPoint);
-                        }
-                    }
-                }
-            }
+            GiveOrder(Input.mousePosition);
         }
     }
     #endregion
@@ -105,6 +80,39 @@ public class CommandController : MonoBehaviour
     {
         selectedUnit.Agent.destination = targetLocation;
         selectedUnit.CommandTarget = null;
+    }
+    public void GiveOrder(Vector3 targetLocation, Camera fromCamera = null)
+    {
+        if(fromCamera == null)
+        {
+            fromCamera = Camera.main;
+        }
+        var ray = fromCamera.ScreenPointToRay(targetLocation);
+        RaycastHit hit;
+        if (GetRayHit(ray, out hit))
+        {
+            var mapPoint = hit.point;
+            //action
+            var allUnits = Map.GetComponentsInChildren<UnitController>();
+            foreach (var u in allUnits)
+            {
+                if (u.Data.IsSelected)
+                {
+                    //u.Data.WayPoints = new List<Vector2>() { mapPoint };
+                    //u.Data.IsMoving = true;
+                    //u.SetDestination(mapPoint);
+                    var unit = hit.collider.GetComponent<UnitController>();
+                    if (unit != null)
+                    {
+                        GiveUnitOrder(u, unit);
+                    }
+                    else
+                    {
+                        GiveUnitOrder(u, mapPoint);
+                    }
+                }
+            }
+        }
     }
     #endregion
     #region private methods

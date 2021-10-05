@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6985556917948450966}
   - component: {fileID: 6924891276616146878}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BarFilling
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -138,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8497852433058101578}
   - component: {fileID: 2238293885190199945}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: BarBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}

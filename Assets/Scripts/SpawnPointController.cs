@@ -13,6 +13,7 @@ public class SpawnPointController : MonoBehaviour
     #region public fields
     public GameObject RespawnField;
     public SpriteRenderer TeamColor;
+    public SpriteRenderer MinimapMarker;
     #endregion
     #region private fields
     private BoxCollider respawnArea;
@@ -29,6 +30,7 @@ public class SpawnPointController : MonoBehaviour
         {
             _team = value;
             TeamColor.color = TeamTools.GetTeamColor(_team);
+            MinimapMarker.color = TeamColor.color;
         }
     }
     #endregion

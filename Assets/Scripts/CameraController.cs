@@ -14,6 +14,7 @@ public class CameraController : MonoBehaviour
     public MapController Map;
     public GameObject ViewRect;
     public GameObject InitialView;
+    public LineRenderer ViewBounds;
     #endregion
     #region private fields
     private Rect viewRect;
@@ -78,7 +79,8 @@ public class CameraController : MonoBehaviour
             panVector = panVector * SCROLL_SPEED * Time.deltaTime;
             var panVector3d = new Vector3(panVector.x, 0, panVector.y);
 
-            Camera.transform.position = ClampCameraPosition(Camera.transform.position + panVector3d); ;
+            Camera.transform.position = ClampCameraPosition(Camera.transform.position + panVector3d);
+            RedrawViewBounds();
         }
 
     }
@@ -91,6 +93,7 @@ public class CameraController : MonoBehaviour
         var cameraPosNew = ClampCameraPosition(new Vector3(location.x, Camera.transform.position.y, location.z));
 
         Camera.transform.position = cameraPosNew;
+        RedrawViewBounds();
     }
     #endregion
     #region private methods
@@ -108,6 +111,22 @@ public class CameraController : MonoBehaviour
     {
         return new Vector3(Mathf.Clamp(location.x, cameraBox.min.x, cameraBox.max.x),
             location.y, Mathf.Clamp(location.z, cameraBox.min.z, cameraBox.max.z));
+    }
+    private void RedrawViewBounds()
+    {
+        //get all corners of the main viewport
+        Vector3 p0 = Camera.ScreenToWorldPoint(new Vector3(viewRect.min.x, viewRect.min.y, Camera.transform.position.y));
+        Vector3 p1 = Camera.ScreenToWorldPoint(new Vector3(viewRect.min.x, viewRect.max.y, Camera.transform.position.y));
+        Vector3 p2 = Camera.ScreenToWorldPoint(new Vector3(viewRect.max.x, viewRect.max.y, Camera.transform.position.y));
+        Vector3 p3 = Camera.ScreenToWorldPoint(new Vector3(viewRect.max.x, viewRect.min.y, Camera.transform.position.y));
+
+        p0.y = 10;
+        p1.y = 10;
+        p2.y = 10;
+        p3.y = 10;
+
+        ViewBounds.SetPositions(new Vector3[] { p0, p1, p2, p3 });
+
     }
     #endregion
 }
