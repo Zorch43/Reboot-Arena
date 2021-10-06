@@ -195,7 +195,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1588704434486824535}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 2895215946849018381}
@@ -303,6 +303,7 @@ MonoBehaviour:
   Team: -1
   Portrait: {fileID: 10911, guid: 0000000000000000f000000000000000, type: 0}
   Symbol: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  DeathLoot: {fileID: 502637539237251665, guid: 7898b491eac7e5b44a452302f664e157, type: 3}
 --- !u!54 &7810740817907385445
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -713,7 +714,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8137214813363557868}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.16, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 6800773236035076173}

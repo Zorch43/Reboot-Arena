@@ -117,7 +117,7 @@ public class ProjectileController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        else if (unit.Data.Team == Target.Data.Team)
+        else if (unit?.Data.Team == Target.Data.Team)
         {
             unit.Data.HP -= Weapon.Damage;
             Destroy(gameObject);

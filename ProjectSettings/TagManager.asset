@@ -3,21 +3,23 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Blocking
+  - NonBlocking
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
-  - Floor
   - Platform
+  - Wall
+  - Pickup
   - Unit
+  - Projectile
   - Air
-  - 
-  - 
-  - 
+  - Minimap
   - 
   - 
   - 
@@ -53,6 +55,12 @@ TagManager:
   - name: Unit
     uniqueID: 2842372345
     locked: 0
-  - name: Air
+  - name: Projectile
     uniqueID: 686347307
+    locked: 0
+  - name: UI
+    uniqueID: 1781608893
+    locked: 0
+  - name: Minimap
+    uniqueID: 971901233
     locked: 0

@@ -29,6 +29,7 @@ public class UnitController : MonoBehaviour
     public int Team = -1;//TEMP
     public Sprite Portrait;
     public Sprite Symbol;
+    public PickupController DeathLoot;
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -140,10 +141,9 @@ public class UnitController : MonoBehaviour
         SpawnSlot.CurrentUnit = this;
         MinimapNumber.text = slot.SlotNumber.ToString();
         UnitNumber.text = slot.SlotNumber.ToString();
-        DeathActions.Add(() =>
-        {
-            SpawnSlot.DoUnitDeath();
-        });
+
+        DeathActions.Add(SpawnSlot.DoUnitDeath);
+        DeathActions.Add(DoLootDrop);
     }
     
     #endregion
@@ -361,6 +361,12 @@ public class UnitController : MonoBehaviour
 
         //}
         //return false;
+    }
+    private void DoLootDrop()
+    {
+        var loot = Instantiate(DeathLoot, transform.parent);
+        loot.transform.position = transform.position + new Vector3(0, .32f, 0);
+        loot.ThrowPack();
     }
     #endregion
 

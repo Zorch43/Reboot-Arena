@@ -134,7 +134,10 @@ public class CapturePointController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         var unit = other.gameObject.GetComponent<UnitController>();
-        units.Add(unit);
+        if(unit != null)
+        {
+            units.Add(unit);
+        }
     }
     #endregion
 }
