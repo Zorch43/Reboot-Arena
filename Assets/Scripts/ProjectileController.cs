@@ -113,7 +113,7 @@ public class ProjectileController : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         var unit = other.gameObject.GetComponent<UnitController>();
-        if (!other.isTrigger && unit == null)
+        if (other.tag != "NonBlocking" && !other.isTrigger && unit == null)
         {
             Destroy(gameObject);
         }

@@ -33,28 +33,48 @@ public abstract class PickupController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-        if (isMoving)
+
+        //if (isMoving)
+        //{
+        //    float elapsedTime = Time.deltaTime;
+        //    transform.position += velocity * elapsedTime;
+        //    velocity += Physics.gravity * elapsedTime;
+        //}
+        //else
+        //{
+        decayTimer -= Time.deltaTime;
+        if (decayTimer <= 0)
         {
-            float elapsedTime = Time.deltaTime;
-            transform.position += velocity * elapsedTime;
-            velocity += Physics.gravity * elapsedTime;
+            Destroy(gameObject);
         }
-        else
-        {
-            decayTimer -= Time.deltaTime;
-            if(decayTimer <= 0)
-            {
-                Destroy(gameObject);
-            }
-        }
+        //}
     }
-    private void OnTriggerEnter(Collider other)
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    //if the collision is with a unit,
+    //    var unit = other.gameObject.GetComponent<UnitController>();
+    //    if (unit != null)
+    //    {
+    //        //check whether the pickup effect can be applied to that unit
+    //        if (CanApplyEffectToUnit(unit))
+    //        {
+    //            //if it can, apply the effect and consume the pickup
+    //            ApplyEffectToUnit(unit);
+    //            Destroy(gameObject);
+    //        }
+    //    }
+    //    else if (!other.isTrigger)
+    //    {
+    //        isMoving = false;
+    //        velocity = new Vector3();
+    //    }
+    //}
+    private void OnCollisionEnter(Collision collision)
     {
-        //if the collision is with a unit,
-        var unit = other.gameObject.GetComponent<UnitController>();
+        var unit = collision.collider.GetComponent<UnitController>();
         if (unit != null)
         {
+            Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
             //check whether the pickup effect can be applied to that unit
             if (CanApplyEffectToUnit(unit))
             {
@@ -62,11 +82,6 @@ public abstract class PickupController : MonoBehaviour
                 ApplyEffectToUnit(unit);
                 Destroy(gameObject);
             }
-        }
-        else if (!other.isTrigger)
-        {
-            isMoving = false;
-            velocity = new Vector3();
         }
     }
     #endregion
@@ -77,6 +92,9 @@ public abstract class PickupController : MonoBehaviour
     {
         velocity = RandomTrajectory();
         isMoving = true;
+        var rb = GetComponent<Rigidbody>();
+        rb.AddForce(velocity, ForceMode.VelocityChange);
+
     }
     #endregion
     #region private methods

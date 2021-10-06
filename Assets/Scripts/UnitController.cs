@@ -183,6 +183,7 @@ public class UnitController : MonoBehaviour
         var activeWeapon = GetActiveWeapon(CommandTarget, false, false);
         if (activeWeapon != null)
         {
+            
             //turn towards target
             var targetRotation = Quaternion.LookRotation(CommandTarget.transform.position - transform.position);
             transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
@@ -236,6 +237,17 @@ public class UnitController : MonoBehaviour
     {
         if(activeWeapon != null && activeWeapon.IsCooledDown())
         {
+            //if (activeWeapon == Data.UnitClass.SecondaryWeapon)
+            //{
+            //    //DEBUG: get line of sight to see what's blocking the shot
+            //    var hits = Physics.RaycastAll(new Ray(transform.position, CommandTarget.transform.position));
+            //    string debugString = "Obstacles: ";
+            //    foreach (var h in hits)
+            //    {
+            //        debugString += "[" + h.collider.tag + "]";
+            //    }
+            //    Debug.Log(debugString);
+            //}
             WeaponMount.Fire(target, activeWeapon);
             activeWeapon.StartCooldown();
             Data.MP -= activeWeapon.AmmoCost;
@@ -350,7 +362,7 @@ public class UnitController : MonoBehaviour
         foreach (var h in hits)
         {
             var obj = h.collider.GetComponent<UnitController>();
-            if (!h.collider.isTrigger && obj == null)
+            if (!h.collider.CompareTag("NonBlocking") && !h.collider.isTrigger && obj == null)
             {
                 return false;
             }
