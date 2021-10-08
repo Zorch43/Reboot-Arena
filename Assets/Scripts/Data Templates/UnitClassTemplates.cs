@@ -17,7 +17,7 @@ namespace Assets.Scripts.Data_Templates
                 MaxHP = 400,
                 MaxMP = 100,
                 MoveSpeed = 1,
-                TurnSpeed = 6,
+                TurnSpeed = 12,
                 PrimaryWeapon = WeaponTemplates.CreateAssaultRifle(),
                 SecondaryWeapon = WeaponTemplates.CreateGrenadeLauncher()
             };

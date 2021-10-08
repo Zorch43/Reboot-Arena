@@ -132,7 +132,7 @@ public class UnitController : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot)
+    public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot, bool hideUI)
     {
         Data = new UnitModel(UnitClassTemplates.GetTrooperClass());//TEMP: decide on either model-first or gameobject first
         Data.Team = team;
@@ -141,6 +141,13 @@ public class UnitController : MonoBehaviour
         SpawnSlot.CurrentUnit = this;
         MinimapNumber.text = slot.SlotNumber.ToString();
         UnitNumber.text = slot.SlotNumber.ToString();
+
+        if (hideUI)
+        {
+            MinimapNumber.gameObject.SetActive(false);
+            UnitNumber.gameObject.SetActive(false);
+            AmmoBar.gameObject.SetActive(false);
+        }
 
         DeathActions.Add(SpawnSlot.DoUnitDeath);
         DeathActions.Add(DoLootDrop);

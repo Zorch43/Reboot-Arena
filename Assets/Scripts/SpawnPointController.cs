@@ -57,7 +57,7 @@ public class SpawnPointController : MonoBehaviour
     }
     #endregion
     #region public methods
-    public void SpawnUnit(UnitSlotModel unitSlot)
+    public UnitController SpawnUnit(UnitSlotModel unitSlot, bool hideUI)
     {
         //instantiate the unit on the map in an empty space in the respawn zone
 
@@ -86,9 +86,9 @@ public class SpawnPointController : MonoBehaviour
                 {
                     //spawn unit and stop looking for an open spot
                     var spawnedUnit = Instantiate(unitSlot.NextUnitClass, transform.parent);
-                    spawnedUnit.SpawnSetup(testPoint, _team, unitSlot);
+                    spawnedUnit.SpawnSetup(testPoint, _team, unitSlot, hideUI);
 
-                    return;
+                    return spawnedUnit;
                 }
             }
             
@@ -128,6 +128,7 @@ public class SpawnPointController : MonoBehaviour
                 break;
             }
         }
+        return null;
     }
     #endregion
     #region private methods

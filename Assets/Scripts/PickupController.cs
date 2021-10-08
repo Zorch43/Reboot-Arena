@@ -16,8 +16,6 @@ public abstract class PickupController : MonoBehaviour
 
     #endregion
     #region private fields
-    private bool isMoving;
-    private Vector3 velocity;
     private float decayTimer;
     #endregion
     #region properties
@@ -33,42 +31,12 @@ public abstract class PickupController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        //if (isMoving)
-        //{
-        //    float elapsedTime = Time.deltaTime;
-        //    transform.position += velocity * elapsedTime;
-        //    velocity += Physics.gravity * elapsedTime;
-        //}
-        //else
-        //{
         decayTimer -= Time.deltaTime;
         if (decayTimer <= 0)
         {
             Destroy(gameObject);
         }
-        //}
     }
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    //if the collision is with a unit,
-    //    var unit = other.gameObject.GetComponent<UnitController>();
-    //    if (unit != null)
-    //    {
-    //        //check whether the pickup effect can be applied to that unit
-    //        if (CanApplyEffectToUnit(unit))
-    //        {
-    //            //if it can, apply the effect and consume the pickup
-    //            ApplyEffectToUnit(unit);
-    //            Destroy(gameObject);
-    //        }
-    //    }
-    //    else if (!other.isTrigger)
-    //    {
-    //        isMoving = false;
-    //        velocity = new Vector3();
-    //    }
-    //}
     private void OnCollisionEnter(Collision collision)
     {
         var unit = collision.collider.GetComponent<UnitController>();
@@ -90,8 +58,7 @@ public abstract class PickupController : MonoBehaviour
     public abstract void ApplyEffectToUnit(UnitController unit);
     public void ThrowPack()
     {
-        velocity = RandomTrajectory();
-        isMoving = true;
+        var velocity = RandomTrajectory();
         var rb = GetComponent<Rigidbody>();
         rb.AddForce(velocity, ForceMode.VelocityChange);
 

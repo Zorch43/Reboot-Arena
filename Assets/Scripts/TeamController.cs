@@ -13,6 +13,7 @@ public class TeamController : MonoBehaviour
     public UnitController[] UnitTemplates;//unit templates avaialable to spawn (6-9)
     public SpawnPointController DefaultSpawnPoint;//starting spawnpoint
     public int Team;
+    public bool HideUnitUI;
     #endregion
     #region private fields
 
@@ -63,7 +64,7 @@ public class TeamController : MonoBehaviour
                 s.RespawnProgress += Time.deltaTime/BASE_RESPAWN_TIME;
                 if (s.RespawnProgress >= 1)
                 {
-                    SpawnPoint.SpawnUnit(s);
+                    var unit = SpawnPoint.SpawnUnit(s, HideUnitUI);
                 }
             }
         }

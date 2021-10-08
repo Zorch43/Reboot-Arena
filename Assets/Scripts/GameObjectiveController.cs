@@ -8,13 +8,14 @@ public class GameObjectiveController : MonoBehaviour
     private const float COUNTDOWN_TIME = 180;//point must be held for 3 minutes to win
     #endregion
     #region public fields
+    public GameMenuController GameMenu;
     public CapturePointController Objective;//capture point that teams are fighting over
     public GameObject GameStateUI;//where to display timer count-downs;
     public KotHTimerController GameStatusUI;//the prefab to add to the ui;
     public GameObject VictoryStateUI;//ui that displays victory message
     public GameObject DefeatStateUI;//ui that displays defeat message
-    public int PlayerTeam;
-    public int AITeam;
+    public TeamController PlayerTeam;
+    public TeamController AITeam;
     #endregion
     #region private fields
     private int team1;
@@ -29,8 +30,8 @@ public class GameObjectiveController : MonoBehaviour
     void Start()
     {
         //set teams
-        team1 = PlayerTeam;
-        team2 = AITeam;
+        team1 = PlayerTeam.Team;
+        team2 = AITeam.Team;
 
         //add timers to UI
         timers = Instantiate(GameStatusUI, GameStateUI.transform);
@@ -56,11 +57,13 @@ public class GameObjectiveController : MonoBehaviour
                 {
                     //player has won, display victory message
                     VictoryStateUI.SetActive(true);
+                    GameMenu.ShowMenu(true);
                 }
                 else
                 {
                     //AI has won, display defeat message
                     DefeatStateUI.SetActive(true);
+                    GameMenu.ShowMenu(true);
                 }
             }
         }
