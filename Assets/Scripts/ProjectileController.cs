@@ -115,7 +115,9 @@ public class ProjectileController : MonoBehaviour
         var unit = other.gameObject.GetComponent<UnitController>();
         if (other.tag != "NonBlocking" && !other.isTrigger && unit == null)
         {
+            Debug.Log("Projectile has hit obstacle: " + other.gameObject.name);
             Destroy(gameObject);
+
         }
         else if (unit?.Data.Team == Target.Data.Team)
         {

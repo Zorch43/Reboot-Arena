@@ -20,6 +20,7 @@ public class UnitSlotController : MonoBehaviour
     public Image ClassSymbol;
     public UIStatusBarController HealthBar;
     public UIStatusBarController AmmoBar;
+    
     #endregion
     #region private fields
     private Button button;

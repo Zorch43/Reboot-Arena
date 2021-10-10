@@ -16,7 +16,6 @@ public class UnitController : MonoBehaviour
     #endregion
     #region public fields
     public GameObject UnitAppearance;
-    public SpriteRenderer TeamColorRenderer;
     public SpriteRenderer MiniMapIcon;
     public TextMeshPro MinimapNumber;
     public TextMeshPro UnitNumber;
@@ -30,13 +29,13 @@ public class UnitController : MonoBehaviour
     public Sprite Portrait;
     public Sprite Symbol;
     public PickupController DeathLoot;
+    public MeshRenderer[] TeamColorParts;
+    public ParticleSystem JetStream;
     #endregion
     #region private fields
     private Quaternion initialRotation;
-    private bool backingOff;
     private float hitBoxSize = 0.16f;
     private float zoneMultiplier = 1;
-    private Vector3 pendingDestination;
     #endregion
     #region properties
     public Vector3 SpacingVector { get; set; }
@@ -66,10 +65,10 @@ public class UnitController : MonoBehaviour
         {
             Data.Team = Team;
         }
-        
+
         //TEMP: set teamcolor
-        TeamColorRenderer.color = TeamTools.GetTeamColor(Data.Team);
-        MiniMapIcon.color = TeamColorRenderer.color;
+        Recolor(Data.Team);
+        MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
     }
 
     // Update is called once per frame
@@ -94,7 +93,9 @@ public class UnitController : MonoBehaviour
 
         //TODO; move unit status elements to UI layer
         //keep unit effects on unit (maybe as partical effects?)
-        UnitEffects.transform.rotation = initialRotation;//reset rotation of unit effect sprites
+        //UnitEffects.transform.rotation = initialRotation;//reset rotation of unit effect sprites
+        UnitEffects.transform.forward = transform.position - Camera.main.transform.position;//orient unit UI towards camera
+        MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
         //update resource bars
         HealthBar.UpdateBar(Data.UnitClass.MaxHP, Data.HP);
         AmmoBar.UpdateBar(Data.UnitClass.MaxMP, Data.MP);
@@ -386,6 +387,16 @@ public class UnitController : MonoBehaviour
         var loot = Instantiate(DeathLoot, transform.parent);
         loot.transform.position = transform.position + new Vector3(0, .32f, 0);
         loot.ThrowPack();
+    }
+    private void Recolor(int team)
+    {
+        var color = TeamTools.GetTeamColor(team);
+        foreach (var p in TeamColorParts)
+        {
+            p.material.color = color;
+        }
+        var particleMain = JetStream.main;
+        particleMain.startColor = color;
     }
     #endregion
 

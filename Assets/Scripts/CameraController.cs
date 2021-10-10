@@ -20,7 +20,9 @@ public class CameraController : MonoBehaviour
     private Rect viewRect;
     private Rect scrollRect;
     private Rect screenRect;
-    private Bounds cameraBox;
+    private Bounds mapBox;
+    private Vector3 cameraOffset;
+    private Plane terrainPlane = new Plane(new Vector3(0, 1, 0), 0);
     #endregion
     #region properties
 
@@ -43,11 +45,10 @@ public class CameraController : MonoBehaviour
         Camera.rect = new Rect(Camera.rect.x, Camera.rect.y, viewRect.width / screenRect.width, 1);
 
         //set the map area that the camera can center on without revealing the edges
-        var mapBox = Map.Terrain.GetComponent<BoxCollider>();
-        var viewPortMin = Camera.ScreenToWorldPoint(new Vector3(viewRect.min.x, viewRect.min.y, Camera.transform.position.y));
-        var viewPortMax = Camera.ScreenToWorldPoint(new Vector3(viewRect.max.x, viewRect.max.y, Camera.transform.position.y));
-        var cameraBorder = (viewPortMax - viewPortMin) / 2;
-        cameraBox = new Bounds(mapBox.center, mapBox.bounds.size - 2 * cameraBorder);
+        mapBox = Map.Terrain.GetComponent<BoxCollider>().bounds;
+
+        //store the initial camera offset
+        cameraOffset = GetCameraOffset();
 
         //pan to initial location
         PanToMapLocation(InitialView.transform.position);
@@ -88,9 +89,8 @@ public class CameraController : MonoBehaviour
     #region public methods
     public void PanToMapLocation(Vector3 location)
     {
-        //clamp to map edges
-
-        var cameraPosNew = ClampCameraPosition(new Vector3(location.x, Camera.transform.position.y, location.z));
+        //clamp center to map edges
+        var cameraPosNew = ClampCameraPosition(new Vector3(location.x, Camera.transform.position.y, location.z) + cameraOffset);
 
         Camera.transform.position = cameraPosNew;
         RedrawViewBounds();
@@ -107,18 +107,23 @@ public class CameraController : MonoBehaviour
         }
         return scrollVector;
     }
-    private Vector3 ClampCameraPosition(Vector3 location)
+    private Vector3 ClampCameraPosition(Vector3 cameraPos)
     {
-        return new Vector3(Mathf.Clamp(location.x, cameraBox.min.x, cameraBox.max.x),
-            location.y, Mathf.Clamp(location.z, cameraBox.min.z, cameraBox.max.z));
+        //clamp location to terrain
+        var cMax = mapBox.max + cameraOffset;
+        var cMin = mapBox.min + cameraOffset;
+
+        var clampedLocation = new Vector3(Mathf.Clamp(cameraPos.x, cMin.x, cMax.x), cameraPos.y, Mathf.Clamp(cameraPos.z, cMin.z, cMax.z));
+
+        return clampedLocation;
     }
     private void RedrawViewBounds()
     {
         //get all corners of the main viewport
-        Vector3 p0 = Camera.ScreenToWorldPoint(new Vector3(viewRect.min.x, viewRect.min.y, Camera.transform.position.y));
-        Vector3 p1 = Camera.ScreenToWorldPoint(new Vector3(viewRect.min.x, viewRect.max.y, Camera.transform.position.y));
-        Vector3 p2 = Camera.ScreenToWorldPoint(new Vector3(viewRect.max.x, viewRect.max.y, Camera.transform.position.y));
-        Vector3 p3 = Camera.ScreenToWorldPoint(new Vector3(viewRect.max.x, viewRect.min.y, Camera.transform.position.y));
+        Vector3 p0 = GetMapPointFromScreenPoint(viewRect.min);
+        Vector3 p1 = GetMapPointFromScreenPoint(new Vector2(viewRect.min.x, viewRect.max.y));
+        Vector3 p2 = GetMapPointFromScreenPoint(viewRect.max);
+        Vector3 p3 = GetMapPointFromScreenPoint(new Vector2(viewRect.max.x, viewRect.min.y));
 
         p0.y = 10;
         p1.y = 10;
@@ -127,6 +132,27 @@ public class CameraController : MonoBehaviour
 
         ViewBounds.SetPositions(new Vector3[] { p0, p1, p2, p3 });
 
+    }
+    private Vector3 GetCameraOffset()
+    {
+        //project a ray from the center of the camera
+        //get intersection point with terrain plane
+        var mapPoint = GetMapPointFromScreenPoint(viewRect.center);
+        //return xz offset of intersection point in relation to the camera
+        var offset = Camera.transform.position - mapPoint;
+        offset.y = 0;
+        return offset;
+    }
+    private Vector3 GetMapPointFromScreenPoint(Vector3 screenPoint)
+    {
+        var ray = Camera.ScreenPointToRay(screenPoint);
+        float enter = 0;
+        Vector3 hit = new Vector3();
+        if(terrainPlane.Raycast(ray, out enter))
+        {
+            hit = ray.GetPoint(enter);
+        }
+        return hit;
     }
     #endregion
 }
