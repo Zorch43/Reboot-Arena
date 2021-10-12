@@ -67,9 +67,15 @@ public class CommandController : MonoBehaviour
                 u.Data.IsSelected = false;
             }
         }
+        bool responseGiven = false;
         foreach (var u in units)
         {
             u.Data.IsSelected = AITeam != u.Data.Team && (!addToSelection || !u.Data.IsSelected);
+            if(u.Data.IsSelected && !responseGiven)
+            {
+                responseGiven = true;
+                u.UnitVoice.PlaySelectionResponse();
+            }
         }
     }
     public void GiveUnitOrder(UnitController selectedUnit, UnitController targetUnit)
@@ -94,6 +100,8 @@ public class CommandController : MonoBehaviour
             var mapPoint = hit.point;
             //action
             var allUnits = Map.GetComponentsInChildren<UnitController>();
+            var unit = hit.collider.GetComponent<UnitController>();
+            bool responseGiven = false;//only one response given per order.
             foreach (var u in allUnits)
             {
                 if (u.Data.IsSelected)
@@ -101,14 +109,32 @@ public class CommandController : MonoBehaviour
                     //u.Data.WayPoints = new List<Vector2>() { mapPoint };
                     //u.Data.IsMoving = true;
                     //u.SetDestination(mapPoint);
-                    var unit = hit.collider.GetComponent<UnitController>();
+                    
                     if (unit != null)
                     {
                         GiveUnitOrder(u, unit);
+                        if (!responseGiven)
+                        {
+                            responseGiven = true;
+                            //TODO: move this logic to the unitcontroller
+                            if(u.Data.Team != unit.Data.Team)
+                            {
+                                u.UnitVoice.PlayAttackResponse();
+                            }
+                            else
+                            {
+                                //TODO: play support response, if it makes sense
+                            }
+                        }
                     }
                     else
                     {
                         GiveUnitOrder(u, mapPoint);
+                        if (!responseGiven)
+                        {
+                            responseGiven = true;
+                            u.UnitVoice.PlayMoveResponse();
+                        }
                     }
                 }
             }

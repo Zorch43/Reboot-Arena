@@ -14,8 +14,8 @@ namespace Assets.Scripts.Data_Templates
             var weapon = new WeaponModel()
             {
                 Name = "Assault Rifle",
-                Cooldown = .2f,
-                Damage = 4,
+                Cooldown = .5f,
+                Damage = 10,
                 DamageFalloff = 0.25f,
                 Range = WeaponModel.WEAPON_RANGE_MEDIUM,
                 CanAutoAttack = true,
@@ -30,7 +30,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Grenade Launcher",
                 Cooldown = 2,
-                Damage = 80,
+                Damage = 60,
                 Range = WeaponModel.WEAPON_RANGE_MEDIUM,
                 WeaponAOE = WeaponModel.AttackArea.Blast,
                 WeaponAOESize = 0.64f,

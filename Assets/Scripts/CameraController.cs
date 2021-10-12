@@ -25,7 +25,13 @@ public class CameraController : MonoBehaviour
     private Plane terrainPlane = new Plane(new Vector3(0, 1, 0), 0);
     #endregion
     #region properties
-
+    public Rect MainViewRect
+    {
+        get
+        {
+            return viewRect;
+        }
+    }
     #endregion
     #region unity methods
     // Start is called before the first frame update

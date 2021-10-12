@@ -11,6 +11,7 @@ public class WeaponController : MonoBehaviour
     #region public fields
     public GameObject Barrel;
     public ProjectileController Projectile;
+    public AudioSource FiringSound;
     #endregion
     #region private fields
     GameObject map;
@@ -38,6 +39,8 @@ public class WeaponController : MonoBehaviour
         projectile.Target = target;
         projectile.Weapon = weapon;
         projectile.transform.position = Barrel.transform.position;
+        //FiringSound.PlayOneShot(FiringSound.clip);
+        FiringSound.Play();
     }
     #endregion
     #region private methods

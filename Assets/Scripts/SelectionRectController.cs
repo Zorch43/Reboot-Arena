@@ -12,7 +12,8 @@ public class SelectionRectController : MonoBehaviour
     public GameObject SelectionRect;
     #endregion
     #region private fields
-    Action<Rect> callback;
+    private Action<Rect> callback;
+    private Rect viewRect;
     #endregion
     #region properties
     public bool IsDrawingSelection { get; set; }
@@ -24,6 +25,7 @@ public class SelectionRectController : MonoBehaviour
     void Start()
     {
         ClearSelection();
+        viewRect = Camera.main.GetComponent<CameraController>().MainViewRect;
     }
 
     // Update is called once per frame
@@ -31,7 +33,10 @@ public class SelectionRectController : MonoBehaviour
     {
         if (IsDrawingSelection)
         {
-            EndingPoint = Input.mousePosition;
+            EndingPoint = new Vector2(
+                Mathf.Clamp(Input.mousePosition.x, viewRect.min.x, viewRect.max.x), 
+                Mathf.Clamp(Input.mousePosition.y, viewRect.min.y, viewRect.max.y));
+
             var rect = SelectionRect.transform as RectTransform;
             var selectionRect = CreateRectArea(StartingPoint, EndingPoint);
             rect.position = selectionRect.position;

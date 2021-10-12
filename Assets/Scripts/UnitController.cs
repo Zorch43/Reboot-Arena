@@ -31,6 +31,7 @@ public class UnitController : MonoBehaviour
     public PickupController DeathLoot;
     public MeshRenderer[] TeamColorParts;
     public ParticleSystem JetStream;
+    public UnitVoiceController UnitVoice;
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -94,7 +95,7 @@ public class UnitController : MonoBehaviour
         //TODO; move unit status elements to UI layer
         //keep unit effects on unit (maybe as partical effects?)
         //UnitEffects.transform.rotation = initialRotation;//reset rotation of unit effect sprites
-        UnitEffects.transform.forward = transform.position - Camera.main.transform.position;//orient unit UI towards camera
+        UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
         MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
         //update resource bars
         HealthBar.UpdateBar(Data.UnitClass.MaxHP, Data.HP);
