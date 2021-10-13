@@ -9,9 +9,15 @@ public class CapturePointController : MonoBehaviour
     const float CAPTURE_RATE = 0.05f;//5% per second per unit
     const float DECAY_RATE = 0.1f;//lose 10% per second while unfinished capture is decaying
     const float DECAY_DELAY = 5;//wait 5 seconds until decay starts
+    const float PROGRESS_SOUND_INTERVAL = 2;//interval to play the progress sound effect while capturing/decapturing
     #endregion
     #region public fields
     public SpriteRenderer OwnerIndicator;
+    public AudioSource PointSound;
+    public AudioClip CaptureSound;
+    public AudioClip UncaptureSound;
+    public AudioClip CaptureCompleteSound;
+
     #endregion
     #region private fields
    
@@ -19,6 +25,8 @@ public class CapturePointController : MonoBehaviour
     
     float decayTimer = 0;
     float maxProgressSize;
+    float progressSoundTimer = PROGRESS_SOUND_INTERVAL;
+    float lastCaptureProgress;
     #endregion
     #region properties
     public int NextOwner { get; set; } = -1;//the next owner of the point, if current capture attempt succeeds
@@ -53,7 +61,9 @@ public class CapturePointController : MonoBehaviour
                 teams.Add(u.Data.Team);
             }
         }
-       
+
+        int captureDirection = 0;
+
         //if there are units of only one team on the point, capture the point for that team
         if(teams.Count == 1)
         {
@@ -61,15 +71,17 @@ public class CapturePointController : MonoBehaviour
             if (CurrOwner == -1)
             {
                 //if another team has progress, revert progress at an accelerated rate
-                if(NextOwner != teams[0] && CaptureProgress > 0)
+                if(NextOwner != teams[0] && CaptureProgress > .01f)
                 {
                     CaptureProgress -= (units.Count * CAPTURE_RATE + DECAY_RATE) * Time.deltaTime;
+                    captureDirection = -1;
                 }
                 //advance progress
                 else
                 {
                     NextOwner = teams[0];
                     CaptureProgress += units.Count * CAPTURE_RATE * Time.deltaTime;
+                    captureDirection = 1;
                     if(CaptureProgress >= 1)
                     {
                         //complete capture
@@ -83,11 +95,15 @@ public class CapturePointController : MonoBehaviour
             else if (CurrOwner == teams[0] && CaptureProgress < 1)
             {
                 CaptureProgress += (units.Count * CAPTURE_RATE + DECAY_RATE) * Time.deltaTime;
+                captureDirection = 1;
+                
             }
             //if the point is currently owned by another team, revert capture progress to neutral
-            else
+            else if(CurrOwner != teams[0])
             {
                 CaptureProgress -= units.Count * CAPTURE_RATE * Time.deltaTime;
+                captureDirection = -1;
+
                 if(CaptureProgress <= 0)
                 {
                     //complete reversion
@@ -107,25 +123,55 @@ public class CapturePointController : MonoBehaviour
             {
                 decayTimer = DECAY_DELAY;
                 //if the point is neutral, but has capture progress, decay progress to empty
-                if(CurrOwner == -1 && CaptureProgress > 0)
+                if(CurrOwner == -1 && CaptureProgress > 0.01f)
                 {
                     CaptureProgress -= DECAY_RATE * Time.deltaTime;
+                    captureDirection = -1;
                 }
                 //if the point is owned by a team, but is partially reverted, decay progress to full
-                else if(CaptureProgress < 1)
+                else if(CurrOwner != -1 && CaptureProgress < 1)
                 {
                     CaptureProgress += DECAY_RATE * Time.deltaTime;
+                    captureDirection = 1;
                 }
             }
         }
 
         //clamp progress value
-        CaptureProgress = Mathf.Clamp(CaptureProgress, 0, 1);
+        CaptureProgress = Mathf.Clamp((float)CaptureProgress, 0, 1);
+
+        //compare last capture progress to current
+        if(captureDirection < 0)
+        {
+            
+            if(CaptureProgress == 0)
+            {
+                PlayCaptureCompleteSound();
+            }
+            else
+            {
+                PlayUncaptureSound();
+            }
+        }
+        else if(captureDirection > 0)
+        {
+           
+            if (CaptureProgress == 1)
+            {
+                PlayCaptureCompleteSound();
+            }
+            else
+            {
+                PlayCaptureSound();
+            }
+        }
+        //update last capture status for next frame
+        lastCaptureProgress = CaptureProgress;
 
         //update ownership visual
         var teamColor = TeamTools.GetTeamColor(NextOwner);
-        OwnerIndicator.gameObject.SetActive(NextOwner != -1 && CaptureProgress > 0);
-        OwnerIndicator.gameObject.transform.localScale = new Vector3(maxProgressSize * CaptureProgress, maxProgressSize * CaptureProgress, 1);
+        OwnerIndicator.gameObject.SetActive(NextOwner != -1 && CaptureProgress > .01f);
+        OwnerIndicator.gameObject.transform.localScale = new Vector3(maxProgressSize * (float)CaptureProgress, maxProgressSize * (float)CaptureProgress, 1);
         OwnerIndicator.color = teamColor;
         
         //clear list of units
@@ -138,6 +184,38 @@ public class CapturePointController : MonoBehaviour
         {
             units.Add(unit);
         }
+    }
+    #endregion
+    #region public methods
+
+    #endregion
+    #region private methods
+    private void PlayCaptureSound()
+    {
+
+        progressSoundTimer -= Time.deltaTime;
+        if(progressSoundTimer <= 0)
+        {
+            progressSoundTimer = PROGRESS_SOUND_INTERVAL;
+            PointSound.clip = CaptureSound;
+            PointSound.Play();
+        }
+    }
+    private void PlayUncaptureSound()
+    {
+        progressSoundTimer -= Time.deltaTime;
+        if (progressSoundTimer <= 0)
+        {
+            progressSoundTimer = PROGRESS_SOUND_INTERVAL;
+            PointSound.clip = UncaptureSound;
+            PointSound.Play();
+        }
+    }
+    private void PlayCaptureCompleteSound()
+    {
+        progressSoundTimer = PROGRESS_SOUND_INTERVAL;
+        PointSound.clip = CaptureCompleteSound;
+        PointSound.Play();
     }
     #endregion
 }

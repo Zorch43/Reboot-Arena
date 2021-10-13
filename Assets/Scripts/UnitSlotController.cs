@@ -99,6 +99,10 @@ public class UnitSlotController : MonoBehaviour
             {
                 Data.CurrentUnit.Data.IsSelected = !Data.CurrentUnit.Data.IsSelected;
             }
+            if (Data.CurrentUnit.Data.IsSelected)
+            {
+                Data.CurrentUnit.UnitVoice.PlaySelectionResponse();
+            }
         }
     }
     #endregion

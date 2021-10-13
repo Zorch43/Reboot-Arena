@@ -55,7 +55,9 @@ public class SelectionRectController : MonoBehaviour
     public void StartSelection(Vector2 startPoint, Action<Rect> callback)
     {
         IsDrawingSelection = true;
-        StartingPoint = startPoint;
+        StartingPoint = new Vector2(
+                Mathf.Clamp(startPoint.x, viewRect.min.x, viewRect.max.x),
+                Mathf.Clamp(startPoint.y, viewRect.min.y, viewRect.max.y));
         this.callback = callback;
     }
     public void ClearSelection()

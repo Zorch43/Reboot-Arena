@@ -13,7 +13,8 @@ public abstract class PickupController : MonoBehaviour
     const float DECAY_TIME = 20;
     #endregion
     #region public fields
-
+    public SoundPointController SoundPointTemplate;
+    public AudioClip PickupSound;
     #endregion
     #region private fields
     private float decayTimer;
@@ -48,6 +49,9 @@ public abstract class PickupController : MonoBehaviour
             {
                 //if it can, apply the effect and consume the pickup
                 ApplyEffectToUnit(unit);
+                //deploy consumption sound to map
+                SoundPointTemplate.Instantiate(PickupSound, transform.parent, transform.position);
+                //remove pickup
                 Destroy(gameObject);
             }
         }

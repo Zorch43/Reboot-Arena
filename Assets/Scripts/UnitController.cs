@@ -28,10 +28,12 @@ public class UnitController : MonoBehaviour
     public int Team = -1;//TEMP
     public Sprite Portrait;
     public Sprite Symbol;
-    public PickupController DeathLoot;
-    public MeshRenderer[] TeamColorParts;
-    public ParticleSystem JetStream;
     public UnitVoiceController UnitVoice;
+    public PickupController DeathLoot;
+    public ParticleSystem JetStream;
+    public ParticleSystem RespawnEffect;
+    public MeshRenderer[] TeamColorParts;
+    
     #endregion
     #region private fields
     private Quaternion initialRotation;
@@ -398,6 +400,8 @@ public class UnitController : MonoBehaviour
         }
         var particleMain = JetStream.main;
         particleMain.startColor = color;
+        var particleRespawn = RespawnEffect.main;
+        particleRespawn.startColor = color;
     }
     #endregion
 

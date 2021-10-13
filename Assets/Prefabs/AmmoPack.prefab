@@ -110,6 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0d334f19b5826854896f47addc31caa6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SoundPointTemplate: {fileID: 241712862199800381, guid: e1f68929113bc9947b2859ab5618d1b1, type: 3}
+  PickupSound: {fileID: 8300000, guid: 788be32f291a6c34bad9c98bd2239865, type: 3}
   AmmoAmount: 100
 --- !u!54 &5948888051601708271
 Rigidbody:

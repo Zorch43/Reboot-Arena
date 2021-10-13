@@ -110,6 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f9c489a8d532164c874d17718a5b318, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SoundPointTemplate: {fileID: 241712862199800381, guid: e1f68929113bc9947b2859ab5618d1b1, type: 3}
+  PickupSound: {fileID: 8300000, guid: 3d88b8e45a939fc40bd4ded8ea806882, type: 3}
   HealPower: 100
 --- !u!54 &-6021400735784883598
 Rigidbody:

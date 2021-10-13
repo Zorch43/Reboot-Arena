@@ -16,6 +16,7 @@ public class PickupSpawnerController : MonoBehaviour
     public Collider PickupCollider;//detects when a unit tries to grab the pickup;
     public PickupController PickupPack;//what kind of pickup the spawned pickup is
     public int PackCount;//how many packs of that pickup to apply.  packs that can't be applied are scattered.
+    public AudioSource Audio;
     #endregion
     #region private fields
     private Vector3 pickupRotation;
@@ -88,6 +89,8 @@ public class PickupSpawnerController : MonoBehaviour
             PickupCollider.enabled = false;
             //start the respawn timer
             respawnTimer = RespawnTime;
+            //play sound
+            Audio.Play();
         }
 
     }
