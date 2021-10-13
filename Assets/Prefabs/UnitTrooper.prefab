@@ -10619,6 +10619,7 @@ MonoBehaviour:
   DeathLoot: {fileID: 502637539237251665, guid: 7898b491eac7e5b44a452302f664e157, type: 3}
   JetStream: {fileID: 1124907135071161719}
   RespawnEffect: {fileID: 6459708879150800176}
+  DeathExplosion: {fileID: 8270483927021890600, guid: f80942e1a1b484d4597e1a23ad21a971, type: 3}
   TeamColorParts:
   - {fileID: 1124907135071161716}
   - {fileID: 1124907134143813915}

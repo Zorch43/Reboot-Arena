@@ -32,6 +32,7 @@ public class UnitController : MonoBehaviour
     public PickupController DeathLoot;
     public ParticleSystem JetStream;
     public ParticleSystem RespawnEffect;
+    public SpecialEffectController DeathExplosion;
     public MeshRenderer[] TeamColorParts;
     
     #endregion
@@ -155,6 +156,7 @@ public class UnitController : MonoBehaviour
 
         DeathActions.Add(SpawnSlot.DoUnitDeath);
         DeathActions.Add(DoLootDrop);
+        DeathActions.Add(DoDeathExplosion);
     }
     
     #endregion
@@ -390,6 +392,10 @@ public class UnitController : MonoBehaviour
         var loot = Instantiate(DeathLoot, transform.parent);
         loot.transform.position = transform.position + new Vector3(0, .32f, 0);
         loot.ThrowPack();
+    }
+    private void DoDeathExplosion()
+    {
+        DeathExplosion.Instantiate(transform.parent, transform.position);
     }
     private void Recolor(int team)
     {
