@@ -48,8 +48,9 @@ public class GameMenuController : MonoBehaviour
         ConfirmationMenu.GetConfirmation("Are you sure you want to retart this game scenario?", () =>
         {
             var sceneName = SceneManager.GetActiveScene().name;
-            SceneManager.LoadSceneAsync(sceneName);
             Time.timeScale = 1;
+            SceneManager.LoadSceneAsync(sceneName);
+            
         });
         
     }
@@ -57,8 +58,9 @@ public class GameMenuController : MonoBehaviour
     {
         ConfirmationMenu.GetConfirmation("Are you sure you want to quit the game and return to the main menu?", () =>
         {
-            SceneManager.LoadSceneAsync("MainMenu");
             Time.timeScale = 1;
+            SceneManager.LoadSceneAsync("MainMenu");
+            
         });
     }
     public void ActionQuit()
