@@ -11,12 +11,13 @@ public class SpawnPointController : MonoBehaviour
     private const float SEARCH_GRID_SIZE = 0.08f;
     #endregion
     #region public fields
-    public GameObject RespawnField;
     public SpriteRenderer TeamColor;
     public SpriteRenderer MinimapMarker;
+    public ParticleSystem SpawnFieldSfx;
+    public BoxCollider RespawnArea;
     #endregion
     #region private fields
-    private BoxCollider respawnArea;
+    
     private int _team;
     #endregion
     #region properties
@@ -31,6 +32,8 @@ public class SpawnPointController : MonoBehaviour
             _team = value;
             TeamColor.color = TeamTools.GetTeamColor(_team);
             MinimapMarker.color = TeamColor.color;
+            var particleMain = SpawnFieldSfx.main;
+            particleMain.startColor = TeamColor.color;
         }
     }
     #endregion
@@ -38,7 +41,7 @@ public class SpawnPointController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        respawnArea = RespawnField.GetComponent<BoxCollider>();
+
     }
 
     // Update is called once per frame
@@ -51,8 +54,7 @@ public class SpawnPointController : MonoBehaviour
         var unit = other.gameObject.GetComponent<UnitController>();
         if(unit?.Data.Team == ControllingTeam)
         {
-            unit.Data.HP = unit.Data.UnitClass.MaxHP;
-            unit.Data.MP = unit.Data.UnitClass.MaxMP;
+            unit.Data.Restore();
         }
     }
     #endregion
@@ -63,14 +65,14 @@ public class SpawnPointController : MonoBehaviour
 
         //starting from the center of the spawn field, search for an empty space (that is also withing bounds of the spawn zone)
 
-        Vector3 testPoint = RespawnField.transform.position;
+        Vector3 testPoint = RespawnArea.bounds.center;
         Vector3 nextNeighbor = new Vector3(0, 0, 1);
         
         while (true)
         {
             //test testPoint
             //var ray = new Ray(testPoint + new Vector3(0, 4), Vector3.down);
-            if (respawnArea.bounds.Contains(testPoint))
+            if (RespawnArea.bounds.Contains(testPoint))
             {
                 var hits = Physics.SphereCastAll(testPoint, FREE_SPACE_RADUS, Vector3.down);
                 bool open = true;
@@ -93,7 +95,7 @@ public class SpawnPointController : MonoBehaviour
             }
             
             // update testpoint
-            testPoint = RespawnField.transform.position + nextNeighbor * SEARCH_GRID_SIZE;
+            testPoint = RespawnArea.bounds.center + nextNeighbor * SEARCH_GRID_SIZE;
             //update nextNeightbor
             if (nextNeighbor.x >= 0 && nextNeighbor.z > 0)
             {

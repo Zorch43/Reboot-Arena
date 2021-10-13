@@ -30,8 +30,7 @@ public class HealthPackController : PickupController
 
     public override void ApplyEffectToUnit(UnitController unit)
     {
-        unit.Data.HP += HealPower;
-        unit.Data.HP = Mathf.Min(unit.Data.HP, unit.Data.UnitClass.MaxHP);//may not need to clamp it here
+        unit.HealUnit(HealPower);
     }
     #endregion
     #region private methods

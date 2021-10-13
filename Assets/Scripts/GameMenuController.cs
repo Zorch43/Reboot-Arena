@@ -20,7 +20,7 @@ public class GameMenuController : MonoBehaviour
     public ConfirmationMenuController ConfirmationMenu;
     #endregion
     #region private fields
-
+    private bool gameOver;
     #endregion
     #region properties
 
@@ -44,24 +44,39 @@ public class GameMenuController : MonoBehaviour
     }
     public void ActionRestart()
     {
-        
-        ConfirmationMenu.GetConfirmation("Are you sure you want to retart this game scenario?", () =>
+        if (!gameOver)
         {
-            var sceneName = SceneManager.GetActiveScene().name;
+            ConfirmationMenu.GetConfirmation("Are you sure you want to retart this game scenario?", () =>
+            {
+                Time.timeScale = 1;
+                var sceneName = SceneManager.GetActiveScene().name;
+                SceneManager.LoadSceneAsync(sceneName);
+
+            });
+        }
+        else
+        {
             Time.timeScale = 1;
+            var sceneName = SceneManager.GetActiveScene().name;
             SceneManager.LoadSceneAsync(sceneName);
-            
-        });
+        }
         
     }
     public void ActionReturn()
     {
-        ConfirmationMenu.GetConfirmation("Are you sure you want to quit the game and return to the main menu?", () =>
+        if (!gameOver)
+        {
+            ConfirmationMenu.GetConfirmation("Are you sure you want to quit the game and return to the main menu?", () =>
+            {
+                Time.timeScale = 1;
+                SceneManager.LoadSceneAsync("MainMenu");
+            });
+        }
+        else
         {
             Time.timeScale = 1;
             SceneManager.LoadSceneAsync("MainMenu");
-            
-        });
+        }
     }
     public void ActionQuit()
     {
@@ -78,11 +93,12 @@ public class GameMenuController : MonoBehaviour
     #region public methods
     public void ShowMenu(bool gameOver = false)
     {
+        this.gameOver = gameOver;
         Title.gameObject.SetActive(!gameOver);
         ResumeButton.gameObject.SetActive(!gameOver);
         gameObject.SetActive(true);
         MenuButton.gameObject.SetActive(false);
-        Time.timeScale = 0;
+        Time.timeScale = 0f;
     }
     #endregion
     #region private methods

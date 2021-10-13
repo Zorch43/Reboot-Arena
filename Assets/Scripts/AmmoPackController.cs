@@ -30,8 +30,7 @@ public class AmmoPackController : PickupController
 
     public override void ApplyEffectToUnit(UnitController unit)
     {
-        unit.Data.MP += AmmoAmount;
-        unit.Data.MP = Mathf.Min(unit.Data.MP, unit.Data.UnitClass.MaxMP);//may not need to clamp it here
+        unit.ReloadUnit(AmmoAmount);
     }
     #endregion
     #region private methods

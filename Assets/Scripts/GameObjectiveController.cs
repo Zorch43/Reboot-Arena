@@ -51,7 +51,7 @@ public class GameObjectiveController : MonoBehaviour
             //count down the holding team's timer
             var remainingTime = timers.UpdateTimer(-Time.deltaTime, holdingTeam);
             //check for holding team's victory - countdown completed, AND in complete control of the point
-            if(remainingTime <= 0 && Objective.CaptureProgress >= 1)
+            if(!GameMenu.gameObject.activeSelf && remainingTime <= 0 && Objective.CaptureProgress >= 1)
             {
                 if(holdingTeam == team1)
                 {

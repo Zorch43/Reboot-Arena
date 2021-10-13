@@ -32,6 +32,8 @@ public class UnitController : MonoBehaviour
     public PickupController DeathLoot;
     public ParticleSystem JetStream;
     public ParticleSystem RespawnEffect;
+    public VariableEffect HealEffect;
+    public VariableEffect ReloadEffect;
     public SpecialEffectController DeathExplosion;
     public MeshRenderer[] TeamColorParts;
     
@@ -158,7 +160,32 @@ public class UnitController : MonoBehaviour
         DeathActions.Add(DoLootDrop);
         DeathActions.Add(DoDeathExplosion);
     }
-    
+    public float HealUnit(float amount)
+    {
+        //heal the unit by amount, up to max hp
+        float oldHealth = Data.HP;
+        Data.HP += amount;
+        Data.HP = Mathf.Min(Data.UnitClass.MaxHP, Data.HP);
+        //scale and play the heal effect
+        var amountHealed = Data.HP - oldHealth;
+        float effectStrength = amountHealed / 25;
+        HealEffect.PlayEffect(effectStrength);
+        //return amount healed
+        return amountHealed;
+    }
+    public float ReloadUnit(float amount)
+    {
+        //resupply the unit by amount, up to max mp
+        float oldAmmo = Data.HP;
+        Data.MP += amount;
+        Data.MP = Mathf.Min(Data.UnitClass.MaxMP, Data.MP);
+        //scale and play the reload effect
+        var amountLoaded = Data.MP - oldAmmo;
+        float effectStrength = amountLoaded / 25;
+        ReloadEffect.PlayEffect(effectStrength);
+        //return amount loaded
+        return amountLoaded;
+    }
     #endregion
     #region private methods
     //when right-clicking on a unit
