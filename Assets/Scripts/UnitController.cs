@@ -277,23 +277,9 @@ public class UnitController : MonoBehaviour
     {
         if(activeWeapon != null && activeWeapon.IsCooledDown())
         {
-            //if (activeWeapon == Data.UnitClass.SecondaryWeapon)
-            //{
-            //    //DEBUG: get line of sight to see what's blocking the shot
-            //    var hits = Physics.RaycastAll(new Ray(transform.position, CommandTarget.transform.position));
-            //    string debugString = "Obstacles: ";
-            //    foreach (var h in hits)
-            //    {
-            //        debugString += "[" + h.collider.tag + "]";
-            //    }
-            //    Debug.Log(debugString);
-            //}
-            WeaponMount.Fire(target, activeWeapon);
+            WeaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target.transform.position);
             activeWeapon.StartCooldown();
             Data.MP -= activeWeapon.AmmoCost;
-            //Debug.Log(string.Format("{0} attacks {1} with {2} at range {3} (max range {4})",
-            //    gameObject.name,target.gameObject.name,activeWeapon.Name, 
-            //    Vector3.Distance(transform.position, target.transform.position), activeWeapon.Range));
         }
     }
     private int CanAttackWithWeapon(WeaponModel weapon, UnitController target, bool isMoving, bool isAutoAttack)
@@ -319,7 +305,7 @@ public class UnitController : MonoBehaviour
         {
             reason = 4;
         }
-        else if(weapon.Range < Vector3.Distance(transform.position, target.transform.position)){
+        else if(weapon.MaxRange < Vector3.Distance(transform.position, target.transform.position)){
             reason = 3;
         }
         else if(weapon.NeedsLineOfSight() && !HasLineOfSight(target.transform.position))

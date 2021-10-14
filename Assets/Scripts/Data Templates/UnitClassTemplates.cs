@@ -18,8 +18,8 @@ namespace Assets.Scripts.Data_Templates
                 MaxMP = 100,
                 MoveSpeed = 1,
                 TurnSpeed = 12,
-                PrimaryWeapon = WeaponTemplates.CreateAssaultRifle(),
-                SecondaryWeapon = WeaponTemplates.CreateGrenadeLauncher()
+                SecondaryWeapon = WeaponTemplates.CreateAssaultRifle(),
+                PrimaryWeapon = WeaponTemplates.CreateFlameThrower()
             };
             return template;
         }

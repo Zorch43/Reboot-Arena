@@ -17,24 +17,33 @@ namespace Assets.Scripts.Data_Models
         public const float WEAPON_RANGE_LONG = 6.4f;//20
         public const float WEAPON_RANGE_VERY_LONG = 9.6f;//30
         public const float WEAPON_RANGE_EXTREME = 16;//50
-        public enum AttackArea
-        {
-            Single,//strike a single target
-            Line,//strike all targets on a line 
-            Cone,//strike all targets within cone area
-            Blast//strike target and all targets withing radius
-        }
+        //public enum AttackArea
+        //{
+        //    Single,//strike a single target
+        //    Line,//strike all targets on a line 
+        //    Cone,//strike all targets within cone area
+        //    Blast//strike target and all targets withing radius
+        //}
         #endregion
         #region template properties
         public string Name { get; set; }//name of weapon
-        public float Range { get; set; }//maximum range of weapon
+        public float MaxRange { get; set; }//maximum range of weapon
+        public float MinRange { get; set; }//minimum range of the weapon
         public float ProjectileSpeed { get; set; }//speed of weapon projectiles
-        public AttackArea WeaponAOE { get; set; }//type of weapon area-of-effect
-        public float WeaponAOESize { get; set; }//size of weapon aoe - affects blast radius, line and cone width
-        public bool ArcingAttack { get; set; }//whether the attacks arcs over obstacles
+        //public AttackArea WeaponAOE { get; set; }//type of weapon area-of-effect
+        public bool Explodes { get; set; }//whether the projectile produces an explosion on impact
+        public float ExplosionSize { get; set; }//size of impact explosion, if generated
+        public bool ArcingAttack { get; set; }//whether the attacks arcs over obstacles - projectile speed is ignored
         public float DamageFalloff { get; set; }//determines damage falloff at max range.  can be used to ramp up damage at long range as well
         public float Cooldown { get; set; }//time between attacks
         public float Damage { get; set; }//damage per attack
+        public float ProjectileStartSize { get; set; } = .02f;//initial size of the projectile
+        public float ProjectileEndSize { get; set; } = .02f;//size of the projectile by the end of range
+        public int ProjectileBurstSize { get; set; } = 1;//number of projectiles produced by a single firing.  damge is divided evenly between projectiles
+        public float ProjectileBurstSpread { get; set; }//angleof cone that burst fits into
+        public float InAccuracy { get; set; }//maximum angle of trajectory deviation allowed for any given projectile
+        public bool PiercesUnits { get; set; }//whether weapon projectiles pass through units
+        public bool PiercesWalls { get; set; }//whether weapon projectiles pass through environmental obstacles
         public float AmmoCost { get; set; }//ammo cost, if any, to fire this weapon
         //TODO: what effects to apply on hit
         public bool FireWhileMoving { get; set; }//whether this weapon can be fired while moving
@@ -67,7 +76,7 @@ namespace Assets.Scripts.Data_Models
         }
         public bool NeedsLineOfSight()
         {
-            return !(ArcingAttack || WeaponAOE == AttackArea.Line || WeaponAOE == AttackArea.Cone);
+            return !(ArcingAttack || PiercesWalls);
         }
         #endregion
     }

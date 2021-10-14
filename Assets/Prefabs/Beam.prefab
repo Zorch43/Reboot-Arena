@@ -10,8 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 3641345954151502729}
   - component: {fileID: 7703949549062292093}
-  - component: {fileID: 1283619542538059636}
   - component: {fileID: 3607764421577427210}
+  - component: {fileID: 5617924735579428241}
   m_Layer: 0
   m_Name: Beam
   m_TagString: Untagged
@@ -76,10 +76,10 @@ LineRenderer:
   m_SortingOrder: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0.08}
+  - {x: 0, y: 0, z: 1}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.04
+    widthMultiplier: 1
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -132,19 +132,6 @@ LineRenderer:
     generateLightingData: 0
   m_UseWorldSpace: 0
   m_Loop: 0
---- !u!65 &1283619542538059636
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5173810531896763841}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.04, y: 0.04000001, z: 0.04000001}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &3607764421577427210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -158,4 +145,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Line: {fileID: 7703949549062292093}
-  Collider: {fileID: 1283619542538059636}
+  Collider: {fileID: 0}
+  ExplosionEffect: {fileID: 3094795405943287217, guid: ecdd96beb7f93494880c052dfccf9dc1, type: 3}
+--- !u!136 &5617924735579428241
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5173810531896763841}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 2
+  m_Center: {x: 0, y: 0, z: 0.5}

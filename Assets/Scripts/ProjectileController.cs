@@ -12,97 +12,82 @@ public class ProjectileController : MonoBehaviour
     #region public fields
     public LineRenderer Line;
     public BoxCollider Collider;
+    public SpecialEffectController ExplosionEffect;
     #endregion
     #region private fields
     private float distanceTravelled;
-    private Vector3 previousLoc;
     private Vector3 firingVector;
     private Vector3 targetPos;
     private float maxBeamDuration;
     private float currentBeamDuration;
-    private bool damageDealt;
-    private bool trajectoryCalculated;
     private Vector3 initialVelocity;
+    private float projectileSizeFactor;
     #endregion
     #region properties
-    public WeaponModel Weapon { get; set; }
-    public UnitController Target { get; set; }//target unit
+    public WeaponModel Weapon { get; set; }//the weapon that is firing this projectile
+    public int AllyTeam { get; set; }//don't damage units of this team
+    public Vector3 TargetLocation { get; set; }//location that the weapon is targeting
     #endregion
     #region unity methods
     // Start is called before the first frame update
     void Start()
     {
-        targetPos = Target.transform.position;
+        targetPos = TargetLocation; //TODO: apply inaccuracy for arcing attacks
         //face towards target
         firingVector = (targetPos - transform.position).normalized;
         transform.forward = firingVector;
         maxBeamDuration = Mathf.Min(MAX_BEAM_DURATION, Weapon.Cooldown/2);
         if (Weapon.ArcingAttack)
         {
-            initialVelocity = TrajectoryTools.GetInitialVelocity(transform.position, Target.transform.position, TrajectoryTools.MIN_ARC_HEIGHT, -Physics.gravity.y);
+            initialVelocity = TrajectoryTools.GetInitialVelocity(transform.position, targetPos, TrajectoryTools.MIN_ARC_HEIGHT, -Physics.gravity.y);
         }
+        if(Weapon.ProjectileSpeed < 0.1)
+        {
+            FireBeam(firingVector);
+        }
+        projectileSizeFactor = (Weapon.ProjectileEndSize - Weapon.ProjectileStartSize) / Weapon.MaxRange;
+        SetProjectileSize(Weapon.ProjectileStartSize);
     }
 
     // Update is called once per frame
     void Update()
     {
         float elapsedTime = Time.deltaTime;
-        previousLoc = transform.position;
 
         //travel towards target position
         //distance determined by projectile speed
         if (Weapon.ArcingAttack)
         {
-            transform.position += initialVelocity * elapsedTime;
+            var distance3d = initialVelocity * elapsedTime;
+            var distance2d = new Vector3(distance3d.x, 0, distance3d.z);
+
+            transform.position += distance3d;
             initialVelocity += Physics.gravity * elapsedTime;
+
+            distanceTravelled += distance2d.magnitude;
+            SetProjectileSize();
 
             //projectile will destroy itself when it hits a unit, an obstacle, or the ground
         }
-        else if (Weapon.ProjectileSpeed > 0)
+        else if (Weapon.ProjectileSpeed > 0.1f)
         {
-            transform.position += firingVector * Weapon.ProjectileSpeed * elapsedTime;
-            //check for hit on any unit
-
-            //if hit detected, do damage (if hitting a unit), and destroy the projectile (handled in OnCOllisionEnter)
-
+            var distance = firingVector * Weapon.ProjectileSpeed * elapsedTime;
+            transform.position += distance;
+            
             //update total distance travelled.
-            distanceTravelled += (firingVector * Weapon.ProjectileSpeed * elapsedTime).magnitude;
+            distanceTravelled += distance.magnitude;
+            SetProjectileSize();
             //if distance exceeds weapon range, destroy this projectile
-            if(distanceTravelled > Weapon.Range)
+            if(distanceTravelled > Weapon.MaxRange)
             {
-                Destroy(gameObject);
+                DoMaxRangeReached();
             }
         }
-        //if projectile speed is 0, it's instant, draw a beam to the target
+        //if projectile speed is 0, it's instant, damage has already been dealt in start(), keep the beam for its duration
         else
         {
-            if(!damageDealt)
-            {
-
-                //do weapon damage to first enemy in path to target
-                var hits = Physics.RaycastAll(transform.position, firingVector, Vector3.Distance(transform.position, targetPos));
-                foreach (var h in hits)
-                {
-                    var obj = h.collider.GetComponent<UnitController>();
-                    if (obj?.Data.Team == Target.Data.Team)//TODO: hit any kind of enemy
-                    {
-                        Target.Data.HP -= Weapon.Damage;
-                        //draw line to first enemy in path to target
-                        Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (obj.transform.position - transform.position).magnitude) });
-                        damageDealt = true;
-                    }
-                }
-                if (!damageDealt)
-                {
-                    //draw line to target
-                    Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (targetPos - transform.position).magnitude) });
-                    Target.Data.HP -= Weapon.Damage;
-                    damageDealt = true;
-                }
-            }
-            
             currentBeamDuration += elapsedTime;
-            if(currentBeamDuration >= maxBeamDuration)
+            if (currentBeamDuration >= maxBeamDuration)
             {
                 //if beam duration exceeded, destroy projectile
                 gameObject.SetActive(false);
@@ -115,14 +100,17 @@ public class ProjectileController : MonoBehaviour
         var unit = other.gameObject.GetComponent<UnitController>();
         if (other.tag != "NonBlocking" && !other.isTrigger && unit == null)
         {
-            Debug.Log("Projectile has hit obstacle: " + other.gameObject.name);
-            Destroy(gameObject);
-
+            if (!DoImpact(transform.position))
+            {
+                Destroy(gameObject);
+            }
         }
-        else if (unit?.Data.Team == Target.Data.Team)
+        else if (unit != null && unit.Data.Team != AllyTeam)
         {
-            unit.Data.HP -= Weapon.Damage;
-            Destroy(gameObject);
+            if (!DoImpact(transform.position, unit))
+            {
+                Destroy(gameObject);
+            }
         }
     }
 
@@ -131,9 +119,108 @@ public class ProjectileController : MonoBehaviour
 
     #endregion
     #region private methods
-    //private float GetInitialVelocityForHeight(float desiredHeight)
-    //{
+    private bool DoImpact(Vector3 impactPosition)
+    {
+        //projectile has collided with a non-unit
 
-    //}
+        //if the project creates explosions, explode
+        if (Weapon.Explodes)
+        {
+            DoExplosion(impactPosition);
+        }
+
+        //return whether the projectile should continue
+        return Weapon.PiercesWalls;
+    }
+    private bool DoImpact(Vector3 impactPosition, UnitController unit)
+    {
+        //projectile has collided with a unit
+
+        //if the projectile creates an explosion, explode at location
+        if (Weapon.Explodes)
+        {
+            DoExplosion(impactPosition);
+        }
+        //otherwise damage the unit
+        else
+        {
+            unit.Data.HP -= Weapon.Damage / Weapon.ProjectileBurstSize;
+        }
+
+        //return whether the projectile should continue
+        return Weapon.PiercesUnits;
+    }
+    private void DoMaxRangeReached()
+    {
+        //if projectile explodes, explode
+        if (Weapon.Explodes)
+        {
+            DoExplosion(firingVector * Weapon.MaxRange);
+        }
+        //destroy the projectile
+        Destroy(gameObject);
+    }
+    private void DoExplosion(Vector3 position)
+    {
+        //spherecast at location
+        var hits2 = Physics.OverlapSphere(position, Weapon.ExplosionSize);
+        //damage all enemy units for the weapon damage amount
+        foreach(var h in hits2)
+        {
+            //var unit = h.collider.GetComponent<UnitController>();
+            var unit = h.GetComponent<UnitController>();
+            if (unit != null && unit.Data.Team != AllyTeam)
+            {
+                unit.Data.HP -= Weapon.Damage / Weapon.ProjectileBurstSize;
+            }
+        }
+        //play explosion effect
+        var explosion = ExplosionEffect.Instantiate(transform.parent, position);
+        explosion.transform.localScale = new Vector3(Weapon.ExplosionSize, Weapon.ExplosionSize, Weapon.ExplosionSize);
+    }
+    private void FireBeam(Vector3 direction)
+    {
+        //pulse a (sphere)raycast, getting all colliders in path of beam
+        var beamHits = Physics.SphereCastAll(transform.position, Weapon.ProjectileStartSize/2, direction, Weapon.MaxRange);
+        Vector3 endPoint = firingVector * Weapon.MaxRange; //if the beam does not collide with anything that can stop it, draw it out to its full length
+        //for each object in the path of the beam, determine whether the beam can continue
+        //if it can, draw the line out to that collision point
+        foreach (var h in beamHits)
+        {
+            var unit = h.collider.GetComponent<UnitController>();
+            if(unit != null && unit.Data.Team != AllyTeam)
+            {
+                if (!DoImpact(h.point, unit))
+                {
+                    endPoint = h.point;
+                    break;
+                }
+            }
+            else
+            {
+                if (!DoImpact(h.point))
+                {
+                    endPoint = h.point;
+                    break;
+                }
+            }
+        }
+        Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (endPoint - transform.position).magnitude) });
+        Line.startWidth = Weapon.ProjectileStartSize;
+        Line.endWidth = Weapon.ProjectileStartSize;
+        Collider.enabled = false;
+        //TODO: play beam particle effect
+    }
+    private void SetProjectileSize()
+    {
+        var size = Weapon.ProjectileStartSize + distanceTravelled * projectileSizeFactor;
+        SetProjectileSize(size);
+    }
+    private void SetProjectileSize(float size)
+    {
+        transform.localScale = new Vector3(size, size, size);
+        Line.startWidth = size;
+        Line.endWidth = size;
+    }
     #endregion
 }
