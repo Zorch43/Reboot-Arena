@@ -24,6 +24,15 @@ public class CommandController : MonoBehaviour
     public UnitSlotManager UnitSlotUI;
     public ActionPanelController UnitActionUI;
     public GameMenuController GameMenuUI;
+    public Texture2D AttackMoveCursor;
+    public Texture2D ForceAttackCursor;
+    public Texture2D SetRallyPointCursor;
+    public ActionMarker MarkerTemplate;
+    public Sprite AttackMarker;
+    public Sprite MoveMarker;
+    public Sprite AttackMoveMarker;
+    public Sprite ForceAttackMarker;
+    public Sprite RallyPointMarker;
     #endregion
     #region private fields
 
@@ -38,6 +47,7 @@ public class CommandController : MonoBehaviour
     void Start()
     {
         KeyBindConfigSettings.LoadFromFile();
+        MarkerTemplate.MainCamera = Camera.main;
     }
 
     // Update is called once per frame
@@ -252,10 +262,13 @@ public class CommandController : MonoBehaviour
                         if (u.Data.Team != unit.Data.Team)
                         {
                             u.UnitVoice.PlayAttackResponse();
+                            //place attack marker on enemy unit
+                            MarkerTemplate.Instantiate(AttackMarker, unit.transform, unit.transform.position, true);
                         }
                         else
                         {
                             //TODO: play support response, if it makes sense
+                            //TODO: place support marker, if it makes sense
                         }
                     }
                 }
@@ -266,6 +279,8 @@ public class CommandController : MonoBehaviour
                     {
                         responseGiven = true;
                         u.UnitVoice.PlayMoveResponse();
+                        //place move marker on position
+                        MarkerTemplate.Instantiate(MoveMarker, Map.transform, mapPoint, false);
                     }
                 }
             }
@@ -286,10 +301,18 @@ public class CommandController : MonoBehaviour
     {
         //get all selected units
         var selectedUnits = GetSelectedUnits();
+        bool firstResponse = false;
         //give each unit an attack-move command to the given location
         foreach(var u in selectedUnits)
         {
             u.DoAttackMove(location);
+            if (!firstResponse)
+            {
+                firstResponse = true;
+                //place attack-move marker
+                MarkerTemplate.Instantiate(AttackMoveMarker, Map.transform, location, false);
+                //TODO: give attack-move response
+            }
         }
         EndSpecialOrder();
     }
@@ -297,10 +320,18 @@ public class CommandController : MonoBehaviour
     {
         //get all selected units
         var selectedUnits = GetSelectedUnits();
+        bool firstResponse = false;
         //give each unit a force-attack order to fire on the given location
         foreach (var u in selectedUnits)
         {
             u.DoForceAttack(location);
+            if (!firstResponse)
+            {
+                firstResponse = true;
+                //place force-attack marker
+                MarkerTemplate.Instantiate(ForceAttackMarker, Map.transform, location, false);
+                //TODO: give force-attack response
+            }
         }
         EndSpecialOrder();
     }
@@ -308,10 +339,18 @@ public class CommandController : MonoBehaviour
     {
         //get all selected units
         var selectedUnits = GetSelectedUnits();
+        bool firstResponse = false;
         //set each selected unit's rally point to the given location
         foreach (var u in selectedUnits)
         {
             u.SetRallypoint(location);
+            if (!firstResponse)
+            {
+                firstResponse = true;
+                //place rally point marker
+                MarkerTemplate.Instantiate(RallyPointMarker, Map.transform, location, false);
+                //TODO: give rally point response
+            }
         }
         EndSpecialOrder();
     }
@@ -330,6 +369,7 @@ public class CommandController : MonoBehaviour
     {
         SelectedCommand = command;
         CommandCompletedCallback = onComplete;
+        SetCursor(SelectedCommand);
     }
     //TODO: add method to activate unit special ability
     public void EndSpecialOrder()
@@ -337,6 +377,31 @@ public class CommandController : MonoBehaviour
         SelectedCommand = SpecialCommands.Normal;
         CommandCompletedCallback?.Invoke();
         CommandCompletedCallback = null;
+        SetCursor(SelectedCommand);
+    }
+    public void SetCursor(SpecialCommands mode)
+    {
+        Texture2D cursorTexture = null;
+        switch (mode)
+        {
+            case SpecialCommands.AttackMove:
+                cursorTexture = AttackMoveCursor;
+                break;
+            case SpecialCommands.ForceAttack:
+                cursorTexture = ForceAttackCursor;
+                break;
+            case SpecialCommands.SetRallyPoint:
+                cursorTexture = SetRallyPointCursor;
+                break;
+        }
+        if(cursorTexture != null)
+        {
+            Cursor.SetCursor(cursorTexture, new Vector2(16, 16), CursorMode.ForceSoftware);
+        }
+        else
+        {
+            Cursor.SetCursor(null, new Vector2(), CursorMode.Auto);
+        }
     }
     public KeyBindModel GetKeyCommand()
     {

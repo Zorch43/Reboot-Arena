@@ -1922,6 +1922,15 @@ MonoBehaviour:
   UnitSlotUI: {fileID: 90404730}
   UnitActionUI: {fileID: 1670538701}
   GameMenuUI: {fileID: 1812599361}
+  AttackMoveCursor: {fileID: 2800000, guid: cfacb3c9c8116914aa1a1570caee49f5, type: 3}
+  ForceAttackCursor: {fileID: 2800000, guid: b37386781e8e05e43a93ed9f4f9c54fc, type: 3}
+  SetRallyPointCursor: {fileID: 2800000, guid: 52c79983cef7bf34f88971dc75221d06, type: 3}
+  MarkerTemplate: {fileID: 5848984215307789728, guid: d68b656d5b6dc0b4e8813a3eb64c75ad, type: 3}
+  AttackMarker: {fileID: 21300000, guid: 0cd452407426a93448f79791b7aa8734, type: 3}
+  MoveMarker: {fileID: 21300000, guid: 0f9fd0f01ce785749a4d376a42cdcb72, type: 3}
+  AttackMoveMarker: {fileID: 21300000, guid: c5434da2481c98b4681002548640056c, type: 3}
+  ForceAttackMarker: {fileID: 21300000, guid: aab32c325bf62f74b8f05a4697796003, type: 3}
+  RallyPointMarker: {fileID: 21300000, guid: 6e860cc1bb05d6148be9f496c4bc65fa, type: 3}
 --- !u!114 &544829690
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2611,6 +2620,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1670538697}
     m_Modifications:
+    - target: {fileID: 2217306956793561924, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 25fc578f1f242b54594c0b01e5e1beac, type: 3}
     - target: {fileID: 3492312257154594657, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_Name
       value: RallyAction
@@ -3631,6 +3644,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1670538697}
     m_Modifications:
+    - target: {fileID: 2217306956793561924, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 6f399118fa225ff4480799012d816316, type: 3}
     - target: {fileID: 3492312257154594657, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_Name
       value: StopAction
@@ -3961,6 +3978,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1670538697}
     m_Modifications:
+    - target: {fileID: 2217306956793561924, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 82a338bd2dfb7d148bc0866ec252d502, type: 3}
     - target: {fileID: 3492312257154594657, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_Name
       value: ClassMenuAction
@@ -5630,6 +5651,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1670538697}
     m_Modifications:
+    - target: {fileID: 2217306956793561924, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 2d610323311f3944ea3a45c7801bb98d, type: 3}
     - target: {fileID: 3492312257154594657, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_Name
       value: ForceAttackAction
@@ -5915,7 +5940,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_Color: {r: 0.20754719, g: 0.20754719, b: 0.20754719, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
