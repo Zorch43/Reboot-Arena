@@ -11,8 +11,9 @@ public class ProjectileController : MonoBehaviour
     #endregion
     #region public fields
     public LineRenderer Line;
-    public BoxCollider Collider;
+    public Collider Collider;
     public SpecialEffectController ExplosionEffect;
+    public ParticleSystem BulletEffect;
     #endregion
     #region private fields
     private float distanceTravelled;
@@ -45,8 +46,11 @@ public class ProjectileController : MonoBehaviour
         {
             FireBeam(firingVector);
         }
-        projectileSizeFactor = (Weapon.ProjectileEndSize - Weapon.ProjectileStartSize) / Weapon.MaxRange;
-        SetProjectileSize(Weapon.ProjectileStartSize);
+        else
+        {
+            projectileSizeFactor = (Weapon.ProjectileEndSize - Weapon.ProjectileStartSize) / Weapon.MaxRange;
+            SetProjectileSize(Weapon.ProjectileStartSize);
+        }
     }
 
     // Update is called once per frame
@@ -205,11 +209,17 @@ public class ProjectileController : MonoBehaviour
                 }
             }
         }
-        Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, (endPoint - transform.position).magnitude) });
-        Line.startWidth = Weapon.ProjectileStartSize;
-        Line.endWidth = Weapon.ProjectileStartSize;
+        var beamLength = (endPoint - transform.position).magnitude;
+        Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, beamLength) });
+        var size = Weapon.ProjectileStartSize;
+        Line.startWidth = size;
+        Line.endWidth = size;
         Collider.enabled = false;
         //TODO: play beam particle effect
+        var particleShape = BulletEffect.shape;
+        particleShape.radius = beamLength;
+        var particleMain = BulletEffect.main;
+        particleMain.startSize = 2 * size;
     }
     private void SetProjectileSize()
     {
@@ -221,6 +231,10 @@ public class ProjectileController : MonoBehaviour
         transform.localScale = new Vector3(size, size, size);
         Line.startWidth = size;
         Line.endWidth = size;
+        var particleShape = BulletEffect.shape;
+        particleShape.radius = 2 * size;
+        var particleMain = BulletEffect.main;
+        particleMain.startSize = 2 * size;
     }
     #endregion
 }

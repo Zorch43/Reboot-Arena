@@ -63,7 +63,7 @@ public class SpawnPointController : MonoBehaviour
     {
         //instantiate the unit on the map in an empty space in the respawn zone
 
-        //starting from the center of the spawn field, search for an empty space (that is also withing bounds of the spawn zone)
+        //starting from the center of the spawn field, search for an empty space (that is also within bounds of the spawn zone)
 
         Vector3 testPoint = RespawnArea.bounds.center;
         Vector3 nextNeighbor = new Vector3(0, 0, 1);

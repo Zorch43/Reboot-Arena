@@ -40,7 +40,7 @@ public class AIController : MonoBehaviour
             {
                 if(u.CurrentUnit != null  && !u.CurrentUnit.Agent.hasPath)
                 {
-                    CommandInterface.GiveUnitOrder(u.CurrentUnit, GameObjective.GetAIObjective());
+                    CommandInterface.GiveUnitMoveOrder(u.CurrentUnit, GameObjective.GetAIObjective());
                 }
             }
         }
@@ -76,7 +76,7 @@ public class AIController : MonoBehaviour
         }
         if(targetUnit != null)
         {
-            CommandInterface.GiveUnitOrder(unit, targetUnit);
+            CommandInterface.GiveUnitAttackOrder(unit, targetUnit);
         }
         return targetUnit;
     }

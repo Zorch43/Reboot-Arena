@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets.Scripts.Data_Models
 {
@@ -33,6 +34,7 @@ namespace Assets.Scripts.Data_Models
                 respawnUnit = value;
             }
         }//unit class that this slot will spawn once current unit dies
+        public Vector3? RallyPoint { get; set; }
         #endregion
         #region public methods
         public void DoUnitDeath()

@@ -65,7 +65,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Flame Thrower",
                 Cooldown = 0.1f,
-                Damage = 3,
+                Damage = 1.5f,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
                 ProjectileSpeed = 1.6f,
                 ProjectileStartSize = .08f,
@@ -106,6 +106,22 @@ namespace Assets.Scripts.Data_Templates
                 ProjectileSpeed = 6.4f,
                 InAccuracy = 10,
                 CanAutoAttack = true
+            };
+            return weapon;
+        }
+        //melee weapon
+        public static WeaponModel CreateBuzzSaw()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Buzz Saw",
+                Cooldown = .1f,
+                Damage = 5,
+                MaxRange = WeaponModel.WEAPON_RANGE_SHORT,
+                ProjectileStartSize = 0.16f,
+                ProjectileEndSize = 0.02f,
+                CanAutoAttack = true,
+                FireWhileMoving = true
             };
             return weapon;
         }

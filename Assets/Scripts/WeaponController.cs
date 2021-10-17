@@ -10,6 +10,7 @@ public class WeaponController : MonoBehaviour
     public GameObject Barrel;
     public ProjectileController Projectile;
     public AudioSource FiringSound;
+    public ParticleSystem MuzzleFlashEffect;
     #endregion
     #region private fields
     #endregion
@@ -47,7 +48,8 @@ public class WeaponController : MonoBehaviour
         {
             FiringSound.Play();//TODO: if firing speed is fast, instead loop a clip
         }
-        
+        MuzzleFlashEffect.transform.position = Barrel.transform.position;
+        MuzzleFlashEffect.Play();
     }
     #endregion
     #region private methods

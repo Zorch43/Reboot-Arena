@@ -37,7 +37,11 @@ public class UnitSlotManager : MonoBehaviour
     }
     #endregion
     #region public methods
-
+    public void SelectSlot(int slotNumber)
+    {
+        slotNumber = Mathf.Clamp(slotNumber, 1, UnitSlots.Count) - 1;
+        UnitSlots[slotNumber].SelectUnitSlot();
+    }
     #endregion
     #region private methods
 
