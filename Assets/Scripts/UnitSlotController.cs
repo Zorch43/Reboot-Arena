@@ -80,7 +80,7 @@ public class UnitSlotController : MonoBehaviour
     }
     #endregion
     #region public methods
-    public void SelectUnitSlot()
+    public void SelectUnitSlot()//TODO: select units through the command interface
     {
         if(Data.CurrentUnit != null)
         {

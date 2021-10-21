@@ -2,7 +2,6 @@ using Assets.Scripts.Data_Models;
 using Assets.Scripts.Data_Templates;
 using Assets.Scripts.Utility;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -24,7 +23,9 @@ public class UnitController : MonoBehaviour
     public NavMeshAgent Agent;
     public ResourceBarController HealthBar;
     public ResourceBarController AmmoBar;
-    public WeaponController WeaponMount;
+    public WeaponController PrimaryWeaponMount;
+    public WeaponController SecondaryWeaponMount;
+    public WeaponController AbilityWeaponMount;
     public int Team = -1;//TEMP
     public Sprite Portrait;
     public Sprite Symbol;
@@ -49,6 +50,7 @@ public class UnitController : MonoBehaviour
     public UnitController CommandTarget { get; set; }
     public UnitController AutoTarget { get; set; }
     public Vector3? ForceTarget { get; set; }
+    public Vector3? AbilityTarget { get; set; }
     public Vector3? AttackMoveDestination { get; set; }
     public UnitSlotModel SpawnSlot { get; set; }
     public List<Action> DeathActions { get; set; } = new List<Action>();
@@ -89,7 +91,7 @@ public class UnitController : MonoBehaviour
 
         if (Agent.hasPath)
         {
-            collider.radius = hitBoxSize + PERSONAL_SPACE; 
+            collider.radius = hitBoxSize + PERSONAL_SPACE;
         }
         else
         {
@@ -121,7 +123,8 @@ public class UnitController : MonoBehaviour
             if(Vector3.Distance(transform.position, Agent.destination) <= ORDER_RADIUS
             || (!unit.Agent.hasPath && Vector3.Distance(unit.transform.position, Agent.destination) <= ORDER_RADIUS/2 * zoneMultiplier))
             {
-                Agent.ResetPath();
+                //Agent.ResetPath();
+                StopMoving();
                 AttackMoveDestination = null;//stop attack-move: destination reached
                 zoneMultiplier = 1;
             }
@@ -164,7 +167,19 @@ public class UnitController : MonoBehaviour
         DeathActions.Add(DoDeathExplosion);
 
         //if unit has a rally point, issue a move order to the rally point
-        Agent.SetDestination(slot.RallyPoint ?? transform.position);
+        //Agent.SetDestination(slot.RallyPoint ?? transform.position);
+        GiveMoveOrder(slot.RallyPoint ?? transform.position);
+    }
+    public UnitModel GetData()
+    {
+        if(Data == null)
+        {
+            return new UnitModel(UnitClassTemplates.GetTrooperClass());
+        }
+        else
+        {
+            return Data;
+        }
     }
     public float HealUnit(float amount)
     {
@@ -206,6 +221,20 @@ public class UnitController : MonoBehaviour
         //set force-attack target
         ForceTarget = location;
     }
+    public void DoSpecialAbility(Vector3 location)
+    {
+        CancelOrders();
+        var specialAbility = Data.UnitClass.SpecialAbility;
+        //if ability is targeted, activate ability at location
+        if (specialAbility.IsTargetedAbility)
+        {
+            AbilityTarget = location;
+        }
+        else
+        {
+            //TODO: immediately activate ability
+        }
+    }
     //set the rally point for this unit's slot.  when another unit spawns from this slot, order it to the rally point
     public void SetRallypoint(Vector3 location)
     {
@@ -215,14 +244,26 @@ public class UnitController : MonoBehaviour
     public void CancelOrders()
     {
         //stop unit
-        Agent.ResetPath();
+        //Agent.ResetPath();
+        StopMoving();
         //remove attack-move destination
         AttackMoveDestination = null;
         //stop command attack
         CommandTarget = null;
         //stop force attack
         ForceTarget = null;
+        //stop targeting ability
+        AbilityTarget = null;
 
+    }
+    public void GiveMoveOrder(Vector3 location)
+    {
+        Agent.SetDestination(location);
+        
+    }
+    public void StopMoving()
+    {
+        Agent.ResetPath();
     }
     #endregion
     #region private methods
@@ -269,11 +310,15 @@ public class UnitController : MonoBehaviour
         {
             targetPosition = ForceTarget;
         }
+        else if(AbilityTarget != null)
+        {
+            targetPosition = AbilityTarget;
+        }
 
         if(targetPosition != null)
         {
-            var activeWeapon = GetActiveWeapon(targetPosition ?? new Vector3(), false, false);
             var target = targetPosition ?? new Vector3();
+            var activeWeapon = GetActiveWeapon(target, false, false);
 
             //perform attack action on unit
             //if can attack (not counting cooldowns), do so
@@ -286,7 +331,9 @@ public class UnitController : MonoBehaviour
             else//move to engage
             {
                 //move into position
-                Agent.SetDestination(target);
+                //TODO: only do if not in range
+                //Agent.SetDestination(target);
+                GiveMoveOrder(target);
                 return false;
             }
         }
@@ -308,7 +355,8 @@ public class UnitController : MonoBehaviour
             //if no targets found, move towards attack-move destination
             if(CommandTarget == null)
             {
-                Agent.SetDestination(AttackMoveDestination ?? new Vector3());
+                //Agent.SetDestination(AttackMoveDestination ?? new Vector3());
+                GiveMoveOrder(AttackMoveDestination ?? new Vector3());
             }
         }
     }
@@ -339,25 +387,47 @@ public class UnitController : MonoBehaviour
     private void DoPreAttack(WeaponModel activeWeapon, Vector3 target, bool stopMoving)
     {
         //turn towards target
-        var targetRotation = Quaternion.LookRotation(target - transform.position);
+        var flatTarget = new Vector3(target.x, transform.position.y, target.z);//only turn on the y-axis
+        var targetRotation = Quaternion.LookRotation(flatTarget - transform.position);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
-        if (Quaternion.Angle(targetRotation, transform.rotation) < 5)
+        var remainingAngle = Quaternion.Angle(targetRotation, transform.rotation);
+        if (remainingAngle < 5)
         {
             //once facing target, fire weapon
             DoAttack(activeWeapon, target);
             if (stopMoving)
             {
-                Agent.ResetPath();//stop moving
+                //Agent.ResetPath();//stop moving
+                StopMoving();
             }
+        }
+        else
+        {
+            //Debug.Log("Remaining Angle: " + remainingAngle);
         }
     }
     private void DoAttack(WeaponModel activeWeapon, Vector3 target)
     {
         if(activeWeapon != null && activeWeapon.IsCooledDown())
         {
-            WeaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
+            WeaponController weaponMount = PrimaryWeaponMount;
+            if(activeWeapon == Data.UnitClass.SecondaryWeapon)
+            {
+                weaponMount = SecondaryWeaponMount;
+            }
+            else if(activeWeapon == Data.UnitClass.SpecialAbility.AbilityWeapon)
+            {
+                weaponMount = AbilityWeaponMount;
+            }
+
+            weaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
             activeWeapon.StartCooldown();
             Data.MP -= activeWeapon.AmmoCost;
+            var specialAbility = Data.UnitClass.SpecialAbility;
+            if (activeWeapon == specialAbility.AbilityWeapon && !specialAbility.IsContinuous)
+            {
+                CancelOrders();
+            }
         }
     }
     private int CanAttackWithWeapon(WeaponModel weapon, Vector3 target, bool isMoving, bool isAutoAttack)
@@ -399,18 +469,31 @@ public class UnitController : MonoBehaviour
     }
     private WeaponModel GetActiveWeapon(Vector3 target, bool isMoving, bool isAutoAttack)
     {
-        int primaryReason = CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon, target, isMoving, isAutoAttack);
-        if (primaryReason == 0 || primaryReason == 1)
+        if(AbilityTarget != null && Data.UnitClass.SpecialAbility.IsWeaponAbility)
         {
-            return Data.UnitClass.PrimaryWeapon;
+            var abilityWeapon = Data.UnitClass.SpecialAbility.AbilityWeapon;
+            int abiltyReason = CanAttackWithWeapon(abilityWeapon, target, isMoving, isAutoAttack);
+            if (abiltyReason == 0 || abiltyReason == 1)
+            {
+                return abilityWeapon;
+            }
         }
+        else
+        {
+            int primaryReason = CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon, target, isMoving, isAutoAttack);
+            if (primaryReason == 0 || primaryReason == 1)
+            {
+                return Data.UnitClass.PrimaryWeapon;
+            }
 
-        int secondaryReason = CanAttackWithWeapon(Data.UnitClass.SecondaryWeapon, target, isMoving, isAutoAttack);
-        if (secondaryReason == 0 || secondaryReason == 1)
-        {
-            return Data.UnitClass.SecondaryWeapon;
+            int secondaryReason = CanAttackWithWeapon(Data.UnitClass.SecondaryWeapon, target, isMoving, isAutoAttack);
+            if (secondaryReason == 0 || secondaryReason == 1)
+            {
+                return Data.UnitClass.SecondaryWeapon;
+            }
         }
-        return null; ;
+        
+        return null;
     }
     private WeaponModel GetActiveWeapon(UnitController target, bool isMoving, bool isAutoAttack)
     {
@@ -424,6 +507,7 @@ public class UnitController : MonoBehaviour
     {
         Data.UnitClass.PrimaryWeapon.DoCooldown(time);
         Data.UnitClass.SecondaryWeapon.DoCooldown(time);
+        Data.UnitClass.SpecialAbility.AbilityWeapon.DoCooldown(time);
     }
 
     private UnitController GetAutoAttackTarget(bool autoAttackOnly = true)

@@ -18,9 +18,6 @@ namespace Assets.Scripts.Data_Models
         public bool IsActing { get; set; }
         public float ActionCooldown { get; set; }//time until another action can be performed
         public bool IsSelected { get; set; }
-        public Vector2 Position { get; set; }//current position on map
-        public List<Vector2> WayPoints { get; set; }//current movement path
-        public UnitModel TargetUnit { get; set; }
         #endregion
         public UnitModel (UnitClassModel unitClass)
         {

@@ -10,6 +10,7 @@ namespace Assets.Scripts.Data_Models
     public class KeyBindConfigModel
     {
         public KeyBindModel GameMenuKey { get; set; }
+        //unit slots
         public KeyBindModel UnitSlot1Key { get; set; }
         public KeyBindModel UnitSlot2Key { get; set; }
         public KeyBindModel UnitSlot3Key { get; set; }
@@ -19,6 +20,7 @@ namespace Assets.Scripts.Data_Models
         public KeyBindModel UnitSlot7Key { get; set; }
         public KeyBindModel UnitSlot8Key { get; set; }
         public KeyBindModel UnitSlot9Key { get; set; }
+        //advanced commands
         public KeyBindModel AttackMoveModeKey { get; set; }
         public KeyBindModel AttackMoveKey { get; set; }
         public KeyBindModel ForceAttackModeKey { get; set; }
@@ -26,6 +28,8 @@ namespace Assets.Scripts.Data_Models
         public KeyBindModel StopActionKey { get; set; }
         public KeyBindModel SetRallyPointModeKey { get; set; }
         public KeyBindModel SetRallyPointKey { get; set; }
+        //ability hotkeys
+        public KeyBindModel AbilityGrenadeKey { get; set; }
 
         public List<KeyBindModel> AllKeyBinds { get; set; }
 
@@ -34,6 +38,7 @@ namespace Assets.Scripts.Data_Models
         public KeyBindConfigModel()
         {
             GameMenuKey = new KeyBindModel("Game Menu", "Open the in-game menu", KeyCode.Escape);
+            //unit slots
             UnitSlot1Key = new KeyBindModel("Unit Slot 1", "Select the unit in slot 1", KeyCode.Alpha1);
             UnitSlot2Key = new KeyBindModel("Unit Slot 2", "Select the unit in slot 2", KeyCode.Alpha2);
             UnitSlot3Key = new KeyBindModel("Unit Slot 3", "Select the unit in slot 3", KeyCode.Alpha3);
@@ -43,6 +48,8 @@ namespace Assets.Scripts.Data_Models
             UnitSlot7Key = new KeyBindModel("Unit Slot 7", "Select the unit in slot 7", KeyCode.Alpha7);
             UnitSlot8Key = new KeyBindModel("Unit Slot 8", "Select the unit in slot 8", KeyCode.Alpha8);
             UnitSlot9Key = new KeyBindModel("Unit Slot 9", "Select the unit in slot 9", KeyCode.Alpha9);
+
+            //advanced commands
             AttackMoveModeKey = new KeyBindModel("Set Attack-Move Mode",
                 "Activate the attack-move command mode.  Set location with left-click, cancel with right-click.",
                 KeyCode.A);
@@ -58,6 +65,10 @@ namespace Assets.Scripts.Data_Models
             SetRallyPointKey = new KeyBindModel("Set Rally-Point", "Set the rally-point to the cursor position for all selected units.", 
                 KeyCode.LeftControl, KeyCode.R);
 
+            //special abilities
+            AbilityGrenadeKey = new KeyBindModel("Throw Frag Grenade", "Throw a high-explosive grenade at the targeted location", KeyCode.G);
+
+            //integration
             AllKeyBinds = new List<KeyBindModel>()
             {
                 GameMenuKey,
@@ -76,7 +87,8 @@ namespace Assets.Scripts.Data_Models
                 ForceAttackKey,
                 StopActionKey,
                 SetRallyPointModeKey,
-                SetRallyPointKey
+                SetRallyPointKey,
+                AbilityGrenadeKey
             };
             AllKeyBinds.Sort();
 

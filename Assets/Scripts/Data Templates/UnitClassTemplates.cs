@@ -19,7 +19,8 @@ namespace Assets.Scripts.Data_Templates
                 MoveSpeed = 1,
                 TurnSpeed = 12,
                 PrimaryWeapon = WeaponTemplates.CreateAssaultRifle(),
-                SecondaryWeapon = WeaponTemplates.CreateShotGun()
+                SecondaryWeapon = WeaponTemplates.CreateShotGun(),
+                SpecialAbility = UnitAbilityTemplates.CreateFragGrenade()
             };
             return template;
         }

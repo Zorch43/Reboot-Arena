@@ -17,11 +17,11 @@ namespace Assets.Scripts.Data_Models
         public float MoveSpeed { get; set; }//base move speed
         public float TurnSpeed { get; set; }//base turn speed
         #endregion
-        //TODO: primary weapon
+        //weapons
         public WeaponModel PrimaryWeapon { get; set; }
         public WeaponModel SecondaryWeapon { get; set; }
-        //TODO: secondary weapon
-        //TODO: active abilities
+        //special ability
+        public UnitAbilityModel SpecialAbility { get; set; }
         //TODO: passive abilities
         #endregion
     }

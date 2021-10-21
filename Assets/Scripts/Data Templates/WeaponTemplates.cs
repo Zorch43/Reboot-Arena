@@ -40,6 +40,24 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
+        public static WeaponModel CreateFragGrenade()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Frag Grenade",
+                Cooldown = 2,
+                Damage = 100,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
+                Explodes = true,
+                ExplosionSize = 0.64f,
+                ArcingAttack = true,
+                ProjectileSpeed = 3.2f,
+                ProjectileStartSize = .08f,
+                ProjectileEndSize = .08f,
+                AmmoCost = 100
+            };
+            return weapon;
+        }
         //test piercing walls
         public static WeaponModel CreateRailgun()
         {

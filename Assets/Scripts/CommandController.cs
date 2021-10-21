@@ -40,6 +40,7 @@ public class CommandController : MonoBehaviour
     #region properties
     public int AITeam { get; set; } = 1;
     public SpecialCommands SelectedCommand { get; set; }
+    public UnitAbilityModel SpecialAbility { get; set; }
     public Action CommandCompletedCallback { get; set; }
     #endregion
     #region unity methods
@@ -126,6 +127,10 @@ public class CommandController : MonoBehaviour
             {
                 UnitSlotUI.SelectSlot(9);
             }
+            else if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AbilityGrenadeKey)
+            {
+                UnitActionUI.ActivateUnitAbility("Grenade");
+            }
         }
         else
         {
@@ -200,7 +205,8 @@ public class CommandController : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    //TODO: activate special ability
+                    //activate special ability
+                    GiveSpecialAbilityOrder(GetMouseMapPosition());
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
@@ -214,6 +220,7 @@ public class CommandController : MonoBehaviour
     public void SelectUnits(List<UnitController> units, bool addToSelection = false)
     {
         var allUnits = GetAllUnits();
+        List<UnitController> selectedUnits = new List<UnitController>();
         if (!addToSelection)
         {
             foreach (var u in allUnits)
@@ -232,8 +239,10 @@ public class CommandController : MonoBehaviour
                     responseGiven = true;
                     u.UnitVoice.PlaySelectionResponse();
                 }
+                selectedUnits.Add(u);
             }
         }
+        UnitActionUI.PopulateAbilityButtons(selectedUnits);
     }
     public void GiveOrder(Vector3 targetLocation, Camera fromCamera = null)
     {
@@ -294,7 +303,7 @@ public class CommandController : MonoBehaviour
     public void GiveUnitMoveOrder(UnitController selectedUnit, Vector3 targetLocation)
     {
         selectedUnit.CancelOrders();
-        selectedUnit.Agent.destination = targetLocation;
+        selectedUnit.GiveMoveOrder(targetLocation);
         selectedUnit.CommandTarget = null;
     }
     public void GiveAttackMoveOrder(Vector3 location)
@@ -365,13 +374,129 @@ public class CommandController : MonoBehaviour
         }
         EndSpecialOrder();
     }
+    public void GiveSpecialAbilityOrder(Vector3 location)
+    {
+        var abilityUnits = GetAbilityUnits(SpecialAbility, location);
+        bool firstResponse = false;
+        foreach(var u in abilityUnits)
+        {
+            //do special ability
+            u.DoSpecialAbility(location);
+            if (!firstResponse)
+            {
+                firstResponse = true;
+                MarkerTemplate.Instantiate(Resources.Load<Sprite>(SpecialAbility.Marker), Map.transform, location, false);
+                //give special ability response
+                u.UnitVoice.PlayAbilityResponse();
+            }
+        }
+        EndSpecialOrder();
+    }
+    public List<UnitController> GetAbilityUnits(UnitAbilityModel ability, Vector3 target)
+    {
+        var selectedUnits = GetSelectedUnits();
+        List<UnitController> validUnits = new List<UnitController>();
+        List<UnitController> bestUnits = new List<UnitController>();
+        float bestScore = 0;
+
+        //get valid units
+        foreach(var u in selectedUnits)
+        {
+            var unitAbility = u.Data.UnitClass.SpecialAbility;
+            //unit must have the ability
+            //unit must be able to pay for the ability
+            if (unitAbility.Name == ability.Name && u.Data.MP >= ability.AmmoCostInstant)
+            {
+                validUnits.Add(u);
+            }
+        }
+        //activate ability for valid units
+        foreach(var u in validUnits)
+        {
+            var unitAbility = u.Data.UnitClass.SpecialAbility;
+
+            //if the ability is group activation, all units do the ability
+            //if there is only one valid unit selected, skip evaluation
+            if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.All || validUnits.Count == 1)
+            {
+                bestUnits.Add(u);
+            }
+            //if the ability is single activation, find the best unit to activate the ability
+            else if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.Single)
+            {
+                float score = ScoreUnitForAbility(u, target);
+                //update best score and best unit
+                if (score > bestScore || bestUnits.Count == 0)
+                {
+                    bestUnits = new List<UnitController>() { u };
+                }
+            }
+        }
+
+        return bestUnits;
+    }
+    public float ScoreUnitForAbility(UnitController unit, Vector3 target)
+    {
+        float score = 0;
+
+        var specialAbility = unit.Data.UnitClass.SpecialAbility;
+        //if unit already has an ability target, heavily de-prioritize it
+        if(unit.AbilityTarget != null)
+        {
+            score -= 100;
+        }
+
+        //TODO: consider weighting these values
+        if (specialAbility.ConsiderLeastAmmoInGroup)
+        {
+            score += 1 - (unit.Data.MP - specialAbility.AmmoCostInstant) / (unit.Data.UnitClass.MaxMP - specialAbility.AmmoCostInstant);
+        }
+        if (specialAbility.ConsiderLeastHealthInGroup)
+        {
+            score += 1 - unit.Data.HP / unit.Data.UnitClass.MaxHP;
+        }
+        if (specialAbility.ConsiderLeastMoveDistanceToTarget)
+        {
+            score += -(Mathf.Max((target - unit.transform.position).magnitude - specialAbility.AbilityWeapon.MaxRange, 0)/unit.Data.UnitClass.MoveSpeed);
+        }
+        if (specialAbility.ConsiderLeastTotalDistanceToTarget)
+        {
+            score += -((target - unit.transform.position).magnitude - specialAbility.AbilityWeapon.MaxRange)/ specialAbility.AbilityWeapon.MaxRange;
+        }
+        if (specialAbility.ConsiderMostAmmoInGroup)
+        {
+            score += unit.Data.MP / unit.Data.UnitClass.MaxMP;
+        }
+        if (specialAbility.ConsiderMostHealthInGroup)
+        {
+            score += unit.Data.HP / unit.Data.UnitClass.MaxHP;
+        }
+
+        return score;
+    }
     public void StartSpecialOrder(SpecialCommands command, Action onComplete)
     {
         SelectedCommand = command;
         CommandCompletedCallback = onComplete;
         SetCursor(SelectedCommand);
     }
-    //TODO: add method to activate unit special ability
+    public void StartSpecialOrder(UnitAbilityModel ability, Action onComplete)
+    {
+        SpecialAbility = ability;
+        if (ability.IsTargetedAbility)
+        {
+            SelectedCommand = SpecialCommands.SpecialAbility;
+            CommandCompletedCallback = onComplete;
+            //set cursor
+            SetCursor(SelectedCommand);
+        }
+        else
+        {
+            //non-target ability
+            GiveSpecialAbilityOrder(new Vector3());//no targeting necessary
+        }
+
+    }
     public void EndSpecialOrder()
     {
         SelectedCommand = SpecialCommands.Normal;
@@ -392,6 +517,9 @@ public class CommandController : MonoBehaviour
                 break;
             case SpecialCommands.SetRallyPoint:
                 cursorTexture = SetRallyPointCursor;
+                break;
+            case SpecialCommands.SpecialAbility:
+                cursorTexture = Resources.Load<Texture2D>(SpecialAbility.Cursor);
                 break;
         }
         if(cursorTexture != null)
