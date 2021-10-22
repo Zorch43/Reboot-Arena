@@ -168,7 +168,7 @@ public class UnitController : MonoBehaviour
 
         //if unit has a rally point, issue a move order to the rally point
         //Agent.SetDestination(slot.RallyPoint ?? transform.position);
-        GiveMoveOrder(slot.RallyPoint ?? transform.position);
+        DoMove(slot.RallyPoint ?? transform.position);
     }
     public UnitModel GetData()
     {
@@ -256,14 +256,38 @@ public class UnitController : MonoBehaviour
         AbilityTarget = null;
 
     }
-    public void GiveMoveOrder(Vector3 location)
+    public void DoMove(Vector3 location)
     {
-        Agent.SetDestination(location);
-        
+        if (!Agent.hasPath || Vector3.Distance(location, Agent.destination) > ORDER_RADIUS)
+        {
+            CancelOrders();
+            Agent.SetDestination(location);
+        } 
     }
     public void StopMoving()
     {
         Agent.ResetPath();
+    }
+    public bool HasLineOfSight(Vector3 target, bool unitsBlockLOS = false)
+    {
+        var pos = transform.position;
+
+        var hits = Physics.RaycastAll(pos, target - pos, Vector3.Distance(pos, target));
+        foreach (var h in hits)
+        {
+            var obj = h.collider.GetComponent<UnitController>();
+            if (!h.collider.CompareTag("NonBlocking") && !h.collider.isTrigger
+                && (obj == null || (unitsBlockLOS && obj.Data.Team != Data.Team)))
+            {
+                return false;
+            }
+        }
+        return true;
+        //if(hits.Length > 0)
+        //{
+
+        //}
+        //return false;
     }
     #endregion
     #region private methods
@@ -333,7 +357,7 @@ public class UnitController : MonoBehaviour
                 //move into position
                 //TODO: only do if not in range
                 //Agent.SetDestination(target);
-                GiveMoveOrder(target);
+                DoMove(target);
                 return false;
             }
         }
@@ -356,7 +380,7 @@ public class UnitController : MonoBehaviour
             if(CommandTarget == null)
             {
                 //Agent.SetDestination(AttackMoveDestination ?? new Vector3());
-                GiveMoveOrder(AttackMoveDestination ?? new Vector3());
+                DoMove(AttackMoveDestination ?? new Vector3());
             }
         }
     }
@@ -547,26 +571,7 @@ public class UnitController : MonoBehaviour
             return bestTarget;
         }
     }
-    private bool HasLineOfSight(Vector3 target)
-    {
-        var pos = transform.position;
-
-        var hits = Physics.RaycastAll(pos, target - pos, Vector3.Distance(pos, target));
-        foreach (var h in hits)
-        {
-            var obj = h.collider.GetComponent<UnitController>();
-            if (!h.collider.CompareTag("NonBlocking") && !h.collider.isTrigger && obj == null)
-            {
-                return false;
-            }
-        }
-        return true;
-        //if(hits.Length > 0)
-        //{
-
-        //}
-        //return false;
-    }
+    
     private void DoLootDrop()
     {
         var loot = Instantiate(DeathLoot, transform.parent);

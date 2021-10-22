@@ -61,7 +61,7 @@ public class CommandController : MonoBehaviour
         {
             if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveKey)
             {
-                GiveAttackMoveOrder(GetMouseMapPosition());
+                GiveAttackMoveOrder(GetSelectedUnits(), GetMouseMapPosition());
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveModeKey)
             {
@@ -169,7 +169,7 @@ public class CommandController : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GiveAttackMoveOrder(GetMouseMapPosition());
+                    GiveAttackMoveOrder(GetSelectedUnits(), GetMouseMapPosition());
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
@@ -303,13 +303,11 @@ public class CommandController : MonoBehaviour
     public void GiveUnitMoveOrder(UnitController selectedUnit, Vector3 targetLocation)
     {
         selectedUnit.CancelOrders();
-        selectedUnit.GiveMoveOrder(targetLocation);
+        selectedUnit.DoMove(targetLocation);
         selectedUnit.CommandTarget = null;
     }
-    public void GiveAttackMoveOrder(Vector3 location)
+    public void GiveAttackMoveOrder(List<UnitController> selectedUnits, Vector3 location)
     {
-        //get all selected units
-        var selectedUnits = GetSelectedUnits();
         bool firstResponse = false;
         //give each unit an attack-move command to the given location
         foreach(var u in selectedUnits)

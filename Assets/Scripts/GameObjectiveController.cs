@@ -75,6 +75,10 @@ public class GameObjectiveController : MonoBehaviour
     {
         return Objective.transform.position;
     }
+    public Vector3 GetAISpawnPoint()
+    {
+        return AITeam.SpawnPoint.transform.position;
+    }
     #endregion
     #region private methods
 
