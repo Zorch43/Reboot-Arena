@@ -302,8 +302,7 @@ public class CommandController : MonoBehaviour
     }
     public void GiveUnitMoveOrder(UnitController selectedUnit, Vector3 targetLocation)
     {
-        selectedUnit.CancelOrders();
-        selectedUnit.DoMove(targetLocation);
+        selectedUnit.DoMove(targetLocation, true);
         selectedUnit.CommandTarget = null;
     }
     public void GiveAttackMoveOrder(List<UnitController> selectedUnits, Vector3 location)
@@ -427,6 +426,7 @@ public class CommandController : MonoBehaviour
                 if (score > bestScore || bestUnits.Count == 0)
                 {
                     bestUnits = new List<UnitController>() { u };
+                    bestScore = score;
                 }
             }
         }
@@ -441,7 +441,7 @@ public class CommandController : MonoBehaviour
         //if unit already has an ability target, heavily de-prioritize it
         if(unit.AbilityTarget != null)
         {
-            score -= 100;
+            score -= 1000;
         }
 
         //TODO: consider weighting these values

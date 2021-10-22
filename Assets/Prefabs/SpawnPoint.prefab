@@ -133,7 +133,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 529aaf1270d07f7448ee35247e09174a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RespawnField: {fileID: 0}
   TeamColor: {fileID: 449350126179645738}
   MinimapMarker: {fileID: 3202157456766733748}
   SpawnFieldSfx: {fileID: 3755992899559513485}
@@ -149,7 +148,7 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 2, y: 0.5, z: 2}
+  m_Size: {x: 2.5, y: 0.5, z: 2.5}
   m_Center: {x: -0.5, y: 0.3, z: 0}
 --- !u!199 &6817979883422106799
 ParticleSystemRenderer:

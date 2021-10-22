@@ -168,7 +168,7 @@ public class UnitController : MonoBehaviour
 
         //if unit has a rally point, issue a move order to the rally point
         //Agent.SetDestination(slot.RallyPoint ?? transform.position);
-        DoMove(slot.RallyPoint ?? transform.position);
+        DoMove(slot.RallyPoint ?? transform.position, true);
     }
     public UnitModel GetData()
     {
@@ -256,11 +256,15 @@ public class UnitController : MonoBehaviour
         AbilityTarget = null;
 
     }
-    public void DoMove(Vector3 location)
+    public void DoMove(Vector3 location, bool cancelOrders = false)
     {
         if (!Agent.hasPath || Vector3.Distance(location, Agent.destination) > ORDER_RADIUS)
         {
-            CancelOrders();
+            if (cancelOrders)
+            {
+                CancelOrders();
+            }
+            
             Agent.SetDestination(location);
         } 
     }
@@ -357,7 +361,7 @@ public class UnitController : MonoBehaviour
                 //move into position
                 //TODO: only do if not in range
                 //Agent.SetDestination(target);
-                DoMove(target);
+                DoMove(target, false);
                 return false;
             }
         }
@@ -380,7 +384,7 @@ public class UnitController : MonoBehaviour
             if(CommandTarget == null)
             {
                 //Agent.SetDestination(AttackMoveDestination ?? new Vector3());
-                DoMove(AttackMoveDestination ?? new Vector3());
+                DoMove(AttackMoveDestination ?? new Vector3(), false);
             }
         }
     }

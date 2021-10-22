@@ -7,16 +7,17 @@ public class TeamController : MonoBehaviour
 {
     #region constants
     public const float BASE_RESPAWN_TIME = 30;
+    public const float MIN_QUEUE_TIME = 0.25f;//minimum time between spawns
     #endregion
     #region public fields
-    public UnitSlotManager UnitSlotManager;//9-12 unit slots
+    public UnitSlotManager UnitSlotManager;//9 unit slots
     public UnitController[] UnitTemplates;//unit templates avaialable to spawn (6-9)
     public SpawnPointController DefaultSpawnPoint;//starting spawnpoint
     public int Team;
     public bool HideUnitUI;
     #endregion
     #region private fields
-
+    private float queueTime;
     #endregion
     #region properties
     public SpawnPointController SpawnPoint { get; set; }//current spawnpoint
@@ -56,14 +57,17 @@ public class TeamController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float deltaTime = Time.deltaTime;
+        queueTime += deltaTime;
         //advance respawn progress on all slots
         foreach(var s in UnitSlots)
         {
-            if(s.RespawnProgress < 1)
+            if(s.CurrentUnit == null)
             {
-                s.RespawnProgress += Time.deltaTime/BASE_RESPAWN_TIME;
-                if (s.RespawnProgress >= 1)
+                s.RespawnProgress += deltaTime/BASE_RESPAWN_TIME;
+                if (s.RespawnProgress >= 1 && queueTime >= MIN_QUEUE_TIME)
                 {
+                    queueTime = 0;
                     var unit = SpawnPoint.SpawnUnit(s, HideUnitUI);
                 }
             }

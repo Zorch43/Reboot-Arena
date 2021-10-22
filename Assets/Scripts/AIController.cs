@@ -203,7 +203,7 @@ public class AIController : MonoBehaviour
             DoAction = () =>
             {
                 Debug.Log("Tactical Order: Get Health");
-                selectedUnit.DoMove(healthLocation);
+                selectedUnit.DoMove(healthLocation, true);
             }
         };
         actionList.Add(healthAction);
@@ -216,7 +216,7 @@ public class AIController : MonoBehaviour
             DoAction = () =>
             {
                 Debug.Log("Tactical Order: Get Ammo");
-                selectedUnit.DoMove(ammoLocation);
+                selectedUnit.DoMove(ammoLocation, true);
             }
         };
         actionList.Add(ammoAction);
@@ -606,7 +606,7 @@ public class AIController : MonoBehaviour
                 //if unit is near the point, rush it
                 if(timeToPoint < 2)
                 {
-                    u.DoMove(objectivePoint);
+                    u.DoMove(objectivePoint, true);
                 }
                 //if they're far away, attack-move towards the point
                 else
@@ -624,7 +624,7 @@ public class AIController : MonoBehaviour
         {
             if(u.Data.Team == Team.Team)
             {
-                u.DoMove(spawnPoint);
+                u.DoMove(spawnPoint, true);
             }
         }
     }
