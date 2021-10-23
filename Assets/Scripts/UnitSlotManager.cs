@@ -1,3 +1,4 @@
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +27,7 @@ public class UnitSlotManager : MonoBehaviour
             var unitSlot = Instantiate(UnitSlotTemplate, transform);
             unitSlot.Manager = this;
             unitSlot.SlotNumberLabel.text = (i + 1).ToString();
+            unitSlot.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetUnitSlotKeyBind(i + 1);
             UnitSlots.Add(unitSlot);
         }
     }

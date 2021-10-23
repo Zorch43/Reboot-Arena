@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 4825969271247308006}
   - component: {fileID: 8698543766851976939}
   - component: {fileID: 5262283005355515824}
+  - component: {fileID: 1317238817259146576}
   m_Layer: 0
   m_Name: HealthSpawner4
   m_TagString: Untagged
@@ -163,6 +164,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1317238817259146576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 519018474442507812}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: NanoPack Dispenser (Large)
+  Body: Heal units that pass over it by large amount.
+  Stats: []
+  AmmoCost: 
+  HealthCost: +400
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 0
 --- !u!1 &2223757652769335876
 GameObject:
   m_ObjectHideFlags: 0

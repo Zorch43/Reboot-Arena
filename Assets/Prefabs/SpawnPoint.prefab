@@ -96,6 +96,7 @@ GameObject:
   - component: {fileID: 7935453375214110762}
   - component: {fileID: 6817979883422106799}
   - component: {fileID: 3755992899559513485}
+  - component: {fileID: 3753615705698406635}
   m_Layer: 6
   m_Name: SpawnPoint
   m_TagString: Untagged
@@ -4924,6 +4925,29 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &3753615705698406635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 449350126201586495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: Spawn Point
+  Body: Destroyed units will respawn here after a period of time.\nWhile near the
+    spawn point, units are healed and resupplied.
+  Stats: []
+  AmmoCost: 
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 0
 --- !u!1 &449350127451272693
 GameObject:
   m_ObjectHideFlags: 0

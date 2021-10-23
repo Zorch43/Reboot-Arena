@@ -9,7 +9,23 @@ namespace Assets.Scripts.Utility
 {
     public static class KeyBindConfigSettings
     {
-        public static KeyBindConfigModel KeyBinds { get; set; }
+        public static KeyBindConfigModel KeyBinds
+        {
+            get
+            {
+                if(_keyBinds == null)
+                {
+                    LoadFromFile();
+                }
+                return _keyBinds;
+            }
+            private set
+            {
+                _keyBinds = value;
+            }
+        }
+
+        private static KeyBindConfigModel _keyBinds;
 
         public static void LoadFromFile()
         {

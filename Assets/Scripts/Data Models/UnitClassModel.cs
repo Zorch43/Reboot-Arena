@@ -11,6 +11,7 @@ namespace Assets.Scripts.Data_Models
         #region properties
         public string Name { get; set; }
         public string Portrait { get; set; }
+        public string Description { get; set; }
         #region stats
         public int MaxHP { get; set; }//maximum health points
         public int MaxMP { get; set; }//maximum munition points

@@ -10546,6 +10546,7 @@ GameObject:
   - component: {fileID: 2647023922534592251}
   - component: {fileID: 1417766503543377058}
   - component: {fileID: 4992382541765544477}
+  - component: {fileID: 495876549913016054}
   m_Layer: 9
   m_Name: UnitTrooper
   m_TagString: Untagged
@@ -10626,6 +10627,7 @@ MonoBehaviour:
   HealEffect: {fileID: 5158448299298131409}
   ReloadEffect: {fileID: 8181086929516134976}
   DeathExplosion: {fileID: 8270483927021890600, guid: f80942e1a1b484d4597e1a23ad21a971, type: 3}
+  ToolTip: {fileID: 495876549913016054}
   TeamColorParts:
   - {fileID: 1124907135071161716}
   - {fileID: 1124907134935260993}
@@ -10783,6 +10785,28 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &495876549913016054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2759423963728736515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: 
+  Body: 
+  Stats: []
+  AmmoCost: 
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 1
 --- !u!1 &3158046709959291376
 GameObject:
   m_ObjectHideFlags: 0
@@ -21351,6 +21375,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+--- !u!4 &984664854816158358 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 561866317584364996, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+  m_PrefabInstance: {fileID: 749318306875279186}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &4476235228222699127 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3781006353295880485, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
@@ -21362,11 +21391,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8341f0cdd6c7374989ea1076708f720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &984664854816158358 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 561866317584364996, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
-  m_PrefabInstance: {fileID: 749318306875279186}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1726706720045007015
 PrefabInstance:
   m_ObjectHideFlags: 0

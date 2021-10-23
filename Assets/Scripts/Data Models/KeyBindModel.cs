@@ -9,25 +9,29 @@ namespace Assets.Scripts.Data_Models
 {
     public class KeyBindModel : IComparable
     {
+        public KeyBindConfigModel.KeyBindId Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public KeyCode HeldKey { get; set; }
         public KeyCode PressedKey { get; set; }
 
-        public KeyBindModel(string name, string description)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description)
         {
+            Id = id;
             Name = name;
             Description = description;
         }
-        public KeyBindModel(string name, string description, KeyCode pressedKey)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode pressedKey)
         {
+            Id = id;
             Name = name;
             Description = description;
             PressedKey = pressedKey;
             HeldKey = KeyCode.None;
         }
-        public KeyBindModel(string name, string description, KeyCode heldKey, KeyCode pressedKey)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCode pressedKey)
         {
+            Id = id;
             Name = name;
             Description = description;
             PressedKey = pressedKey;
@@ -37,7 +41,7 @@ namespace Assets.Scripts.Data_Models
         {
             var other = obj as KeyBindModel;
 
-            return other != null && HeldKey == other.HeldKey && PressedKey == other.PressedKey;
+            return other.Id == Id;
         }
         public override int GetHashCode()
         {
@@ -64,6 +68,17 @@ namespace Assets.Scripts.Data_Models
                 }
             }
             return 0;
+        }
+        public override string ToString()
+        {
+            string output = "";
+            if(HeldKey != KeyCode.None)
+            {
+                output += HeldKey.ToString() + " + ";
+            }
+            output += PressedKey.ToString();
+
+            return output;
         }
     }
 }

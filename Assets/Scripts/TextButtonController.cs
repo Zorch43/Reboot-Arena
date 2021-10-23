@@ -8,4 +8,5 @@ public class TextButtonController : MonoBehaviour
 {
     public Button Button;
     public TextMeshProUGUI Text;
+    public ToolTipContentController ToolTip;
 }

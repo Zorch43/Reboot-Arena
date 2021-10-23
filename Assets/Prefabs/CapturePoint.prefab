@@ -178,6 +178,7 @@ GameObject:
   - component: {fileID: 3618516727991134146}
   - component: {fileID: 6881245569922215163}
   - component: {fileID: 7777716564583423672}
+  - component: {fileID: 6436619378783064782}
   m_Layer: 0
   m_Name: CapturePoint
   m_TagString: Untagged
@@ -328,6 +329,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6436619378783064782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3618516727991134144}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: Capture Point
+  Body: Capture this point by moving units on top of it.
+  Stats: []
+  AmmoCost: 
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 0
 --- !u!1 &3618516728468171890
 GameObject:
   m_ObjectHideFlags: 0

@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 271552197942034140}
   - component: {fileID: 4979802137480751949}
   - component: {fileID: -7050323429712945673}
+  - component: {fileID: 6304495945418608967}
   m_Layer: 0
   m_Name: AmmoSpawner8
   m_TagString: Untagged
@@ -327,3 +328,25 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &6304495945418608967
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6453287408288920060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: AmmoPack Dispenser (Small)
+  Body: Spawns eight AmmoPack pickups, which restore unit ammo.
+  Stats: []
+  AmmoCost: +800
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 0

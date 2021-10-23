@@ -20,7 +20,7 @@ public class UnitSlotController : MonoBehaviour
     public Image ClassSymbol;
     public UIStatusBarController HealthBar;
     public UIStatusBarController AmmoBar;
-    
+    public ToolTipContentController ToolTip;
     #endregion
     #region private fields
     private Button button;
@@ -63,6 +63,11 @@ public class UnitSlotController : MonoBehaviour
             ClassSymbol.sprite = Data.CurrentUnit.Symbol;
             //update selection state
             SelectionIndicator.SetActive(unitData.IsSelected);
+
+            //update tooltip
+            ToolTip.Clear();
+            ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + ClassNameLabel.text;
+            ToolTip.Body = "Displays status of unit assigned to slot.  Select the slot to select the unit.";
         }
         else
         {
@@ -76,6 +81,15 @@ public class UnitSlotController : MonoBehaviour
             //TODO: update class name, symbol, and portrait with next unit (Pending spawn switching)
             //hide selection state
             SelectionIndicator.SetActive(false);
+
+            //update tooltip
+            ToolTip.Clear();
+            ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + ClassNameLabel.text;
+            ToolTip.Body = "Unit will respawn at spawn point shortly...";
+            ToolTip.Stats = new string[]
+            {
+                string.Format("Respawning... {0}%", (int)Mathf.Min(Data.RespawnProgress * 100, 100))
+            };
         }
     }
     #endregion

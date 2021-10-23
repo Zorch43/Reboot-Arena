@@ -51,6 +51,9 @@ public class ActionPanelController : MonoBehaviour
             abilityButton.Text.text = specialAbility.Name;
             abilityButton.gameObject.SetActive(false);
             abilityButtons.Add(abilityButton);
+            abilityButton.ToolTip.Header = specialAbility.Name;
+            abilityButton.ToolTip.Body = specialAbility.Description;
+            abilityButton.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
         }
     }
 

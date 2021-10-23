@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 932215067467779274}
   - component: {fileID: 2868409772712749226}
   - component: {fileID: 3873759798958733781}
+  - component: {fileID: -1042899436920484449}
   m_Layer: 5
   m_Name: UnitSlot
   m_TagString: Untagged
@@ -103,6 +104,7 @@ MonoBehaviour:
   ClassSymbol: {fileID: 1476863927896573385}
   HealthBar: {fileID: 6772418921950673925}
   AmmoBar: {fileID: 2066876093410717440}
+  ToolTip: {fileID: -1042899436920484449}
 --- !u!114 &3873759798958733781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,6 +149,28 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &-1042899436920484449
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 932215067467779272}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: 
+  Body: 
+  Stats: []
+  AmmoCost: 
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 1
 --- !u!1 &1208751503260709112
 GameObject:
   m_ObjectHideFlags: 0

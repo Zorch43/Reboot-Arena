@@ -88,6 +88,7 @@ GameObject:
   - component: {fileID: 3492312257154594671}
   - component: {fileID: 1054914971817613207}
   - component: {fileID: 529258818010193739}
+  - component: {fileID: 3630309584759194246}
   m_Layer: 5
   m_Name: ActionMenuItem
   m_TagString: Untagged
@@ -212,6 +213,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Button: {fileID: 1054914971817613207}
   Text: {fileID: 3492312258319185012}
+  ToolTip: {fileID: 3630309584759194246}
+--- !u!114 &3630309584759194246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3492312257154594657}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: 
+  Body: 
+  Stats: []
+  AmmoCost: 
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 0
 --- !u!1 &3492312258319185014
 GameObject:
   m_ObjectHideFlags: 0

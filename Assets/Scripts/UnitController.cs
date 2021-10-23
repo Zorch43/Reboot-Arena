@@ -36,6 +36,7 @@ public class UnitController : MonoBehaviour
     public VariableEffect HealEffect;
     public VariableEffect ReloadEffect;
     public SpecialEffectController DeathExplosion;
+    public ToolTipContentController ToolTip;
     public MeshRenderer[] TeamColorParts;
     
     #endregion
@@ -101,14 +102,16 @@ public class UnitController : MonoBehaviour
         DoWeaponCooldown(elapsedTime);
         DoUnitAction();
 
-        //TODO; move unit status elements to UI layer
-        //keep unit effects on unit (maybe as partical effects?)
-        //UnitEffects.transform.rotation = initialRotation;//reset rotation of unit effect sprites
         UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
         MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
+
         //update resource bars
         HealthBar.UpdateBar(Data.UnitClass.MaxHP, Data.HP);
         AmmoBar.UpdateBar(Data.UnitClass.MaxMP, Data.MP);
+
+        //update tooltip
+        UpdateTooltip();
+
         if(Data.HP <= 0)
         {
             Kill();
@@ -597,6 +600,21 @@ public class UnitController : MonoBehaviour
         particleMain.startColor = color;
         var particleRespawn = RespawnEffect.main;
         particleRespawn.startColor = color;
+    }
+    private void UpdateTooltip()
+    {
+        ToolTip.Header = Data.UnitClass.Name;
+        ToolTip.Body = Data.UnitClass.Description;
+        var primaryWeapon = Data.UnitClass.PrimaryWeapon;
+        var secondaryWeapon = Data.UnitClass.SecondaryWeapon;
+        ToolTip.Stats = new string[]
+        {
+            string.Format("Primary Weapon: {0} ({1} damage, {2}/s)", primaryWeapon.Name, primaryWeapon.Damage, 1/primaryWeapon.Cooldown),
+            string.Format("Secondary Weapon: {0} ({1} damage, {2}/s)", secondaryWeapon.Name, secondaryWeapon.Damage, 1/secondaryWeapon.Cooldown),
+            string.Format("Special Ability: {0}", Data.UnitClass.SpecialAbility.Name)
+        };
+        ToolTip.AmmoCost = Data.MP + "/" + Data.UnitClass.MaxMP;
+        ToolTip.HealthCost = Data.HP + "/" + Data.UnitClass.MaxHP;
     }
     #endregion
 

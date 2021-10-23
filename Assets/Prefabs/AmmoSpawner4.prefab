@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7392432203811994316}
   - component: {fileID: 3193706341322605662}
   - component: {fileID: -2494606401466364000}
+  - component: {fileID: 5057738625396136221}
   m_Layer: 0
   m_Name: AmmoSpawner4
   m_TagString: Untagged
@@ -163,6 +164,28 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &5057738625396136221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2684458395968159717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9313000de92fb404798c980f2fe5cc82, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Header: AmmoPack Dispenser (Large)
+  Body: Spawns four AmmoPack pickups, which restore unit ammo.
+  Stats: []
+  AmmoCost: +400
+  HealthCost: 
+  MainShortcut: 0
+  AltShortcutType: 
+  AltShortcut: 0
+  UseKeyBindData: 0
+  Updates: 0
 --- !u!1 &2900362380363366296
 GameObject:
   m_ObjectHideFlags: 0

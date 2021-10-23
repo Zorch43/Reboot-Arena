@@ -14,6 +14,7 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitClassModel()
             {
                 Name = "Trooper",
+                Description = "Genralist frontliner, adept at both attacking and holding points.",
                 MaxHP = 400,
                 MaxMP = 100,
                 MoveSpeed = 1,
