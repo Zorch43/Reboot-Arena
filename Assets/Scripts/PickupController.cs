@@ -6,11 +6,12 @@ using UnityEngine;
 public abstract class PickupController : MonoBehaviour
 {
     #region constants
-    const float MIN_ARC_HEIGHT = .64f;
-    const float MAX_ARC_HEIGHT = 2;
+    const float MIN_ARC_HEIGHT = .32f;
+    const float MAX_ARC_HEIGHT = .64f;
     const float MIN_SCATTER_RADIUS = .32f;
-    const float MAX_SCATTER_RADIUS = .96f;
+    const float MAX_SCATTER_RADIUS = .64f;
     const float DECAY_TIME = 20;
+    const float RE_COLLIDE_TIMER = 1f;
     #endregion
     #region public fields
     public SoundPointController SoundPointTemplate;
@@ -18,6 +19,9 @@ public abstract class PickupController : MonoBehaviour
     #endregion
     #region private fields
     private float decayTimer;
+    private float lastCollision = 0;
+    private BoxCollider boxCollider;
+    private List<Collider> ignoredColliders = new List<Collider>();
     #endregion
     #region properties
 
@@ -27,15 +31,29 @@ public abstract class PickupController : MonoBehaviour
     void Start()
     {
         decayTimer = DECAY_TIME;
+        boxCollider = GetComponent<BoxCollider>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        decayTimer -= Time.deltaTime;
+        float deltaTime = Time.deltaTime;
+        decayTimer -= deltaTime;
         if (decayTimer <= 0)
         {
             Destroy(gameObject);
+        }
+        //re-enable collisions
+        lastCollision += deltaTime;
+        if (lastCollision >= RE_COLLIDE_TIMER)
+        {
+            foreach (var c in ignoredColliders)//reset ignored colliders
+            {
+                if(c != null)
+                {
+                    Physics.IgnoreCollision(c, boxCollider, false);
+                }
+            }
         }
     }
     private void OnCollisionEnter(Collision collision)
@@ -43,7 +61,9 @@ public abstract class PickupController : MonoBehaviour
         var unit = collision.collider.GetComponent<UnitController>();
         if (unit != null)
         {
-            Physics.IgnoreCollision(collision.collider, GetComponent<Collider>());
+            lastCollision = 0;
+            Physics.IgnoreCollision(collision.collider, boxCollider);
+            ignoredColliders.Add(collision.collider);
             //check whether the pickup effect can be applied to that unit
             if (CanApplyEffectToUnit(unit))
             {
@@ -56,6 +76,7 @@ public abstract class PickupController : MonoBehaviour
             }
         }
     }
+
     #endregion
     #region public methods
     public abstract bool CanApplyEffectToUnit(UnitController unit);
