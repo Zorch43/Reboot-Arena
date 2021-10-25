@@ -11,16 +11,56 @@ namespace Assets.Scripts.Data_Templates
     {
         public static WeaponModel CreateAssaultRifle()
         {
+            //accurate, needs no ammo, can fire on the move
             var weapon = new WeaponModel()
             {
-                Name = "Assault Rifle",
+                Name = "Assault Rifle (Semi-Auto)",
                 Cooldown = .5f,
                 Damage = 10,
                 DamageFalloff = 0.25f,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
                 CanAutoAttack = true,
                 FireWhileMoving = true,
-                ProjectileSpeed = 6.4f
+                ProjectileSpeed = 20f,
+                ProjectileStartSize = .05f,
+                ProjectileEndSize = .05f
+            };
+            return weapon;
+        }
+        public static WeaponModel CreateMachineGun()
+        {
+            //inaccurate, long-range, rapid fire.  can't fire while moving, uses ammo
+            var weapon = new WeaponModel()
+            {
+                Name = "Assault Rifle (Full Auto)",
+                Cooldown = .2f,
+                Damage = 10,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_LONG,
+                ProjectileSpeed = 20f,
+                InAccuracy = 10,
+                CanAutoAttack = true,
+                AmmoCost = 2,
+                ProjectileStartSize = .05f,
+                ProjectileEndSize = .05f
+            };
+            return weapon;
+        }
+        public static WeaponModel CreateFragGrenade()
+        {
+            //lobbed explosive.  uses a lot of ammo
+            var weapon = new WeaponModel()
+            {
+                Name = "Frag Grenade",
+                Cooldown = 1,
+                Damage = 50,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
+                Explodes = true,
+                ExplosionSize = 2f,
+                ArcingAttack = true,
+                ProjectileSpeed = 3.2f,
+                ProjectileStartSize = .1f,
+                ProjectileEndSize = .1f,
+                AmmoCost = 100
             };
             return weapon;
         }
@@ -40,24 +80,7 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
-        public static WeaponModel CreateFragGrenade()
-        {
-            var weapon = new WeaponModel()
-            {
-                Name = "Frag Grenade",
-                Cooldown = 2,
-                Damage = 100,
-                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
-                Explodes = true,
-                ExplosionSize = 0.64f,
-                ArcingAttack = true,
-                ProjectileSpeed = 3.2f,
-                ProjectileStartSize = .08f,
-                ProjectileEndSize = .08f,
-                AmmoCost = 100
-            };
-            return weapon;
-        }
+        
         //test piercing walls
         public static WeaponModel CreateRailgun()
         {
@@ -112,21 +135,8 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
-        //test projectile inaccuracy
-        public static WeaponModel CreateMinigun()
-        {
-            var weapon = new WeaponModel()
-            {
-                Name = "Minigun",
-                Cooldown = .1f,
-                Damage = 4,
-                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
-                ProjectileSpeed = 6.4f,
-                InAccuracy = 10,
-                CanAutoAttack = true
-            };
-            return weapon;
-        }
+        
+        
         //melee weapon
         public static WeaponModel CreateBuzzSaw()
         {

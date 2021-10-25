@@ -6,8 +6,8 @@ using UnityEngine.UI;
 public class CameraController : MonoBehaviour
 {
     #region constants
-    public const float SCROLL_ZONE_WIDTH = 16;
-    public const float SCROLL_SPEED = 3.2f;
+    public const float SCROLL_ZONE_WIDTH = 20;
+    public const float SCROLL_SPEED = 10f;
     #endregion
     #region public fields
     public Camera Camera;
@@ -34,8 +34,7 @@ public class CameraController : MonoBehaviour
     }
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
 

@@ -11,7 +11,7 @@ public class UnitController : MonoBehaviour
 {
     #region constants
     private const float PERSONAL_SPACE = 0.02f;
-    private const float ORDER_RADIUS = 0.32f;
+    private const float ORDER_RADIUS = 1f;
     #endregion
     #region public fields
     public GameObject UnitAppearance;
@@ -42,7 +42,8 @@ public class UnitController : MonoBehaviour
     #endregion
     #region private fields
     private Quaternion initialRotation;
-    private float hitBoxSize = 0.16f;
+    private float hitBoxSize;
+    private new SphereCollider collider;
     private float zoneMultiplier = 1;
     #endregion
     #region properties
@@ -76,7 +77,8 @@ public class UnitController : MonoBehaviour
         {
             Data.Team = Team;
         }
-
+        collider = GetComponent<SphereCollider>();
+        hitBoxSize = collider.radius;
         //TEMP: set teamcolor
         Recolor(Data.Team);
         MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
@@ -86,7 +88,6 @@ public class UnitController : MonoBehaviour
     void Update()
     {
         float elapsedTime = Time.deltaTime;
-        var collider = GetComponent<SphereCollider>();
         //update selection state
         Selector.gameObject.SetActive(Data.IsSelected);
 

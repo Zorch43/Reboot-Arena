@@ -7,8 +7,8 @@ using UnityEngine;
 public class SpawnPointController : MonoBehaviour
 {
     #region constants
-    private const float FREE_SPACE_RADUS = 0.16f;
-    private const float SEARCH_GRID_SIZE = 0.08f;
+    private const float FREE_SPACE_RADUS = 0.5f;
+    private const float SEARCH_GRID_SIZE = 0.125f;
     #endregion
     #region public fields
     public SpriteRenderer TeamColor;
@@ -117,7 +117,7 @@ public class SpawnPointController : MonoBehaviour
                 {
                     //spiral out
                     nextNeighbor.z += 1;
-                    if (nextNeighbor.z == 10)
+                    if (nextNeighbor.z == 100)
                     {
                         Debug.LogError("Could not find free space to spawn unit");
                         break;

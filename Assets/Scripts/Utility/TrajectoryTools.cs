@@ -9,7 +9,7 @@ namespace Assets.Scripts.Utility
 {
     public static class TrajectoryTools
     {
-        public const float MIN_ARC_HEIGHT = 2f;
+        public const float MIN_ARC_HEIGHT = 3f;
         /// <summary>
         /// Get the firing velocity that will result in a parabolic arc that conforms to restrictions
         /// </summary>

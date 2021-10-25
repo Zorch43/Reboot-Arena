@@ -14,13 +14,13 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitClassModel()
             {
                 Name = "Trooper",
-                Description = "Genralist frontliner, adept at both attacking and holding points.",
-                MaxHP = 400,
-                MaxMP = 100,
-                MoveSpeed = 1,
+                Description = "Generalist frontliner, adept at both attacking and holding points.",
+                MaxHP = 500,
+                MaxMP = 200,
+                MoveSpeed = 3,
                 TurnSpeed = 12,
-                PrimaryWeapon = WeaponTemplates.CreateAssaultRifle(),
-                SecondaryWeapon = WeaponTemplates.CreateShotGun(),
+                PrimaryWeapon = WeaponTemplates.CreateMachineGun(),
+                SecondaryWeapon = WeaponTemplates.CreateAssaultRifle(),
                 SpecialAbility = UnitAbilityTemplates.CreateFragGrenade()
             };
             return template;
