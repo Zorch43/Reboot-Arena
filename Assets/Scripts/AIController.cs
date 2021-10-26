@@ -12,6 +12,7 @@ public class AIController : MonoBehaviour
     const float TACTICAL_ACTION_PROBABILITY = 1;
     const float MASS_TACTICAL_ACTION_PROBABILITY = TACTICAL_ACTION_PROBABILITY * 0.25f;
     const float ENGAGE_DISTANCE = 15;
+    const float CAPTURE_DISTANCE = 6;
     const float WEAK_ENEMY_HP = 200;//focus fire on enemies with health below 200
     const float RETREAT_HP = 150;//start retreating to base if health falls below 150
     const float SEEK_HEALING_HP = .5f;//seek healing at half health
@@ -75,30 +76,31 @@ public class AIController : MonoBehaviour
                 //get all units
                 var allUnits = Map.GetComponentsInChildren<UnitController>();
 
-                //score possible strategic actions:
+                ////score possible strategic actions:
 
-                //rush objective
-                float rushScore = ScoreRushPoint(allUnits);
-                //retreat
-                float retreatScore = ScoreRetreatFromPoint(allUnits);
-                //mass tactical
-                float massTacticalScore = ScoreMassTactical(allUnits);
+                ////rush objective
+                //float rushScore = ScoreRushPoint(allUnits);
+                ////retreat
+                //float retreatScore = ScoreRetreatFromPoint(allUnits);
+                ////mass tactical
+                //float massTacticalScore = ScoreMassTactical(allUnits);
 
-                //do best scoring action
-                if (rushScore >= retreatScore && rushScore >= massTacticalScore)
-                {
-                    //rush the point
-                    DoRush(allUnits);
-                }
-                else if(retreatScore >= massTacticalScore && retreatScore >= rushScore)
-                {
-                    //retreat from point
-                    DoRetreat(allUnits);
-                }
-                else
-                {
-                    DoMassTactical(allUnits);
-                }
+                ////do best scoring action
+                //if (rushScore >= retreatScore && rushScore >= massTacticalScore)
+                //{
+                //    //rush the point
+                //    DoRush(allUnits);
+                //}
+                //else if(retreatScore >= massTacticalScore && retreatScore >= rushScore)
+                //{
+                //    //retreat from point
+                //    DoRetreat(allUnits);
+                //}
+                //else
+                //{
+                //    DoMassTactical(allUnits);
+                //}
+                DoStrategicMovement(allUnits);
             }
         }
 
@@ -186,7 +188,7 @@ public class AIController : MonoBehaviour
             Score = abilityScore,
             DoAction = () =>
             {
-                Debug.Log("Tactical Order: use Ability");
+                Debug.Log("Tactical Order: Use Ability");
                 selectedUnit.DoSpecialAbility(abilityTarget);
             }
         };
@@ -231,7 +233,14 @@ public class AIController : MonoBehaviour
             }
         }
         //do best action
-        bestAction.DoAction.Invoke();
+        if(bestAction.Score >= 0.1f)
+        {
+            bestAction.DoAction.Invoke();
+        }
+        else
+        {
+            Debug.Log("No Tactical Options...");
+        }
     }
     public UnitController EngageWeakTarget(UnitController unit)
     {
@@ -278,6 +287,69 @@ public class AIController : MonoBehaviour
     #region scoring
     //action scoring methods
     //strategic actions
+    private void DoStrategicMovement(UnitController[] allUnits)
+    {
+        var objectivePoint = GameObjective.GetAIObjective();
+        var teamSpawnPoint = GameObjective.GetAISpawnPoint();
+
+        float teamPointUnits = 0;
+        float teamReserveUnits = 0;
+        float enemyPointUnits = 0;
+        float enemyReserveUnits = 0;
+
+        foreach (var u in allUnits)
+        {
+            var distanceToPoint = Vector3.Distance(objectivePoint, u.transform.position);
+            var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
+            var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
+            if (u.Data.Team == Team.Team)
+            {
+                if (travelTime < 1)
+                {
+                    teamPointUnits++;
+                }
+                else
+                {
+                    teamReserveUnits += 1 / travelTime;
+                }
+            }
+            else
+            {
+                if (travelTime < 1)
+                {
+                    enemyPointUnits++;
+                }
+                else
+                {
+                    enemyReserveUnits += 1 / travelTime;
+                }
+            }
+        }
+        float objectiveScore = 1;
+        if(GameObjective.Objective.CurrOwner != Team.Team)
+        {
+            objectiveScore += 1f;
+            if(GameObjective.Objective.CurrOwner == -1)
+            {
+                objectiveScore += 1f;
+            }
+        }
+        if(teamPointUnits + teamReserveUnits + objectiveScore >= enemyPointUnits)
+        {
+            //attack
+            DoRush(allUnits);
+        }
+        else if (teamPointUnits + teamReserveUnits <= enemyPointUnits/2)
+        {
+            //retreat
+            DoRetreat(allUnits);
+        }
+        else
+        {
+            //mass tactical
+            DoMassTactical(allUnits);
+        }
+    }
     private float ScoreRushPoint(UnitController[] allUnits)
     {
         //determine the state of the objective
@@ -286,40 +358,41 @@ public class AIController : MonoBehaviour
         //if team units at point + reserve units >= enemy units at point, rush the point
         var objectivePoint = GameObjective.GetAIObjective();
 
-        int teamPointUnits = 0;
-        int teamReserveUnits = 0;
-        int enemyPointUnits = 0;
-        float score = 1;//prioritize attacking
+        float score = 0;
 
         foreach(var u in allUnits)
         {
             var distanceToPoint = Vector3.Distance(objectivePoint, u.transform.position);
-            var moveDistance = Mathf.Min(distanceToPoint - ENGAGE_DISTANCE, 0);
+            var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
             var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
             if (u.Data.Team == Team.Team)
             {
                 if(travelTime < 1)
                 {
-                    teamPointUnits++;
+                    score++;
                 }
                 else
                 {
-                    teamReserveUnits++;
+                    score += 1/travelTime;
                 }
             }
             else
             {
                 if(travelTime < 1)
                 {
-                    enemyPointUnits++;
+                    score--;
+                }
+                else
+                {
+                    score -= 1 / travelTime;
                 }
             }
         }
-
-        score += teamPointUnits;
-        score += teamReserveUnits;
-        score -= enemyPointUnits;
-        //TODO: prioritize getting on the point if the point is in transisition
+        //prioritize getting on the point if the point is not owned
+        if(GameObjective.Objective.CurrOwner != Team.Team)
+        {
+            score += 1;
+        }
 
         return score;
     }
@@ -334,12 +407,12 @@ public class AIController : MonoBehaviour
         int teamPointUnits = 0;
         int teamReserveUnits = 0;
         int enemyPointUnits = 0;
-        float score = 0;
+        float score = 1;
 
         foreach (var u in allUnits)
         {
             var distanceToPoint = Vector3.Distance(objectivePoint, u.transform.position);
-            var moveDistance = Mathf.Min(distanceToPoint - ENGAGE_DISTANCE, 0);
+            var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
             var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
             if (u.Data.Team == Team.Team)
             {
@@ -363,7 +436,7 @@ public class AIController : MonoBehaviour
 
 
         score += enemyPointUnits;
-        score -= teamPointUnits * 2;
+        score /= 2 * teamPointUnits + 1;
 
         return score;
     }
@@ -379,7 +452,7 @@ public class AIController : MonoBehaviour
         foreach (var u in allUnits)
         {
             var distanceToPoint = Vector3.Distance(objectivePoint, u.transform.position);
-            var moveDistance = Mathf.Min(distanceToPoint - ENGAGE_DISTANCE, 0);
+            var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
             var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
             if (u.Data.Team == Team.Team)
             {
@@ -412,24 +485,43 @@ public class AIController : MonoBehaviour
     {
         targetUnit = null;
         float score = 0;
-
-        foreach(var u in allUnits)
+        var primaryWeapon = unit.Data.UnitClass.PrimaryWeapon;
+        foreach (var u in allUnits)
         {
             if(u.Data.Team != Team.Team)
             {
+                float distanceToTarget = Vector3.Distance(u.transform.position, unit.transform.position);
                 float targetScore = 0;
                 //score target
                 //prefer targets within (true) line-of-sight
-                if (unit.HasLineOfSight(u.transform.position))
+                if (unit.HasLineOfSight(u.transform.position, true))
                 {
-                    targetScore += 1;
+
+                    if (distanceToTarget <= ENGAGE_DISTANCE)
+                    {
+                        targetScore += 1f;
+                    }
+                    if (distanceToTarget <= unit.Data.UnitClass.PrimaryWeapon.MaxRange 
+                        || distanceToTarget <= unit.Data.UnitClass.SecondaryWeapon.MaxRange)//TODO: get more accurate active weapon
+                    {
+                        targetScore += 1f;
+                    }
                 }
                 //prefer close units
                 targetScore += (ENGAGE_DISTANCE - Vector3.Distance(u.transform.position, unit.transform.position))/ENGAGE_DISTANCE;
                 //prefer units with low health
                 targetScore += 1 - u.Data.HP / 500;
+                //prefer units near death
+                float unitsKilled = 0;
+                if (primaryWeapon.Damage/primaryWeapon.Cooldown >= u.Data.HP)
+                {
+                    unitsKilled += 1;
+                }
 
-                if(targetUnit == null || targetScore > score)
+                targetScore += unitsKilled * primaryWeapon.Damage/primaryWeapon.Cooldown / 100;
+                //targetScore -= primaryWeapon.AmmoCost / primaryWeapon.Cooldown;
+
+                if (targetUnit == null || targetScore > score)
                 {
                     targetUnit = u;
                     score = targetScore;
@@ -437,7 +529,7 @@ public class AIController : MonoBehaviour
             }
         }
         //make final weight adjustments
-        score /= 4;//number of conditions
+        //score /= 4;//number of conditions
         return score;
     }
     private float ScoreFragGrenade(UnitController unit, UnitController[] allUnits, out Vector3 targetLocation)
@@ -445,33 +537,59 @@ public class AIController : MonoBehaviour
         bool hasTarget = false;
         targetLocation = new Vector3();
         float score = 0;
-        if(unit.Data.MP >= unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+        var abilityWeapon = unit.Data.UnitClass.SpecialAbility.AbilityWeapon;
+        float engageDistance = 2 * unit.Data.UnitClass.MoveSpeed + abilityWeapon.MaxRange;
+        if (unit.Data.MP >= unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
         {
             foreach (var u in allUnits)
             {
                 if (u.Data.Team != Team.Team)
                 {
+                    
                     float targetScore = 0;
+                    float distanceToTarget = Vector3.Distance(u.transform.position, unit.transform.position);
                     //score target
-                    //prefer targets within (true) line-of-sight
-                    if (unit.HasLineOfSight(u.transform.position))
+                    //prefer targets within (true) line-of-sight, and in range
+                    if (unit.HasLineOfSight(u.transform.position, true))
                     {
-                        targetScore += 1;
+                        if (distanceToTarget <= engageDistance)
+                        {
+                            targetScore += 1f;
+                        }
+                        if (distanceToTarget <= abilityWeapon.MaxRange)
+                        {
+                            targetScore += 1f;
+                        }
                     }
                     //prefer close units
-                    targetScore += (ENGAGE_DISTANCE - Vector3.Distance(u.transform.position, unit.transform.position))/ENGAGE_DISTANCE;
+                    
+                    targetScore += (engageDistance - Vector3.Distance(u.transform.position, unit.transform.position))/engageDistance;
                     //prefer units with low health
                     targetScore += 1 - u.Data.HP / 500;
+                    //prefer units near death
+                    float unitsKilled = 0;
+                    if(abilityWeapon.Damage >= u.Data.HP)
+                    {
+                        unitsKilled += 1;
+                    }
+
                     //prefer targets with other units close to them
+                    float targetsHit = 0;//don't count the main target
                     foreach(var o in allUnits)
                     {
                         if(o.Data.Team != Team.Team && o != u 
                             && Vector3.Distance(u.transform.position, o.transform.position)
                             <= unit.Data.UnitClass.SpecialAbility.AbilityWeapon.ExplosionSize)
                         {
-                            targetScore += 0.5f;
+                            targetsHit += 0.5f;
+                            if(abilityWeapon.Damage >= o.Data.HP)
+                            {
+                                unitsKilled += .5f;
+                            }
                         }
                     }
+                    targetScore += (targetsHit + unitsKilled) * abilityWeapon.Damage / 100;
+                    //targetScore -= abilityWeapon.AmmoCost;
 
                     if (!hasTarget || targetScore > score)
                     {
@@ -482,7 +600,7 @@ public class AIController : MonoBehaviour
                 }
             }
             //make final weight adjustments
-            score /= 4;//number of conditions
+            //score /= 4;//number of normal conditions
         }
         else
         {
@@ -539,7 +657,7 @@ public class AIController : MonoBehaviour
             }
         }
 
-        score *= 2;//final weighting
+        score /= 4;//final weighting
         return score;
     }
 
@@ -589,7 +707,7 @@ public class AIController : MonoBehaviour
             }
         }
 
-        score *= 1.5f;//final weighting
+        score /= 6;//final weighting
         return score;
     }
     #endregion
