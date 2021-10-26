@@ -8,6 +8,7 @@ public class CameraController : MonoBehaviour
     #region constants
     public const float SCROLL_ZONE_WIDTH = 20;
     public const float SCROLL_SPEED = 10f;
+    const float EDGE_LINE_HEIGHT = 25;
     #endregion
     #region public fields
     public Camera Camera;
@@ -130,10 +131,10 @@ public class CameraController : MonoBehaviour
         Vector3 p2 = GetMapPointFromScreenPoint(viewRect.max);
         Vector3 p3 = GetMapPointFromScreenPoint(new Vector2(viewRect.max.x, viewRect.min.y));
 
-        p0.y = 10;
-        p1.y = 10;
-        p2.y = 10;
-        p3.y = 10;
+        p0.y = EDGE_LINE_HEIGHT;
+        p1.y = EDGE_LINE_HEIGHT;
+        p2.y = EDGE_LINE_HEIGHT;
+        p3.y = EDGE_LINE_HEIGHT;
 
         ViewBounds.SetPositions(new Vector3[] { p0, p1, p2, p3 });
 

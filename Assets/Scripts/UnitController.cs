@@ -90,7 +90,6 @@ public class UnitController : MonoBehaviour
         float elapsedTime = Time.deltaTime;
         //update selection state
         Selector.gameObject.SetActive(Data.IsSelected);
-
         if (Agent.hasPath)
         {
             collider.radius = hitBoxSize + PERSONAL_SPACE;
@@ -153,6 +152,7 @@ public class UnitController : MonoBehaviour
     {
         Data = new UnitModel(UnitClassTemplates.GetTrooperClass());//TEMP: decide on either model-first or gameobject first
         Data.Team = team;
+        Agent.enabled = false;//disable the agent while manually placing the unit
         transform.position = position;
         SpawnSlot = slot;
         SpawnSlot.CurrentUnit = this;
@@ -171,8 +171,8 @@ public class UnitController : MonoBehaviour
         DeathActions.Add(DoDeathExplosion);
 
         //if unit has a rally point, issue a move order to the rally point
-        //Agent.SetDestination(slot.RallyPoint ?? transform.position);
-        DoMove(slot.RallyPoint ?? transform.position, true);
+        Agent.enabled = true;
+        DoMove(slot.RallyPoint ?? transform.position, false);
     }
     public UnitModel GetData()
     {

@@ -6,11 +6,12 @@ using UnityEngine;
 public class AIController : MonoBehaviour
 {
     #region constants
-    const float STRATEGY_ACTION_SPEED = 3;//delay between strategic actions
+    const float STRATEGY_ACTION_SPEED = 5;//delay between strategic actions
     const float STRATEGY_ACTION_PROBABILITY = 1;
-    const float TACTICAL_ACTION_SPEED = 1f;//delay between tactical actions
+    const float TACTICAL_ACTION_SPEED = 2f;//delay between tactical actions
     const float TACTICAL_ACTION_PROBABILITY = 1;
-    const float ENGAGE_DISTANCE = 5;
+    const float MASS_TACTICAL_ACTION_PROBABILITY = TACTICAL_ACTION_PROBABILITY * 0.25f;
+    const float ENGAGE_DISTANCE = 15;
     const float WEAK_ENEMY_HP = 200;//focus fire on enemies with health below 200
     const float RETREAT_HP = 150;//start retreating to base if health falls below 150
     const float SEEK_HEALING_HP = .5f;//seek healing at half health
@@ -507,9 +508,9 @@ public class AIController : MonoBehaviour
                 //score health
                 float targetScore = 0;
                 //prioritize proximity (by movement speed)
-                targetScore += 3 - Vector3.Distance(unit.transform.position, d.transform.position) / unit.Data.UnitClass.MoveSpeed;
+                float moveScore = Vector3.Distance(unit.transform.position, d.transform.position) / unit.Data.UnitClass.MoveSpeed + 1;
                 //prioritize magnitude - up to max missing health
-                targetScore += Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, d.PackCount * 100)/ 100;
+                targetScore += Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, d.PackCount * 100)/ 100 /moveScore;
                 
                 if(!hasTarget || targetScore > score)
                 {
@@ -526,9 +527,9 @@ public class AIController : MonoBehaviour
             //score health
             float targetScore = 0;
             //prioritize proximity (by movement speed)
-            targetScore += 3 - Vector3.Distance(unit.transform.position, p.transform.position) / unit.Data.UnitClass.MoveSpeed;
+            float moveScore = Vector3.Distance(unit.transform.position, p.transform.position) / unit.Data.UnitClass.MoveSpeed + 1;
             //prioritize magnitude - up to max missing health
-            targetScore += Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, 100) / 100;
+            targetScore += Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, 100) / 100 / moveScore;
 
             if (!hasTarget || targetScore > score)
             {
@@ -538,7 +539,7 @@ public class AIController : MonoBehaviour
             }
         }
 
-        score /= 4;//final weighting
+        score *= 2;//final weighting
         return score;
     }
 
@@ -559,9 +560,9 @@ public class AIController : MonoBehaviour
                 //score health
                 float targetScore = 0;
                 //prioritize proximity (by movement speed)
-                targetScore += 3 - Vector3.Distance(unit.transform.position, d.transform.position) / unit.Data.UnitClass.MoveSpeed;
+                float moveScore = Vector3.Distance(unit.transform.position, d.transform.position) / unit.Data.UnitClass.MoveSpeed + 1 ;
                 //prioritize magnitude - up to max missing health
-                targetScore += Mathf.Min(unit.Data.UnitClass.MaxMP - unit.Data.MP, d.PackCount * 100) / 100;
+                targetScore += Mathf.Min(unit.Data.UnitClass.MaxMP - unit.Data.MP, d.PackCount * 100) / 100 / moveScore;
 
                 if (!hasTarget || targetScore > score)
                 {
@@ -577,9 +578,9 @@ public class AIController : MonoBehaviour
             //score health
             float targetScore = 0;
             //prioritize proximity (by movement speed)
-            targetScore += 3 - Vector3.Distance(unit.transform.position, p.transform.position) / unit.Data.UnitClass.MoveSpeed;
+            float moveScore = Vector3.Distance(unit.transform.position, p.transform.position) / unit.Data.UnitClass.MoveSpeed + 1;
             //prioritize magnitude - up to max missing health
-            targetScore += Mathf.Min(unit.Data.UnitClass.MaxMP - unit.Data.MP, 100) / 100;
+            targetScore += Mathf.Min(unit.Data.UnitClass.MaxMP - unit.Data.MP, 100) / 100 / moveScore;
 
             if (!hasTarget || targetScore > score)
             {
@@ -588,7 +589,7 @@ public class AIController : MonoBehaviour
             }
         }
 
-        score /= 4;//final weighting
+        score *= 1.5f;//final weighting
         return score;
     }
     #endregion
@@ -634,7 +635,7 @@ public class AIController : MonoBehaviour
 
         foreach (var u in allUnits)
         {
-            if (u.Data.Team == Team.Team)
+            if (u.Data.Team == Team.Team && Random.Range(0, 1f) < MASS_TACTICAL_ACTION_PROBABILITY)
             {
                 DoTacticalAction(u, allUnits);
             }
