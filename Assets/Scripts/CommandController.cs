@@ -19,11 +19,12 @@ public class CommandController : MonoBehaviour
     }
     #endregion
     #region public fields
-    public SelectionRectController SelectionRect;
     public GameObject Map;
     public UnitSlotManager UnitSlotUI;
     public ActionPanelController UnitActionUI;
+    public SelectionRectController SelectionRect;
     public GameMenuController GameMenuUI;
+    public CameraController Cameras;
     public Texture2D AttackMoveCursor;
     public Texture2D ForceAttackCursor;
     public Texture2D SetRallyPointCursor;
@@ -48,7 +49,7 @@ public class CommandController : MonoBehaviour
     void Start()
     {
         KeyBindConfigSettings.LoadFromFile();
-        MarkerTemplate.MainCamera = Camera.main;
+        MarkerTemplate.MainCamera = Cameras.MainCamera;
     }
 
     // Update is called once per frame
@@ -56,12 +57,16 @@ public class CommandController : MonoBehaviour
     {
         var hotKeyCommand = GetKeyCommand();
         //hotKey commands
+        Vector3 mapPos = new Vector3();
 
         if(hotKeyCommand != null && hotKeyCommand.PressedKey != KeyCode.None)
         {
             if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveKey)
             {
-                GiveAttackMoveOrder(GetSelectedUnits(), GetMouseMapPosition());
+                if(GetMouseMapPosition(out mapPos))
+                {
+                    GiveAttackMoveOrder(GetSelectedUnits(), mapPos);
+                }
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveModeKey)
             {
@@ -69,7 +74,10 @@ public class CommandController : MonoBehaviour
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.ForceAttackKey)
             {
-                GiveForceAttackOrder(GetMouseMapPosition());
+                if (GetMouseMapPosition(out mapPos))
+                {
+                    GiveForceAttackOrder(mapPos);
+                }   
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.ForceAttackModeKey)
             {
@@ -81,7 +89,10 @@ public class CommandController : MonoBehaviour
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.SetRallyPointKey)
             {
-                GiveRallyOrder(GetMouseMapPosition());
+                if (GetMouseMapPosition(out mapPos))
+                {
+                    GiveRallyOrder(mapPos);
+                }
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.SetRallyPointModeKey)
             {
@@ -134,13 +145,21 @@ public class CommandController : MonoBehaviour
         }
         else
         {
+            //left-click on minimap will always pan the camera to the clicked location
+            if(Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButtonDown(0))
+            {
+                if(GetMouseMapPosition(out mapPos))
+                {
+                    Cameras.PanToMapLocation(mapPos);
+                }
+            }
             //if the command mode is normal, lmb selects, rmb peforms action
-            if (SelectedCommand == SpecialCommands.Normal || SelectedCommand == SpecialCommands.ClassMenu)
+            else if (SelectedCommand == SpecialCommands.Normal || SelectedCommand == SpecialCommands.ClassMenu)
             {
                 //selection
                 if (Input.GetMouseButtonDown(0))
                 {
-                    var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                    var ray = Cameras.MainCamera.ScreenPointToRay(Input.mousePosition);
                     RaycastHit hit;
                     UnitController selectedUnit = null;
                     if (GetRayHit(ray, out hit))
@@ -169,7 +188,11 @@ public class CommandController : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GiveAttackMoveOrder(GetSelectedUnits(), GetMouseMapPosition());
+                    if(GetMouseMapPosition(out mapPos))
+                    {
+                        GiveAttackMoveOrder(GetSelectedUnits(), mapPos);
+                    }
+                    
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
@@ -181,7 +204,10 @@ public class CommandController : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GiveForceAttackOrder(GetMouseMapPosition());
+                    if (GetMouseMapPosition(out mapPos))
+                    {
+                        GiveForceAttackOrder(mapPos);
+                    }
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
@@ -193,7 +219,10 @@ public class CommandController : MonoBehaviour
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    GiveRallyOrder(GetMouseMapPosition());
+                    if (GetMouseMapPosition(out mapPos))
+                    {
+                        GiveRallyOrder(mapPos);
+                    }
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
@@ -206,7 +235,10 @@ public class CommandController : MonoBehaviour
                 if (Input.GetMouseButtonDown(0))
                 {
                     //activate special ability
-                    GiveSpecialAbilityOrder(GetMouseMapPosition());
+                    if (GetMouseMapPosition(out mapPos))
+                    {
+                        GiveSpecialAbilityOrder(mapPos);
+                    }
                 }
                 else if (Input.GetMouseButtonDown(1))
                 {
@@ -244,12 +276,10 @@ public class CommandController : MonoBehaviour
         }
         UnitActionUI.PopulateAbilityButtons(selectedUnits);
     }
-    public void GiveOrder(Vector3 targetLocation, Camera fromCamera = null)
+    public void GiveOrder(Vector3 targetLocation)
     {
-        if(fromCamera == null)
-        {
-            fromCamera = Camera.main;
-        }
+        var fromCamera = Cameras.GetCommandCamera(targetLocation);
+
         var ray = fromCamera.ScreenPointToRay(targetLocation);
         RaycastHit hit;
         if (GetRayHit(ray, out hit))
@@ -550,7 +580,7 @@ public class CommandController : MonoBehaviour
         {
             foreach (var u in allUnits)
             {
-                var unitPoint = Camera.main.WorldToScreenPoint(u.transform.position);
+                var unitPoint = Cameras.MainCamera.WorldToScreenPoint(u.transform.position);
                 if (rect.Contains(unitPoint))
                 {
                     selectedUnits.Add(u);
@@ -581,26 +611,30 @@ public class CommandController : MonoBehaviour
 
         return hits.Length > 0;
     }
-    private Vector3 GetMapPositionFromScreen(Vector2 screenPos, Camera fromCamera = null)
+    private bool GetMapPositionFromScreen(Vector2 screenPos, out Vector3 mapPos, Camera fromCamera = null)
     {
-        if(fromCamera == null)
+        mapPos = new Vector3();
+        if (fromCamera == null)
         {
-            fromCamera = Camera.main;
+            return false;
         }
 
         var ray = fromCamera.ScreenPointToRay(screenPos);
-        Vector3 mapPos = new Vector3();
+
         RaycastHit hit;
         if(GetRayHit(ray, out hit))
         {
             mapPos = hit.point;
+            return true;
         }
-        return mapPos;
+        return false;
     }
-    private Vector3 GetMouseMapPosition(Camera fromCamera = null)
+    private bool GetMouseMapPosition(out Vector3 mapPos)
     {
-        //TODO: auto-detect which camera to use (main or minimap) based on mouse position
-        return GetMapPositionFromScreen(Input.mousePosition, fromCamera);
+        //auto-detect which camera to use (main or minimap) based on mouse position
+        var fromCamera = Cameras.GetCommandCamera(Input.mousePosition);
+        
+        return GetMapPositionFromScreen(Input.mousePosition, out mapPos, fromCamera);
     }
     private List<UnitController> GetSelectedUnits()
     {

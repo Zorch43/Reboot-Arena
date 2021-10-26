@@ -98,11 +98,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99c9455103e06314da4202d10286aa4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Camera: {fileID: 4423426330262848135}
-  Map: {fileID: 0}
-  ViewRect: {fileID: 0}
-  InitialView: {fileID: 0}
+  MainCamera: {fileID: 4423426330262848135}
+  ViewRect_Main: {fileID: 0}
+  MiniMapCamera: {fileID: 0}
+  ViewRect_Mini: {fileID: 0}
   ViewBounds: {fileID: 4423426331463357104}
+  Map: {fileID: 0}
+  InitialView: {fileID: 0}
 --- !u!82 &4423426330262848130
 AudioSource:
   m_ObjectHideFlags: 0
@@ -123,7 +125,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 4.35532
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -272,10 +274,10 @@ LineRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Positions:
-  - {x: 5, y: 10, z: -5}
-  - {x: 5, y: 10, z: 5}
-  - {x: -5, y: 10, z: 5}
-  - {x: -5, y: 10, z: -5}
+  - {x: 5, y: 30, z: -5}
+  - {x: 5, y: 30, z: 5}
+  - {x: -5, y: 30, z: 5}
+  - {x: -5, y: 30, z: -5}
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 0.16
