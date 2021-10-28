@@ -1,5 +1,6 @@
 using Assets.Scripts.Data_Models;
 using Assets.Scripts.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,6 +24,8 @@ public class ActionPanelController : MonoBehaviour
     #endregion
     #region private fields
     private List<TextButtonController> abilityButtons = new List<TextButtonController>();
+    private List<Action> disableAbilityActions = new List<Action>();
+    private List<UnitController> lastSelectedUnits;
     #endregion
     #region properties
 
@@ -54,13 +57,29 @@ public class ActionPanelController : MonoBehaviour
             abilityButton.ToolTip.Header = specialAbility.Name;
             abilityButton.ToolTip.Body = specialAbility.Description;
             abilityButton.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
+            disableAbilityActions.Add(() =>
+            {
+                if(abilityButton.gameObject.activeSelf && CanActivateAbility(lastSelectedUnits, specialAbility.Name))
+                {
+                    abilityButton.Button.interactable = true;
+                }
+                else
+                {
+                    abilityButton.Button.interactable = false;
+                    //TODO: cancel targeting?
+                }
+            });
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        //check if any abilities cannot be used due to insufficient ammo
+        foreach(var a in disableAbilityActions)
+        {
+            a.Invoke();
+        }
     }
     #endregion
     #region actions
@@ -97,6 +116,7 @@ public class ActionPanelController : MonoBehaviour
     #region public methods
     public void PopulateAbilityButtons(List<UnitController> selectedUnits)
     {
+        lastSelectedUnits = selectedUnits;
         //hide all ability buttons
         foreach(var a in abilityButtons)
         {
@@ -140,6 +160,20 @@ public class ActionPanelController : MonoBehaviour
                 break;
             }
         }
+    }
+    public bool CanActivateAbility(List<UnitController> selectedUnits, string abilityName)
+    {
+        if(selectedUnits != null)
+        {
+            foreach (var u in selectedUnits)
+            {
+                if (u.Data.UnitClass.SpecialAbility.Name == abilityName && u.Data.MP >= u.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     #endregion
     #region private methods

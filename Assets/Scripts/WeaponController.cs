@@ -43,11 +43,8 @@ public class WeaponController : MonoBehaviour
             projectile.AllyTeam = unit.Data.Team;
         }
 
-        //FiringSound.PlayOneShot(FiringSound.clip);
-        if (!FiringSound.isPlaying)
-        {
-            FiringSound.Play();//TODO: if firing speed is fast, instead loop a clip
-        }
+        FiringSound.Play();//TODO: if firing speed is fast, instead loop a clip
+
         MuzzleFlashEffect.transform.position = Barrel.transform.position;
         MuzzleFlashEffect.Play();
     }
