@@ -22,13 +22,20 @@ public class UnitSlotManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        for(int i = 0; i < SlotCount; i++)
+        if (GameObjectiveController.BattleConfig.IsPlayerSpectator)
         {
-            var unitSlot = Instantiate(UnitSlotTemplate, transform);
-            unitSlot.Manager = this;
-            unitSlot.SlotNumberLabel.text = (i + 1).ToString();
-            unitSlot.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetUnitSlotKeyBind(i + 1);
-            UnitSlots.Add(unitSlot);
+            gameObject.SetActive(false);
+        }
+        else
+        {
+            for (int i = 0; i < SlotCount; i++)
+            {
+                var unitSlot = Instantiate(UnitSlotTemplate, transform);
+                unitSlot.Manager = this;
+                unitSlot.SlotNumberLabel.text = (i + 1).ToString();
+                unitSlot.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetUnitSlotKeyBind(i + 1);
+                UnitSlots.Add(unitSlot);
+            }
         }
     }
 

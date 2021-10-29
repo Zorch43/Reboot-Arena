@@ -1,3 +1,4 @@
+using Assets.Scripts.Data_Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,9 @@ public class GameObjectiveController : MonoBehaviour
     #region constants
     private const float COUNTDOWN_TIME = 180;//point must be held for 3 minutes to win
     #endregion
+    #region static fields
+    public static BattleConfigModel BattleConfig;
+    #endregion
     #region public fields
     public GameMenuController GameMenu;
     public CapturePointController Objective;//capture point that teams are fighting over
@@ -14,31 +18,86 @@ public class GameObjectiveController : MonoBehaviour
     public KotHTimerController GameStatusUI;//the prefab to add to the ui;
     public GameObject VictoryStateUI;//ui that displays victory message
     public GameObject DefeatStateUI;//ui that displays defeat message
-    public TeamController PlayerTeam;
-    public TeamController AITeam;
+
+    public SpawnPointController[] SpawnPoints;//list of all starting spawn points
+    public UnitSlotManager PlayerSlotManager;//need this referenced here to apply to player-controlled teams
+    public ActionPanelController PlayerUnitActions;
+    public TeamController PlayerTeamTemplate;
+    public TeamController AITeamTemplate;
+
+    public MapController Map;
+    public CommandController CommandInterface;
+    
     #endregion
     #region private fields
-    private int team1;
-    private int team2;
+
     private KotHTimerController timers;
     #endregion
     #region properties
+    public List<TeamController> Teams { get; set; } = new List<TeamController>();
 
     #endregion
     #region unity methods
+    private void Awake()
+    {
+        if (BattleConfig == null)
+        {
+            BattleConfig = new BattleConfigModel()
+            {
+                Players = new List<PlayerConfigModel>()
+                {
+                    new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.AI, TeamId = 0},
+                    new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.AI, TeamId = 1}
+                }
+            };
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
-        //set teams
-        team1 = PlayerTeam.Team;
-        team2 = AITeam.Team;
+        
+        if (!BattleConfig.IsValidConfig)
+        {
+            Debug.LogError("Not a valid battle config!");
+        }
+
+        //create teams based on battle config
+        bool spectator = BattleConfig.IsPlayerSpectator;
+        for(int i = 0; i < SpawnPoints.Length; i++)
+        {
+            var teamConfig = BattleConfig.Players[i];
+            TeamController team = null;
+            if(teamConfig.Controller == PlayerConfigModel.ControlType.AI)
+            {
+                team = Instantiate(AITeamTemplate, transform);
+                
+                var ai = team.GetComponent<AIController>();
+                ai.GameObjective = this;
+                //TODO: remove these references?
+                ai.Map = Map;
+                ai.CommandInterface = CommandInterface;
+                if (!spectator)
+                {
+                    team.HideUnitUI = true;
+                }
+            }
+            else if(teamConfig.Controller == PlayerConfigModel.ControlType.Player)
+            {
+                team = Instantiate(PlayerTeamTemplate, transform);
+                team.UnitSlotManager = PlayerSlotManager;
+                PlayerUnitActions.PlayerTeam = team;
+            }
+            team.Team = teamConfig.TeamId;
+            team.DefaultSpawnPoint = SpawnPoints[i];
+            Teams.Add(team);
+        }
 
         //add timers to UI
         timers = Instantiate(GameStatusUI, GameStateUI.transform);
         //timers.gameObject.transform.position = GameStateUI.transform.position;
 
         //setup timers
-        timers.Setup(COUNTDOWN_TIME, team1, team2);
+        timers.Setup(COUNTDOWN_TIME, Teams[0].Team, Teams[1].Team);
     }
 
     // Update is called once per frame
@@ -53,7 +112,14 @@ public class GameObjectiveController : MonoBehaviour
             //check for holding team's victory - countdown completed, AND in complete control of the point
             if(!GameMenu.gameObject.activeSelf && remainingTime <= 0 && Objective.CaptureProgress >= 1)
             {
-                if(holdingTeam == team1)
+                var playerTeam = BattleConfig.PlayerTeam;
+                if(playerTeam == null)
+                {
+                    //AI has won against AI, display victory message
+                    VictoryStateUI.SetActive(true);
+                    GameMenu.ShowMenu(true);
+                }
+                else if (holdingTeam == playerTeam?.TeamId)
                 {
                     //player has won, display victory message
                     VictoryStateUI.SetActive(true);
@@ -61,7 +127,7 @@ public class GameObjectiveController : MonoBehaviour
                 }
                 else
                 {
-                    //AI has won, display defeat message
+                    //AI has won againts player, display defeat message
                     DefeatStateUI.SetActive(true);
                     GameMenu.ShowMenu(true);
                 }
@@ -75,9 +141,18 @@ public class GameObjectiveController : MonoBehaviour
     {
         return Objective.transform.position;
     }
-    public Vector3 GetAISpawnPoint()
+    public Vector3 GetAISpawnPoint(int team)
     {
-        return AITeam.SpawnPoint.transform.position;
+        for(int i = 0; i < Teams.Count; i++)
+        {
+            if(Teams[i].Team == team)
+            {
+                return Teams[i].SpawnPoint.transform.position;
+            }
+        }
+        Debug.LogError("Spawn point for team " + team + " not found!");
+        return new Vector3();
+        
     }
     #endregion
     #region private methods

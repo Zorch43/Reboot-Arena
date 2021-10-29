@@ -47,14 +47,22 @@ public class CameraController : MonoBehaviour
     #region unity methods
     void Awake()
     {
+        bool isSpectating = GameObjectiveController.BattleConfig.IsPlayerSpectator;
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
 
         //set non-scrollable screen area
         var buffer = new Vector2(SCROLL_ZONE_WIDTH, SCROLL_ZONE_WIDTH);
         scrollRect = new Rect(screenRect.min + buffer, screenRect.size - 2 * buffer);
-
-        //set main camera viewport dimensions
-        viewRectMain = SetupCameraSpace(MainCamera, ViewRect_Main);
+        if (!isSpectating)
+        {
+            //set main camera viewport dimensions
+            viewRectMain = SetupCameraSpace(MainCamera, ViewRect_Main);
+        }
+        else
+        {
+            viewRectMain = screenRect;
+            MainCamera.rect = new Rect(0, 0, 1, 1);//full screen
+        }
 
         //set minimap camera viewport dimensions
         viewRectMini = SetupCameraSpace(MiniMapCamera, ViewRect_Mini);
@@ -119,13 +127,13 @@ public class CameraController : MonoBehaviour
     }
     public Camera GetCommandCamera(Vector2 mousePos)
     {
-        if (IsPointInMainMapBounds(mousePos))
-        {
-            return MainCamera;
-        }
-        else if (IsPointInMiniMapBounds(mousePos))
+        if (IsPointInMiniMapBounds(mousePos))
         {
             return MiniMapCamera;
+        }
+        else if (IsPointInMainMapBounds(mousePos))
+        {
+            return MainCamera;
         }
         return null;
     }

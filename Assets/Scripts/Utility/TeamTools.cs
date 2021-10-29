@@ -37,5 +37,19 @@ namespace Assets.Scripts.Utility
                     return Color.grey;
             }
         }
+
+        public static List<int> GetRandomTeams(int teamCount)
+        {
+            var teamList = new List<int>() { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            List<int> pickedTeams = new List<int>();
+            for(int i = 0; i < teamCount; i++)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, teamList.Count - 1);
+                pickedTeams.Add(teamList[randomIndex]);
+                teamList.RemoveAt(randomIndex);
+            }
+
+            return pickedTeams;
+        }
     }
 }

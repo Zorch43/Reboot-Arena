@@ -6,11 +6,11 @@ using UnityEngine;
 public class AIController : MonoBehaviour
 {
     #region constants
-    const float STRATEGY_ACTION_SPEED = 5;//delay between strategic actions
+    const float STRATEGY_ACTION_SPEED = 3;//delay between strategic actions
     const float STRATEGY_ACTION_PROBABILITY = 1;
-    const float TACTICAL_ACTION_SPEED = 2f;//delay between tactical actions
+    const float TACTICAL_ACTION_SPEED = 1f;//delay between tactical actions
     const float TACTICAL_ACTION_PROBABILITY = 1;
-    const float MASS_TACTICAL_ACTION_PROBABILITY = TACTICAL_ACTION_PROBABILITY * 0.25f;
+    const float MASS_TACTICAL_ACTION_PROBABILITY = TACTICAL_ACTION_PROBABILITY * 1f;
     const float ENGAGE_DISTANCE = 15;
     const float CAPTURE_DISTANCE = 6;
     const float WEAK_ENEMY_HP = 200;//focus fire on enemies with health below 200
@@ -27,6 +27,7 @@ public class AIController : MonoBehaviour
     #region private fields
     private float strategyTime;
     private float tacticTime;
+    private string strategicStance = "";
     #endregion
     #region properties
 
@@ -35,7 +36,7 @@ public class AIController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CommandInterface.AITeam = Team.Team;
+
     }
 
     // Update is called once per frame
@@ -166,33 +167,36 @@ public class AIController : MonoBehaviour
     {
         //score tactical actions with that unit, and get targets for those actions
         List<ScoredAction> actionList = new List<ScoredAction>();
-        //regular attack
-        UnitController attackTarget = null;
-        float attackScore = ScoreAttack(selectedUnit, allUnits, out attackTarget);
-        var attackAction = new ScoredAction()
+        
+        if(strategicStance != "Retreat")
         {
-            Score = attackScore,
-            DoAction = () =>
+            //regular attack
+            UnitController attackTarget = null;
+            float attackScore = ScoreAttack(selectedUnit, allUnits, out attackTarget);
+            var attackAction = new ScoredAction()
             {
-                Debug.Log("Tactical order: Attack");
-                CommandInterface.GiveUnitAttackOrder(selectedUnit, attackTarget);
-            }
-        };
-        actionList.Add(attackAction);
-
-        //special ability
-        Vector3 abilityTarget = new Vector3();
-        float abilityScore = ScoreFragGrenade(selectedUnit, allUnits, out abilityTarget);
-        var abilityAction = new ScoredAction()
-        {
-            Score = abilityScore,
-            DoAction = () =>
+                Score = attackScore,
+                DoAction = () =>
+                {
+                    Debug.Log("Tactical order: Attack");
+                    CommandInterface.GiveUnitAttackOrder(selectedUnit, attackTarget);
+                }
+            };
+            actionList.Add(attackAction);
+            //special ability
+            Vector3 abilityTarget = new Vector3();
+            float abilityScore = ScoreFragGrenade(selectedUnit, allUnits, out abilityTarget);
+            var abilityAction = new ScoredAction()
             {
-                Debug.Log("Tactical Order: Use Ability");
-                selectedUnit.DoSpecialAbility(abilityTarget);
-            }
-        };
-        actionList.Add(abilityAction);
+                Score = abilityScore,
+                DoAction = () =>
+                {
+                    Debug.Log("Tactical Order: Use Ability");
+                    selectedUnit.DoSpecialAbility(abilityTarget);
+                }
+            };
+            actionList.Add(abilityAction);
+        }
 
         var pickupDispensers = Map.GetComponentsInChildren<PickupSpawnerController>();
         var healthPacks = Map.GetComponentsInChildren<HealthPackController>();
@@ -290,7 +294,7 @@ public class AIController : MonoBehaviour
     private void DoStrategicMovement(UnitController[] allUnits)
     {
         var objectivePoint = GameObjective.GetAIObjective();
-        var teamSpawnPoint = GameObjective.GetAISpawnPoint();
+        var teamSpawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
 
         float teamPointUnits = 0;
         float teamReserveUnits = 0;
@@ -310,7 +314,7 @@ public class AIController : MonoBehaviour
                 }
                 else
                 {
-                    teamReserveUnits += 1 / travelTime;
+                    teamReserveUnits += 1;
                 }
             }
             else
@@ -321,7 +325,7 @@ public class AIController : MonoBehaviour
                 }
                 else
                 {
-                    enemyReserveUnits += 1 / travelTime;
+                    enemyReserveUnits += 1;
                 }
             }
         }
@@ -509,6 +513,8 @@ public class AIController : MonoBehaviour
                 }
                 //prefer close units
                 targetScore += (ENGAGE_DISTANCE - Vector3.Distance(u.transform.position, unit.transform.position))/ENGAGE_DISTANCE;
+                //prefer units close to the objective
+                targetScore += (CAPTURE_DISTANCE - Vector3.Distance(u.transform.position, GameObjective.GetAIObjective())) / CAPTURE_DISTANCE;
                 //prefer units with low health
                 targetScore += 1 - u.Data.HP / 500;
                 //prefer units near death
@@ -562,8 +568,14 @@ public class AIController : MonoBehaviour
                         }
                     }
                     //prefer close units
-                    
                     targetScore += (engageDistance - Vector3.Distance(u.transform.position, unit.transform.position))/engageDistance;
+                    //prefer units close to the objective
+                    targetScore += (CAPTURE_DISTANCE - Vector3.Distance(u.transform.position, GameObjective.GetAIObjective())) / CAPTURE_DISTANCE;
+                    //prefer stopped units
+                    if (!u.Agent.hasPath)
+                    {
+                        targetScore += 0.5f;
+                    }
                     //prefer units with low health
                     targetScore += 1 - u.Data.HP / 500;
                     //prefer units near death
@@ -714,6 +726,7 @@ public class AIController : MonoBehaviour
     #region acting
     private void DoRush(UnitController[] allUnits)
     {
+        strategicStance = "Rush";
         Debug.Log("Rushing Point!");
         var objectivePoint = GameObjective.GetAIObjective();
         foreach(var u in allUnits)
@@ -730,15 +743,17 @@ public class AIController : MonoBehaviour
                 //if they're far away, attack-move towards the point
                 else
                 {
-                    u.DoAttackMove(objectivePoint);
+                    //u.DoAttackMove(objectivePoint);
+                    u.DoMove(objectivePoint, true);
                 }
             }
         }
     }
     private void DoRetreat(UnitController[] allUnits)
     {
+        strategicStance = "Retreat";
         Debug.Log("Retreating...");
-        var spawnPoint = GameObjective.GetAISpawnPoint();
+        var spawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
         foreach(var u in allUnits)
         {
             if(u.Data.Team == Team.Team)
@@ -749,6 +764,7 @@ public class AIController : MonoBehaviour
     }
     private void DoMassTactical(UnitController[] allUnits)
     {
+        strategicStance = "Defend";
         Debug.Log("Mass Tactical!");
 
         foreach (var u in allUnits)

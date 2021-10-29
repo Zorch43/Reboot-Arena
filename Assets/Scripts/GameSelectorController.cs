@@ -1,3 +1,5 @@
+using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,8 +12,11 @@ public class GameSelectorController : MonoBehaviour
 
     #endregion
     #region public fields
-    public Button PlayButton;
+    public Toggle SelectButton;
+    public GameSetupController SetupPanel;
     public string SceneName;
+    public int MaxPlayers;
+
     #endregion
     #region private fields
 
@@ -23,14 +28,21 @@ public class GameSelectorController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayButton.onClick.AddListener(ActionPlay);
+        SelectButton.onValueChanged.AddListener(ActionSelect);
 
     }
     #endregion
     #region actions
-    public void ActionPlay()
+    public void ActionSelect(bool state)
     {
-        SceneManager.LoadSceneAsync(SceneName);
+        if (state)
+        {
+            SetupPanel.RefreshSettings(SceneName, MaxPlayers);
+        }
+        else if (!SelectButton.group.AnyTogglesOn())
+        {
+            SetupPanel.gameObject.SetActive(false);
+        }
     }
     #endregion
     #region public methods

@@ -41,35 +41,44 @@ public class ActionPanelController : MonoBehaviour
         StopActionButton.onClick.AddListener(ActionStop);
         ChangeClassButton.onClick.AddListener(ActionToggleClassMenu);
 
-        //add all possible unit ability buttons
-        foreach(var u in PlayerTeam.UnitTemplates)
+        if(PlayerTeam != null)
         {
-            var abilityButton = Instantiate(ButtonTemplate, transform);
-            var specialAbility = u.GetData().UnitClass.SpecialAbility;
-            abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
-            abilityButton.Button.onClick.AddListener(() =>
+            //add all possible unit ability buttons
+            foreach (var u in PlayerTeam.UnitTemplates)
             {
-                ActionUnitAbility(specialAbility);
-            });
-            abilityButton.Text.text = specialAbility.Name;
-            abilityButton.gameObject.SetActive(false);
-            abilityButtons.Add(abilityButton);
-            abilityButton.ToolTip.Header = specialAbility.Name;
-            abilityButton.ToolTip.Body = specialAbility.Description;
-            abilityButton.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
-            disableAbilityActions.Add(() =>
-            {
-                if(abilityButton.gameObject.activeSelf && CanActivateAbility(lastSelectedUnits, specialAbility.Name))
+                var abilityButton = Instantiate(ButtonTemplate, transform);
+                var specialAbility = u.GetData().UnitClass.SpecialAbility;
+                abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
+                abilityButton.Button.onClick.AddListener(() =>
                 {
-                    abilityButton.Button.interactable = true;
-                }
-                else
+                    ActionUnitAbility(specialAbility);
+                });
+                abilityButton.Text.text = specialAbility.Name;
+                abilityButton.gameObject.SetActive(false);
+                abilityButtons.Add(abilityButton);
+                abilityButton.ToolTip.Header = specialAbility.Name;
+                abilityButton.ToolTip.Body = specialAbility.Description;
+                abilityButton.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
+                disableAbilityActions.Add(() =>
                 {
-                    abilityButton.Button.interactable = false;
-                    //TODO: cancel targeting?
-                }
-            });
+                    if (abilityButton.gameObject.activeSelf && CanActivateAbility(lastSelectedUnits, specialAbility.Name))
+                    {
+                        abilityButton.Button.interactable = true;
+                    }
+                    else
+                    {
+                        abilityButton.Button.interactable = false;
+                        //TODO: cancel targeting?
+                    }
+                });
+            }
         }
+        else
+        {
+            Debug.Log("No Player assigned to the unit action UI");
+            gameObject.SetActive(false);
+        }
+        
     }
 
     // Update is called once per frame

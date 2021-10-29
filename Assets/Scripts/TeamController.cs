@@ -14,12 +14,16 @@ public class TeamController : MonoBehaviour
     public UnitController[] UnitTemplates;//unit templates avaialable to spawn (6-9)
     public SpawnPointController DefaultSpawnPoint;//starting spawnpoint
     public int Team;
-    public bool HideUnitUI;
     #endregion
     #region private fields
     private float queueTime;
     #endregion
     #region properties
+    public bool HideUnitUI
+    {
+        get;
+        set;
+    }
     public SpawnPointController SpawnPoint { get; set; }//current spawnpoint
     public List<UnitSlotModel> UnitSlots { get; set; } = new List<UnitSlotModel>();//unit slots
     #endregion

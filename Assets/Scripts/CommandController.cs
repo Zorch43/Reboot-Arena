@@ -36,10 +36,9 @@ public class CommandController : MonoBehaviour
     public Sprite RallyPointMarker;
     #endregion
     #region private fields
-
+    bool isSpectating;
     #endregion
     #region properties
-    public int AITeam { get; set; } = 1;
     public SpecialCommands SelectedCommand { get; set; }
     public UnitAbilityModel SpecialAbility { get; set; }
     public Action CommandCompletedCallback { get; set; }
@@ -50,16 +49,18 @@ public class CommandController : MonoBehaviour
     {
         KeyBindConfigSettings.LoadFromFile();
         MarkerTemplate.MainCamera = Cameras.MainCamera;
+        isSpectating = GameObjectiveController.BattleConfig.IsPlayerSpectator;
     }
 
     // Update is called once per frame
     void Update()
     {
+
         var hotKeyCommand = GetKeyCommand();
         //hotKey commands
         Vector3 mapPos = new Vector3();
 
-        if(hotKeyCommand != null && hotKeyCommand.PressedKey != KeyCode.None)
+        if(!isSpectating && hotKeyCommand != null && hotKeyCommand.PressedKey != KeyCode.None)
         {
             if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveKey)
             {
@@ -153,98 +154,102 @@ public class CommandController : MonoBehaviour
                     Cameras.PanToMapLocation(mapPos);
                 }
             }
-            //if the command mode is normal, lmb selects, rmb peforms action
-            else if (SelectedCommand == SpecialCommands.Normal || SelectedCommand == SpecialCommands.ClassMenu)
+            else if (!isSpectating)
             {
-                //selection
-                if (Input.GetMouseButtonDown(0))
+                //if the command mode is normal, lmb selects, rmb peforms action
+                if (SelectedCommand == SpecialCommands.Normal || SelectedCommand == SpecialCommands.ClassMenu)
                 {
-                    var ray = Cameras.MainCamera.ScreenPointToRay(Input.mousePosition);
-                    RaycastHit hit;
-                    UnitController selectedUnit = null;
-                    if (GetRayHit(ray, out hit))
+                    //selection
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        selectedUnit = hit.transform.GetComponent<UnitController>();
-                        if (selectedUnit != null)
+                        var ray = Cameras.MainCamera.ScreenPointToRay(Input.mousePosition);
+                        RaycastHit hit;
+                        UnitController selectedUnit = null;
+                        if (GetRayHit(ray, out hit))
                         {
-                            bool shift = Input.GetKey(KeyCode.LeftShift);
+                            selectedUnit = hit.transform.GetComponent<UnitController>();
+                            if (selectedUnit != null)
+                            {
+                                bool shift = Input.GetKey(KeyCode.LeftShift);
 
-                            SelectUnits(new List<UnitController>() { selectedUnit }, shift);
+                                SelectUnits(new List<UnitController>() { selectedUnit }, shift);
+                            }
+                        }
+                        if (selectedUnit == null)
+                        {
+                            SelectionRect.StartSelection(Input.mousePosition, SelectUnitsInRect);
                         }
                     }
-                    if (selectedUnit == null)
+                    //perform contextual action
+                    else if (Input.GetMouseButtonDown(1))
                     {
-                        SelectionRect.StartSelection(Input.mousePosition, SelectUnitsInRect);
+                        GiveOrder(Input.mousePosition);
                     }
                 }
-                //perform contextual action
-                else if (Input.GetMouseButtonDown(1))
+                //if attack-move command is active, lmb gives the order, rmb cancels the order
+                else if (SelectedCommand == SpecialCommands.AttackMove)
                 {
-                    GiveOrder(Input.mousePosition);
-                }
-            }
-            //if attack-move command is active, lmb gives the order, rmb cancels the order
-            else if (SelectedCommand == SpecialCommands.AttackMove)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    if(GetMouseMapPosition(out mapPos))
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        GiveAttackMoveOrder(GetSelectedUnits(), mapPos);
+                        if (GetMouseMapPosition(out mapPos))
+                        {
+                            GiveAttackMoveOrder(GetSelectedUnits(), mapPos);
+                        }
+
                     }
-                    
-                }
-                else if (Input.GetMouseButtonDown(1))
-                {
-                    EndSpecialOrder();
-                }
-            }
-            //if force-attack command is active, lmb gives the order, rmb cancels the order
-            else if (SelectedCommand == SpecialCommands.ForceAttack)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    if (GetMouseMapPosition(out mapPos))
+                    else if (Input.GetMouseButtonDown(1))
                     {
-                        GiveForceAttackOrder(mapPos);
+                        EndSpecialOrder();
                     }
                 }
-                else if (Input.GetMouseButtonDown(1))
+                //if force-attack command is active, lmb gives the order, rmb cancels the order
+                else if (SelectedCommand == SpecialCommands.ForceAttack)
                 {
-                    EndSpecialOrder();
-                }
-            }
-            //if rally point command is active, lmb sets the rally point, rmb cancels order
-            else if (SelectedCommand == SpecialCommands.SetRallyPoint)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    if (GetMouseMapPosition(out mapPos))
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        GiveRallyOrder(mapPos);
+                        if (GetMouseMapPosition(out mapPos))
+                        {
+                            GiveForceAttackOrder(mapPos);
+                        }
+                    }
+                    else if (Input.GetMouseButtonDown(1))
+                    {
+                        EndSpecialOrder();
                     }
                 }
-                else if (Input.GetMouseButtonDown(1))
+                //if rally point command is active, lmb sets the rally point, rmb cancels order
+                else if (SelectedCommand == SpecialCommands.SetRallyPoint)
                 {
-                    EndSpecialOrder();
-                }
-            }
-            //if special ability command is active, and needs a target, lmb sets the target, rmb cancels the order
-            else if (SelectedCommand == SpecialCommands.SpecialAbility)
-            {
-                if (Input.GetMouseButtonDown(0))
-                {
-                    //activate special ability
-                    if (GetMouseMapPosition(out mapPos))
+                    if (Input.GetMouseButtonDown(0))
                     {
-                        GiveSpecialAbilityOrder(mapPos);
+                        if (GetMouseMapPosition(out mapPos))
+                        {
+                            GiveRallyOrder(mapPos);
+                        }
+                    }
+                    else if (Input.GetMouseButtonDown(1))
+                    {
+                        EndSpecialOrder();
                     }
                 }
-                else if (Input.GetMouseButtonDown(1))
+                //if special ability command is active, and needs a target, lmb sets the target, rmb cancels the order
+                else if (SelectedCommand == SpecialCommands.SpecialAbility)
                 {
-                    EndSpecialOrder();
+                    if (Input.GetMouseButtonDown(0))
+                    {
+                        //activate special ability
+                        if (GetMouseMapPosition(out mapPos))
+                        {
+                            GiveSpecialAbilityOrder(mapPos);
+                        }
+                    }
+                    else if (Input.GetMouseButtonDown(1))
+                    {
+                        EndSpecialOrder();
+                    }
                 }
             }
+            
         }
     }
     #endregion
@@ -263,7 +268,7 @@ public class CommandController : MonoBehaviour
         bool responseGiven = false;
         foreach (var u in units)
         {
-            u.Data.IsSelected = AITeam != u.Data.Team && (!addToSelection || !u.Data.IsSelected);
+            u.Data.IsSelected = !GameObjectiveController.BattleConfig.IsAITeam(u.Data.Team) && (!addToSelection || !u.Data.IsSelected);
             if(u.Data.IsSelected)
             {
                 if (!responseGiven)
@@ -633,7 +638,7 @@ public class CommandController : MonoBehaviour
     {
         //auto-detect which camera to use (main or minimap) based on mouse position
         var fromCamera = Cameras.GetCommandCamera(Input.mousePosition);
-        
+
         return GetMapPositionFromScreen(Input.mousePosition, out mapPos, fromCamera);
     }
     private List<UnitController> GetSelectedUnits()
