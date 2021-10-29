@@ -1563,7 +1563,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 934396105549775391, guid: 040ec4601b1cdd84982c17db27d61ce6, type: 3}
       propertyPath: m_Volume
-      value: 0.25
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 5783294451452656789, guid: 040ec4601b1cdd84982c17db27d61ce6, type: 3}
       propertyPath: Shuffle

@@ -23,7 +23,7 @@ public class UIStatusBarController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        maxWidth = ((RectTransform)(BarFill.transform)).rect.width;
+        maxWidth = ((RectTransform)(BarFill.transform.parent)).rect.width;
     }
 
     // Update is called once per frame

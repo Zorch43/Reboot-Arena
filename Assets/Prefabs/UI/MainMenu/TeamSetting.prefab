@@ -85,6 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7335210413341322978}
   - component: {fileID: 187002926766653107}
+  - component: {fileID: 5157018032338114377}
   m_Layer: 5
   m_Name: Item
   m_TagString: Untagged
@@ -162,6 +163,19 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_IsOn: 1
+--- !u!114 &5157018032338114377
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 334890855858168067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4984a58d4297ba943bf04de8d1169dd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ItemBackground: {fileID: 7027033806713946566}
 --- !u!1 &758834419480046477
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +273,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 1
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 1
+  m_ScrollSensitivity: 20
   m_Viewport: {fileID: 8820405894512880690}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 4452279286314169241}
@@ -826,7 +840,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.078431375, g: 0.078431375, b: 0.078431375, a: 1}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -893,25 +907,25 @@ MonoBehaviour:
   m_Value: 0
   m_Options:
     m_Options:
-    - m_Text: 0
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 1
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 2
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 3
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 4
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 5
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 6
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 7
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 8
+    - m_Text: 
       m_Image: {fileID: 0}
-    - m_Text: 9
+    - m_Text: 
       m_Image: {fileID: 0}
   m_OnValueChanged:
     m_PersistentCalls:
@@ -1149,7 +1163,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 0
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -37,6 +37,13 @@ namespace Assets.Scripts.Utility
                     return Color.grey;
             }
         }
+        public static string GetTeamColorHex(int team)
+        {
+            var color = GetTeamColor(team);
+            string hex = string.Format("{0}{1}{2}{3}", 
+                ColorFloatToByte(color.r), ColorFloatToByte(color.g), ColorFloatToByte(color.b), ColorFloatToByte(color.a));
+            return hex;
+        }
 
         public static List<int> GetRandomTeams(int teamCount)
         {
@@ -50,6 +57,11 @@ namespace Assets.Scripts.Utility
             }
 
             return pickedTeams;
+        }
+
+        private static string ColorFloatToByte(float colorFloat)
+        {
+            return ((int)(colorFloat * 256)).ToString("X");
         }
     }
 }

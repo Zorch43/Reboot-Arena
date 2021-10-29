@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -23,6 +24,7 @@ public class TeamSettingController : MonoBehaviour
         //wire up controls
         ControllerSelector.onValueChanged.AddListener(ActionSelectController);
         ColorSelector.onValueChanged.AddListener(ActionSelectColor);
+        
     }
     #endregion
     #region actions
@@ -75,6 +77,7 @@ public class TeamSettingController : MonoBehaviour
                 break;
             }
         }
+        ColorSelector.image.color = TeamTools.GetTeamColor(state);
     }
     #endregion
     #region public methods
@@ -84,6 +87,14 @@ public class TeamSettingController : MonoBehaviour
         result.Setup = setup;
         result.Data = new PlayerConfigModel();
         result.TeamLabel.text = label;
+
+        //mark each option with team color
+        for(int i = 0; i < result.ColorSelector.options.Count; i++)
+        {
+            var o = result.ColorSelector.options[i];
+
+        }
+
         return result;
     }
     public void Refresh()
@@ -93,6 +104,7 @@ public class TeamSettingController : MonoBehaviour
         
         //set color from data
         ColorSelector.SetValueWithoutNotify(Data.TeamId);
+        ColorSelector.image.color = TeamTools.GetTeamColor(Data.TeamId);
         ColorSelector.interactable = Data.Controller != PlayerConfigModel.ControlType.None;
     }
     public void SetInteractive(bool state)
