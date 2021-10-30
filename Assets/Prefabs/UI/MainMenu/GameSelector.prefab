@@ -93,6 +93,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SelectButton: {fileID: 5674039055289442150}
+  SetupPanel: {fileID: 0}
   SceneName: TestScene1
   MaxPlayers: 2
 --- !u!114 &5674039055289442150
@@ -313,7 +314,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 350, y: -10}
-  m_SizeDelta: {x: -550, y: 50}
+  m_SizeDelta: {x: -360, y: 50}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &6990087610365296517
 CanvasRenderer:

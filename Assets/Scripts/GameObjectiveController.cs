@@ -46,7 +46,7 @@ public class GameObjectiveController : MonoBehaviour
             {
                 Players = new List<PlayerConfigModel>()
                 {
-                    new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.AI, TeamId = 0},
+                    new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.Player, TeamId = 0},
                     new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.AI, TeamId = 1}
                 }
             };
@@ -85,13 +85,16 @@ public class GameObjectiveController : MonoBehaviour
             {
                 team = Instantiate(PlayerTeamTemplate, transform);
                 team.UnitSlotManager = PlayerSlotManager;
-                PlayerUnitActions.PlayerTeam = team;
+                PlayerUnitActions.Setup(team);
             }
             team.Team = teamConfig.TeamId;
             team.DefaultSpawnPoint = SpawnPoints[i];
             Teams.Add(team);
         }
-
+        if (spectator)
+        {
+            PlayerUnitActions.Setup(null);
+        }
         //add timers to UI
         timers = Instantiate(GameStatusUI, GameStateUI.transform);
         //timers.gameObject.transform.position = GameStateUI.transform.position;

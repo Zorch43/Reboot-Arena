@@ -13,7 +13,6 @@ public class ActionPanelController : MonoBehaviour
     #endregion
     #region public fields
     public CommandController CommandInterface;
-    public TeamController PlayerTeam;
     public Button MoveAttackButton;
     public Button ForceAttackButton;
     public Button StopActionButton;
@@ -40,45 +39,6 @@ public class ActionPanelController : MonoBehaviour
         SetRallyButton.onClick.AddListener(ActionSetRallyPoint);
         StopActionButton.onClick.AddListener(ActionStop);
         ChangeClassButton.onClick.AddListener(ActionToggleClassMenu);
-
-        if(PlayerTeam != null)
-        {
-            //add all possible unit ability buttons
-            foreach (var u in PlayerTeam.UnitTemplates)
-            {
-                var abilityButton = Instantiate(ButtonTemplate, transform);
-                var specialAbility = u.GetData().UnitClass.SpecialAbility;
-                abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
-                abilityButton.Button.onClick.AddListener(() =>
-                {
-                    ActionUnitAbility(specialAbility);
-                });
-                abilityButton.Text.text = specialAbility.Name;
-                abilityButton.gameObject.SetActive(false);
-                abilityButtons.Add(abilityButton);
-                abilityButton.ToolTip.Header = specialAbility.Name;
-                abilityButton.ToolTip.Body = specialAbility.Description;
-                abilityButton.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
-                disableAbilityActions.Add(() =>
-                {
-                    if (abilityButton.gameObject.activeSelf && CanActivateAbility(lastSelectedUnits, specialAbility.Name))
-                    {
-                        abilityButton.Button.interactable = true;
-                    }
-                    else
-                    {
-                        abilityButton.Button.interactable = false;
-                        //TODO: cancel targeting?
-                    }
-                });
-            }
-        }
-        else
-        {
-            Debug.Log("No Player assigned to the unit action UI");
-            gameObject.SetActive(false);
-        }
-        
     }
 
     // Update is called once per frame
@@ -123,6 +83,46 @@ public class ActionPanelController : MonoBehaviour
     }
     #endregion
     #region public methods
+    public void Setup(TeamController playerTeam)
+    {
+        if (playerTeam != null)
+        {
+            //add all possible unit ability buttons
+            foreach (var u in playerTeam.UnitTemplates)
+            {
+                var abilityButton = Instantiate(ButtonTemplate, transform);
+                var specialAbility = u.GetData().UnitClass.SpecialAbility;
+                abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
+                abilityButton.Button.onClick.AddListener(() =>
+                {
+                    ActionUnitAbility(specialAbility);
+                });
+                abilityButton.Text.text = specialAbility.Name;
+                abilityButton.gameObject.SetActive(false);
+                abilityButtons.Add(abilityButton);
+                abilityButton.ToolTip.Header = specialAbility.Name;
+                abilityButton.ToolTip.Body = specialAbility.Description;
+                abilityButton.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
+                disableAbilityActions.Add(() =>
+                {
+                    if (abilityButton.gameObject.activeSelf && CanActivateAbility(lastSelectedUnits, specialAbility.Name))
+                    {
+                        abilityButton.Button.interactable = true;
+                    }
+                    else
+                    {
+                        abilityButton.Button.interactable = false;
+                        //TODO: cancel targeting?
+                    }
+                });
+            }
+        }
+        else
+        {
+            Debug.Log("No Player assigned to the unit action UI");
+            gameObject.SetActive(false);
+        }
+    }
     public void PopulateAbilityButtons(List<UnitController> selectedUnits)
     {
         lastSelectedUnits = selectedUnits;
