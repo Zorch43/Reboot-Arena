@@ -15,6 +15,7 @@ public class GameSetupController : MonoBehaviour
     public Button PlayButton;
     public GameObject SettingsList;
     public TeamSettingController SettingsTemplate;
+    public LoadingTransitionController LoadingTransition;
     #endregion
     #region private fields
 
@@ -106,7 +107,7 @@ public class GameSetupController : MonoBehaviour
         }
         GameObjectiveController.BattleConfig = config;
         //load scene
-        SceneManager.LoadSceneAsync(SceneName);
+        LoadingTransition.LoadScene(SceneName, null);
     }
     
     #endregion

@@ -61,7 +61,7 @@ namespace Assets.Scripts.Utility
 
         private static string ColorFloatToByte(float colorFloat)
         {
-            return ((int)(colorFloat * 256)).ToString("X");
+            return ((int)(colorFloat * 255)).ToString("X");
         }
     }
 }

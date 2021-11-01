@@ -1,6 +1,8 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameObjectiveController : MonoBehaviour
@@ -16,8 +18,7 @@ public class GameObjectiveController : MonoBehaviour
     public CapturePointController Objective;//capture point that teams are fighting over
     public GameObject GameStateUI;//where to display timer count-downs;
     public KotHTimerController GameStatusUI;//the prefab to add to the ui;
-    public GameObject VictoryStateUI;//ui that displays victory message
-    public GameObject DefeatStateUI;//ui that displays defeat message
+    public GameObject VictoryStateUI;//ui that displays victory or defeat message
 
     public SpawnPointController[] SpawnPoints;//list of all starting spawn points
     public UnitSlotManager PlayerSlotManager;//need this referenced here to apply to player-controlled teams
@@ -116,24 +117,26 @@ public class GameObjectiveController : MonoBehaviour
             if(!GameMenu.gameObject.activeSelf && remainingTime <= 0 && Objective.CaptureProgress >= 1)
             {
                 var playerTeam = BattleConfig.PlayerTeam;
-                if(playerTeam == null)
+                var victoryMessage = VictoryStateUI.GetComponentInChildren<TextMeshProUGUI>();
+                victoryMessage.color = TeamTools.GetTeamColor(holdingTeam);
+                if (playerTeam == null)
                 {
                     //AI has won against AI, display victory message
-                    VictoryStateUI.SetActive(true);
-                    GameMenu.ShowMenu(true);
+                    victoryMessage.text = string.Format("AI WINS!");
                 }
                 else if (holdingTeam == playerTeam?.TeamId)
                 {
                     //player has won, display victory message
-                    VictoryStateUI.SetActive(true);
-                    GameMenu.ShowMenu(true);
+                    victoryMessage.text = string.Format("VICTORY!");
                 }
                 else
                 {
                     //AI has won againts player, display defeat message
-                    DefeatStateUI.SetActive(true);
-                    GameMenu.ShowMenu(true);
+                    victoryMessage.text = string.Format("DEFEAT...");
                 }
+                
+                VictoryStateUI.SetActive(true);
+                GameMenu.ShowMenu(true);
             }
         }
 

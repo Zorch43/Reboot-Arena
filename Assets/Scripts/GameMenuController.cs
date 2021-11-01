@@ -18,6 +18,7 @@ public class GameMenuController : MonoBehaviour
     public Button QuitButton;
     public Button MenuButton;
     public ConfirmationMenuController ConfirmationMenu;
+    public LoadingTransitionController LoadingScreen;
     #endregion
     #region private fields
     private bool gameOver;
@@ -48,17 +49,15 @@ public class GameMenuController : MonoBehaviour
         {
             ConfirmationMenu.GetConfirmation("Are you sure you want to retart this game scenario?", () =>
             {
-                Time.timeScale = 1;
                 var sceneName = SceneManager.GetActiveScene().name;
-                SceneManager.LoadSceneAsync(sceneName);
+                LoadingScreen.LoadScene(sceneName, ActionResetTime);
 
             });
         }
         else
         {
-            Time.timeScale = 1;
             var sceneName = SceneManager.GetActiveScene().name;
-            SceneManager.LoadSceneAsync(sceneName);
+            LoadingScreen.LoadScene(sceneName, ActionResetTime);
         }
         
     }
@@ -68,14 +67,12 @@ public class GameMenuController : MonoBehaviour
         {
             ConfirmationMenu.GetConfirmation("Are you sure you want to quit the game and return to the main menu?", () =>
             {
-                Time.timeScale = 1;
-                SceneManager.LoadSceneAsync("MainMenu");
+                LoadingScreen.LoadScene("MainMenu", ActionResetTime);
             });
         }
         else
         {
-            Time.timeScale = 1;
-            SceneManager.LoadSceneAsync("MainMenu");
+            LoadingScreen.LoadScene("MainMenu", ActionResetTime);
         }
     }
     public void ActionQuit()
@@ -88,6 +85,10 @@ public class GameMenuController : MonoBehaviour
     public void ActionMenu()
     {
         ShowMenu();
+    }
+    public void ActionResetTime()
+    {
+        Time.timeScale = 1;
     }
     #endregion
     #region public methods

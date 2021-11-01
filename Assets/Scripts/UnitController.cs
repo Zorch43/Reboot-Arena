@@ -126,10 +126,13 @@ public class UnitController : MonoBehaviour
             if(Vector3.Distance(transform.position, Agent.destination) <= ORDER_RADIUS
             || (!unit.Agent.hasPath && Vector3.Distance(unit.transform.position, Agent.destination) <= ORDER_RADIUS/2 * zoneMultiplier))
             {
-                //Agent.ResetPath();
                 StopMoving();
-                AttackMoveDestination = null;//stop attack-move: destination reached
-                zoneMultiplier = 1;
+                if(AttackMoveDestination != null 
+                && (Vector3.Distance(transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS
+                || (!unit.Agent.hasPath && Vector3.Distance(unit.transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS / 2 * zoneMultiplier)))
+                {
+                    AttackMoveDestination = null;//stop attack-move
+                }
             }
             else
             {
@@ -211,12 +214,23 @@ public class UnitController : MonoBehaviour
         //return amount loaded
         return amountLoaded;
     }
+    public void DoAttack(UnitController target)
+    {
+        if(CommandTarget != target)
+        {
+            CancelOrders();//cancel all other orders
+            CommandTarget = target;
+        }
+    }
     //move to the specified location, stopping to attack all enemies encountered on the way.  Cancel if another order is given
     public void DoAttackMove(Vector3 location)
     {
-        CancelOrders();//cancel all other orders
-        //set the move-attack destination
-        AttackMoveDestination = location;
+        if (!Agent.hasPath || Vector3.Distance(location, Agent.destination) > ORDER_RADIUS)
+        {
+            CancelOrders();//cancel all other orders
+            //set the move-attack destination
+            AttackMoveDestination = location;
+        }
     }
     //attack the ground at the specified location. keep attacking until unit is given another order
     public void DoForceAttack(Vector3 location)
@@ -275,17 +289,19 @@ public class UnitController : MonoBehaviour
     public void StopMoving()
     {
         Agent.ResetPath();
+        
+        zoneMultiplier = 1;
     }
-    public bool HasLineOfSight(Vector3 target, bool unitsBlockLOS = false)
+    public bool HasLineOfSight(Vector3 target)
     {
         var pos = transform.position;
 
         var hits = Physics.RaycastAll(pos, target - pos, Vector3.Distance(pos, target));
         foreach (var h in hits)
         {
-            var obj = h.collider.GetComponent<UnitController>();
+            var unit = h.collider.GetComponent<UnitController>();
             if (!h.collider.CompareTag("NonBlocking") && !h.collider.isTrigger
-                && (obj == null || (unitsBlockLOS && obj.Data.Team != Data.Team)))
+                && unit == null)
             {
                 return false;
             }
@@ -296,6 +312,28 @@ public class UnitController : MonoBehaviour
 
         //}
         //return false;
+    }
+    public bool HasTrueLineOfSight(UnitController target)
+    {
+        var pos = transform.position;
+        var targetPos = target.transform.position;
+
+        var hits = Physics.RaycastAll(pos, targetPos - pos, Vector3.Distance(pos, targetPos));
+        foreach (var h in hits)
+        {
+            var unit = h.collider.GetComponent<UnitController>();
+            if(unit == target)
+            {
+                return true;
+            }
+            else if (!h.collider.CompareTag("NonBlocking")//pass through non-block objects 
+                && !h.collider.isTrigger//pass through triggers
+                && (unit == null || unit.Data.Team != Data.Team))//blocked by non-units, and enemy units that aren't your target
+            {
+                return false;
+            }
+        }
+        return true;
     }
     #endregion
     #region private methods
