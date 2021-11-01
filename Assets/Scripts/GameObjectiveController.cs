@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Data_Templates;
 using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,9 +75,8 @@ public class GameObjectiveController : MonoBehaviour
                 
                 var ai = team.GetComponent<AIController>();
                 ai.GameObjective = this;
-                //TODO: remove these references?
+                ai.Config = AIConfigTemplates.GetAIConfigList()[teamConfig.AIIndex];//select ai for ai player
                 ai.Map = Map;
-                ai.CommandInterface = CommandInterface;
                 if (!spectator)
                 {
                     team.HideUnitUI = true;

@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Data_Templates;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -47,18 +48,6 @@ public class GameSetupController : MonoBehaviour
             {
                 var setting = SettingsTemplate.Instantiate(this, string.Format("Team {0}:", i + 1));
                 setting.Data.TeamId = i;
-                //if (i == 0)
-                //{
-                //    setting.Data.Controller = PlayerConfigModel.ControlType.Player;
-                //}
-                //else if (i == 1)
-                //{
-                //    setting.Data.Controller = PlayerConfigModel.ControlType.AI;
-                //}
-                //else
-                //{
-                //    setting.Data.Controller = PlayerConfigModel.ControlType.None;
-                //}
                 setting.Refresh();
                 Settings.Add(setting);
             }
@@ -79,6 +68,8 @@ public class GameSetupController : MonoBehaviour
                 else
                 {
                     setting.Data.Controller = PlayerConfigModel.ControlType.AI;
+                    var list = AIConfigTemplates.GetAIConfigList();
+                    setting.Data.AIIndex = Random.Range(0, list.Count);
                 }
                 setting.Refresh();
             }

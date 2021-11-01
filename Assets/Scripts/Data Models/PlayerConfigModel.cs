@@ -17,8 +17,10 @@ namespace Assets.Scripts.Data_Models
         }
 
         public int TeamId { get; set; }
+        
         public ControlType Controller { get; set; }
-        //TODO: AI settings
+        //AI settings
+        public int AIIndex { get; set; }//if control type is AI, pick the AI from list using index
         //TODO: network player
     }
 }

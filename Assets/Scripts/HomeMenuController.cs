@@ -11,9 +11,11 @@ public class HomeMenuController : MonoBehaviour
     #region public fields
     public GameObject PlayView;
     public GameObject InfoView;
+    public GameObject CreditsView;
     public ConfirmationMenuController ConfirmDialog;
     public Button PlayButton;
     public Button InfoButton;
+    public Button CreditsButton;
     public Button ExitButton;
     #endregion
     #region private fields
@@ -28,6 +30,7 @@ public class HomeMenuController : MonoBehaviour
     {
         PlayButton.onClick.AddListener(ActionPlay);
         InfoButton.onClick.AddListener(ActionInfo);
+        CreditsButton.onClick.AddListener(ActionCredits);
         ExitButton.onClick.AddListener(ActionExit);
     }
 
@@ -46,6 +49,11 @@ public class HomeMenuController : MonoBehaviour
     public void ActionInfo()
     {
         InfoView.SetActive(true);
+        gameObject.SetActive(false);
+    }
+    public void ActionCredits()
+    {
+        CreditsView.SetActive(true);
         gameObject.SetActive(false);
     }
     public void ActionExit()

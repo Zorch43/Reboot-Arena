@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Data_Templates;
 using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,6 +25,20 @@ public class TeamSettingController : MonoBehaviour
         //wire up controls
         ControllerSelector.onValueChanged.AddListener(ActionSelectController);
         ColorSelector.onValueChanged.AddListener(ActionSelectColor);
+
+        //populate controller drop-down with defined ai configs
+        ControllerSelector.options = new List<TMP_Dropdown.OptionData>() 
+        {
+            new TMP_Dropdown.OptionData("None"),
+            new TMP_Dropdown.OptionData("Player")
+            //add any additional non-ai control types here
+        };
+        
+        var aiList = AIConfigTemplates.GetAIConfigList();
+        foreach(var a in aiList)
+        {
+            ControllerSelector.options.Add(new TMP_Dropdown.OptionData(a.Name));
+        }
         
     }
     #endregion
@@ -33,7 +48,15 @@ public class TeamSettingController : MonoBehaviour
         //save the old state
         var oldState = Data.Controller;
         //update model
-        Data.Controller = (PlayerConfigModel.ControlType)state;
+        if(state < (int)PlayerConfigModel.ControlType.AI)
+        {
+            Data.Controller = (PlayerConfigModel.ControlType)state;
+        }
+        else
+        {
+            Data.Controller = PlayerConfigModel.ControlType.AI;
+            Data.AIIndex = state - (int)PlayerConfigModel.ControlType.AI;
+        }
         //check the list of settings:
         int playerCount = 0;
         int activeCount = 0;
@@ -100,7 +123,7 @@ public class TeamSettingController : MonoBehaviour
     public void Refresh()
     {
         //set control type from data
-        ControllerSelector.SetValueWithoutNotify((int)Data.Controller);
+        RefreshControllerSelector();
         
         //set color from data
         ColorSelector.SetValueWithoutNotify(Data.TeamId);
@@ -121,6 +144,17 @@ public class TeamSettingController : MonoBehaviour
             //Data.Controller = PlayerConfigModel.ControlType.None;
             ColorSelector.interactable = false;
         }
+    }
+    #endregion
+    #region private methods
+    private void RefreshControllerSelector()
+    {
+        int index = (int)Data.Controller;
+        if(index == (int)PlayerConfigModel.ControlType.AI)
+        {
+            index += Data.AIIndex;
+        }
+        ControllerSelector.SetValueWithoutNotify(index);
     }
     #endregion
 }
