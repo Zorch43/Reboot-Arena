@@ -122,6 +122,7 @@ public class ActionPanelController : MonoBehaviour
             Debug.Log("No Player assigned to the unit action UI");
             gameObject.SetActive(false);
         }
+        disableAbilityActions.Add(UpdateSpecialActions);
     }
     public void PopulateAbilityButtons(List<UnitController> selectedUnits)
     {
@@ -135,21 +136,24 @@ public class ActionPanelController : MonoBehaviour
         int abilityCount = 0;
         foreach(var u in selectedUnits)
         {
-            var specialAbility = u.Data.UnitClass.SpecialAbility;
-            foreach(var b in abilityButtons)
+            if(u != null)
             {
-                //if button for ability found
-                if(b.Text.text == specialAbility.Name)
+                var specialAbility = u.Data.UnitClass.SpecialAbility;
+                foreach (var b in abilityButtons)
                 {
-                    //and the button is hidden
-                    if (!b.gameObject.activeSelf)
+                    //if button for ability found
+                    if (b.Text.text == specialAbility.Name)
                     {
-                        //show the button
-                        b.gameObject.SetActive(true);
-                        //increment the abilityCount
-                        abilityCount++;
+                        //and the button is hidden
+                        if (!b.gameObject.activeSelf)
+                        {
+                            //show the button
+                            b.gameObject.SetActive(true);
+                            //increment the abilityCount
+                            abilityCount++;
+                        }
+                        break;
                     }
-                    break;
                 }
             }
         }
@@ -158,6 +162,7 @@ public class ActionPanelController : MonoBehaviour
         {
             FreeButtons[i].SetActive(i >= abilityCount);
         }
+        
     }
     public void ActivateUnitAbility(string abilityName)
     {
@@ -176,13 +181,45 @@ public class ActionPanelController : MonoBehaviour
         {
             foreach (var u in selectedUnits)
             {
-                if (u.Data.UnitClass.SpecialAbility.Name == abilityName && u.Data.MP >= u.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+                if (u != null && u.Data.UnitClass.SpecialAbility.Name == abilityName && u.Data.MP >= u.Data.UnitClass.SpecialAbility.AmmoCostInstant)
                 {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public void UpdateSpecialActions()
+    {
+        bool canUse = false;
+        if(lastSelectedUnits != null && lastSelectedUnits.Count > 0)
+        {
+            foreach(var u in lastSelectedUnits)
+            {
+                if(u != null)
+                {
+                    canUse = true;
+                    break;
+                }
+            }
+        }
+        if (canUse)
+        {
+            //enable all ability buttons
+            MoveAttackButton.interactable = true;
+            ForceAttackButton.interactable = true;
+            SetRallyButton.interactable = true;
+            StopActionButton.interactable = true;
+        }
+        else
+        {
+            //disable ability buttons, as no units are selected
+            MoveAttackButton.interactable = false;
+            ForceAttackButton.interactable = false;
+            SetRallyButton.interactable = false;
+            StopActionButton.interactable = false;
+        }
     }
     #endregion
     #region private methods

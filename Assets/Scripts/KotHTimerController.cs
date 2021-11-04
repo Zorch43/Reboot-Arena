@@ -11,11 +11,11 @@ public class KotHTimerController : MonoBehaviour
 
     #endregion
     #region public fields
-    public TextMeshProUGUI TimerText1, TimerText2;
+    public TextMeshProUGUI[] TimerTextList;
     #endregion
     #region private fields
-    private TimerModel timer1, timer2;
-    private int team1, team2;
+    private List<TimerModel> timers = new List<TimerModel>();
+    private List<int> teams = new List<int>();
     #endregion
     #region properties
     #endregion
@@ -33,35 +33,32 @@ public class KotHTimerController : MonoBehaviour
     }
     #endregion
     #region public methods
-    public void Setup(float initialSeconds, int team1, int team2)
+    public void Setup(float initialSeconds, List<TeamController> teams)
     {
-        timer1 = new TimerModel() { RawTime = initialSeconds };
-        timer2 = new TimerModel() { RawTime = initialSeconds };
+        for(int i = 0; i < teams.Count; i++)
+        {
+            var timer = new TimerModel() { RawTime = initialSeconds };
+            timers.Add(timer);
+            this.teams.Add(teams[i].Team);
+            TimerTextList[i].color = TeamTools.GetTeamColor(teams[i].Team);
+            TimerTextList[i].text = timer.ToString();
+            TimerTextList[i].gameObject.SetActive(true);
+            
+            
+        }
 
-        TimerText1.color = TeamTools.GetTeamColor(team1);
-        TimerText2.color = TeamTools.GetTeamColor(team2);
-
-        TimerText1.text = timer1.ToString();
-        TimerText2.text = timer2.ToString();
-
-        this.team1 = team1;
-        this.team2 = team2;
     }
     public float UpdateTimer(float time, int team)
     {
-        if(team == team1)
+        for (int i = 0; i < teams.Count; i++)
         {
-            return UpdateTimer(time, timer1, TimerText1);
+            if (teams[i] == team)
+            {
+                return UpdateTimer(time, timers[i], TimerTextList[i]);
+            }
         }
-        else if(team == team2)
-        {
-            return UpdateTimer(time, timer2, TimerText2);
-        }
-        else
-        {
-            Debug.LogError("Invalid team does not have a timer");
-            return -1;
-        }
+        Debug.LogError("Invalid team does not have a timer");
+        return -1;
     }
     #endregion
     #region private methods

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,12 +33,6 @@ public class HomeMenuController : MonoBehaviour
         InfoButton.onClick.AddListener(ActionInfo);
         CreditsButton.onClick.AddListener(ActionCredits);
         ExitButton.onClick.AddListener(ActionExit);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
     #endregion
     #region actions

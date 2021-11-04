@@ -68,8 +68,8 @@ public class GameSetupController : MonoBehaviour
                 else
                 {
                     setting.Data.Controller = PlayerConfigModel.ControlType.AI;
-                    var list = AIConfigTemplates.GetAIConfigList();
-                    setting.Data.AIIndex = Random.Range(0, list.Count);
+                    //var list = AIConfigTemplates.GetAIConfigList();
+                    //setting.Data.AIIndex = Random.Range(0, list.Count);
                 }
                 setting.Refresh();
             }

@@ -12,31 +12,13 @@ public class LoadingTransitionController : MonoBehaviour
     public MusicPlayerController MusicPlayer;
     #endregion
     #region private fields
-    private float startingVolume;
     private AsyncOperation asyncLoad;
-    private bool startedLoad;
     private Action onComplete;
     #endregion
     #region properties
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (startedLoad && MusicPlayer != null)
-        {
-            //start fading bgm
-            MusicPlayer.Player.volume = startingVolume * (1 - asyncLoad.progress);
-
-            //once fade has finished, finish loading scene
-        }
-    }
     #endregion
     #region actions
     public void ActionFinishLoading(AsyncOperation op)
@@ -55,13 +37,9 @@ public class LoadingTransitionController : MonoBehaviour
         asyncLoad.allowSceneActivation = true;
 
         this.onComplete = onComplete;
-        startedLoad = true;
         if (MusicPlayer != null)
         {
-            //start fading bgm
-            startingVolume = MusicPlayer.Player.volume;
-
-            //once fade has finished, finish loading scene
+            MusicPlayer.FadeVolume(0, 0.5f);
         }
 
     }

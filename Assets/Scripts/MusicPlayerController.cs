@@ -14,11 +14,18 @@ public class MusicPlayerController : MonoBehaviour
     #endregion
     #region private fields
     int currentTrack = 0;
+    float targetFadeVolume;
+    float fadeTimer;
+    float fadeDuration;
     #endregion
     #region properties
-
+    public float BaseVolume { get; private set; }
     #endregion
     #region unity methods
+    private void Start()
+    {
+        BaseVolume = Player.volume;
+    }
     // Update is called once per frame
     void Update()
     {
@@ -52,11 +59,30 @@ public class MusicPlayerController : MonoBehaviour
                 Player.Play();
                 currentTrack++;
             }
+            //fade volume up or down
+            if(fadeDuration > 0.1f)
+            {
+                float deltaTime = Time.deltaTime;
+                fadeTimer += deltaTime;
+
+                Player.volume += (targetFadeVolume - BaseVolume) / fadeDuration * deltaTime;
+
+                if(fadeTimer >= fadeDuration)
+                {
+                    fadeDuration = 0;
+                    fadeTimer = 0;
+                }
+            }
         }
     }
     #endregion
     #region public methods
-
+    public void FadeVolume(float endVolume, float fadeTime)
+    {
+        fadeTimer = 0;
+        fadeDuration = fadeTime;
+        targetFadeVolume = endVolume;
+    }
     #endregion
     #region private methods
 

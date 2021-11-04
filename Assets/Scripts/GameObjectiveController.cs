@@ -29,6 +29,8 @@ public class GameObjectiveController : MonoBehaviour
 
     public MapController Map;
     public CommandController CommandInterface;
+
+    public MusicPlayerController MusicPlayer;
     
     #endregion
     #region private fields
@@ -65,7 +67,7 @@ public class GameObjectiveController : MonoBehaviour
 
         //create teams based on battle config
         bool spectator = BattleConfig.IsPlayerSpectator;
-        for(int i = 0; i < SpawnPoints.Length; i++)
+        for(int i = 0; i < BattleConfig.Players.Count; i++)
         {
             var teamConfig = BattleConfig.Players[i];
             TeamController team = null;
@@ -90,6 +92,7 @@ public class GameObjectiveController : MonoBehaviour
             }
             team.Team = teamConfig.TeamId;
             team.DefaultSpawnPoint = SpawnPoints[i];
+            team.DefaultSpawnPoint.IsActive = true;
             Teams.Add(team);
         }
         if (spectator)
@@ -101,7 +104,7 @@ public class GameObjectiveController : MonoBehaviour
         //timers.gameObject.transform.position = GameStateUI.transform.position;
 
         //setup timers
-        timers.Setup(COUNTDOWN_TIME, Teams[0].Team, Teams[1].Team);
+        timers.Setup(COUNTDOWN_TIME, Teams);
     }
 
     // Update is called once per frame
@@ -119,23 +122,30 @@ public class GameObjectiveController : MonoBehaviour
                 var playerTeam = BattleConfig.PlayerTeam;
                 var victoryMessage = VictoryStateUI.GetComponentInChildren<TextMeshProUGUI>();
                 victoryMessage.color = TeamTools.GetTeamColor(holdingTeam);
+                var victorySound = VictoryStateUI.GetComponent<AudioSource>();
+                
                 if (playerTeam == null)
                 {
                     //AI has won against AI, display victory message
                     victoryMessage.text = string.Format("AI WINS!");
+                    MusicPlayer.FadeVolume(.2f, 3);
                 }
                 else if (holdingTeam == playerTeam?.TeamId)
                 {
                     //player has won, display victory message
                     victoryMessage.text = string.Format("VICTORY!");
+                    MusicPlayer.FadeVolume(.2f, 3);
                 }
                 else
                 {
                     //AI has won againts player, display defeat message
                     victoryMessage.text = string.Format("DEFEAT...");
+                    MusicPlayer.FadeVolume(0, 3);
+                    
                 }
                 
                 VictoryStateUI.SetActive(true);
+                victorySound.Play();
                 GameMenu.ShowMenu(true);
             }
         }

@@ -351,6 +351,18 @@ public class AIController : MonoBehaviour
                 pickupLocation = p.transform.position;
             }
         }
+        //score retreat
+        //prioritize proximity (by movement speed)
+        var spawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
+        float retreatTime = Vector3.Distance(unit.transform.position, spawnPoint) / unit.Data.UnitClass.MoveSpeed;
+        //prioritize magnitude - up to max missing health
+        float retreatScore = (unit.Data.UnitClass.MaxHP - unit.Data.HP) / 100 / Mathf.Pow(Mathf.Max(retreatTime, Config.Speed), 2);
+        if(!hasTarget || retreatScore > score)
+        {
+            hasTarget = true;
+            score = retreatScore;
+            pickupLocation = spawnPoint;
+        }
         return score;
     }
 
@@ -400,6 +412,18 @@ public class AIController : MonoBehaviour
                 score = targetScore;
                 pickupLocation = p.transform.position;
             }
+        }
+        //score retreat
+        //prioritize proximity (by movement speed)
+        var spawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
+        float retreatTime = Vector3.Distance(unit.transform.position, spawnPoint) / unit.Data.UnitClass.MoveSpeed;
+        //prioritize magnitude - up to max missing health
+        float retreatScore = (unit.Data.UnitClass.MaxMP - unit.Data.MP) / 100 / Mathf.Pow(Mathf.Max(retreatTime, Config.Speed), 2);
+        if (!hasTarget || retreatScore > score)
+        {
+            hasTarget = true;
+            score = retreatScore;
+            pickupLocation = spawnPoint;
         }
         return score;
     }
@@ -452,7 +476,7 @@ public class AIController : MonoBehaviour
                 objectiveScore += 1f;
             }
         }
-        if (teamPointUnits + teamReserveUnits + objectiveScore >= enemyPointUnits && (enemyPointUnits > 0 || objectiveScore > 1.1f))
+        if ((teamPointUnits + teamReserveUnits + objectiveScore >= enemyPointUnits || teamPointUnits + teamReserveUnits >= 8) && (enemyPointUnits > 0 || objectiveScore > 1.1f))
         {
             //attack
             if(strategicStance != "Rush")
@@ -463,7 +487,7 @@ public class AIController : MonoBehaviour
             strategicStance = "Rush";
 
         }
-        else if (teamPointUnits + teamReserveUnits <= enemyPointUnits / 2)
+        else if (teamPointUnits + teamReserveUnits <= enemyPointUnits / 2 && teamPointUnits < 4)
         {
             //retreat
             if (strategicStance != "Retreat")

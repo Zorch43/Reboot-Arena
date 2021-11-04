@@ -36,18 +36,18 @@ public class SpawnPointController : MonoBehaviour
             particleMain.startColor = TeamColor.color;
         }
     }
+    public bool IsActive { get; set; }
     #endregion
     #region unity methods
     // Start is called before the first frame update
     void Start()
     {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        if (!IsActive)
+        {
+            //disable spawn field and minimap icon
+            MinimapMarker.gameObject.SetActive(false);
+            RespawnArea.gameObject.SetActive(false);
+        }
     }
     private void OnTriggerStay(Collider other)
     {
