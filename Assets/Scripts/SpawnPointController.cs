@@ -34,29 +34,21 @@ public class SpawnPointController : MonoBehaviour
             MinimapMarker.color = TeamColor.color;
             var particleMain = SpawnFieldSfx.main;
             particleMain.startColor = TeamColor.color;
+            if (_team == -1)
+            {
+                MinimapMarker.gameObject.SetActive(false);
+                RespawnArea.gameObject.SetActive(false);
+            }
+            else
+            {
+                MinimapMarker.gameObject.SetActive(true);
+                RespawnArea.gameObject.SetActive(true);
+            }
         }
     }
-    public bool IsActive { get; set; }
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
-        if (!IsActive)
-        {
-            //disable spawn field and minimap icon
-            MinimapMarker.gameObject.SetActive(false);
-            RespawnArea.gameObject.SetActive(false);
-        }
-    }
-    private void OnTriggerStay(Collider other)
-    {
-        var unit = other.gameObject.GetComponent<UnitController>();
-        if(unit?.Data.Team == ControllingTeam)
-        {
-            unit.Data.Restore();
-        }
-    }
+    
     #endregion
     #region public methods
     public UnitController SpawnUnit(UnitSlotModel unitSlot, bool hideUI)
@@ -64,7 +56,6 @@ public class SpawnPointController : MonoBehaviour
         //instantiate the unit on the map in an empty space in the respawn zone
 
         //starting from the center of the spawn field, search for an empty space (that is also within bounds of the spawn zone)
-
         Vector3 testPoint = RespawnArea.bounds.center;
         Vector3 nextNeighbor = new Vector3(0, 0, 1);
         

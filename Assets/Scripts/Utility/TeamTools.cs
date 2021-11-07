@@ -16,23 +16,23 @@ namespace Assets.Scripts.Utility
                 case 0:
                     return Color.red;
                 case 1:
-                    return Color.blue;
+                    return new Color(0, 0.15f, 1);//blue
                 case 2:
-                    return Color.yellow;
+                    return new Color(1, 0.85f, 0);//gold
                 case 3:
-                    return Color.green;
+                    return new Color(0, 0.7f, 0);//green (darker)
                 case 4:
                     return new Color(1, 0.5f, 0);//orange
                 case 5:
-                    return new Color(0.5f, 0, 1);//purple
+                    return new Color(0.7f, 0, 1);//purple
                 case 6:
                     return Color.magenta;
                 case 7:
                     return Color.cyan;
                 case 8:
-                    return Color.black;
+                    return new Color(0.1f, 0.1f, 0.1f); //off-white
                 case 9:
-                    return Color.white;
+                    return new Color(0.9f, 0.9f, 0.9f);//dark grey
                 default:
                     return Color.grey;
             }

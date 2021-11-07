@@ -17,7 +17,6 @@ public class CameraController : MonoBehaviour
     public RectTransform ViewRect_Mini;
     public LineRenderer ViewBounds;
     public MapController Map;
-    public GameObject InitialView;
     #endregion
     #region private fields
     private Rect viewRectMain;
@@ -81,7 +80,7 @@ public class CameraController : MonoBehaviour
         //TODO: only update when changing camera rotation or angle
 
         //pan to initial location
-        PanToMapLocation(InitialView.transform.position);
+        //PanToMapLocation(InitialView.transform.position);
     }
 
     // Update is called once per frame

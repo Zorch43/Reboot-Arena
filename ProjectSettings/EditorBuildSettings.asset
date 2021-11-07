@@ -15,12 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/KotH_Tempest.unity
     guid: b066dce5b9139494d9614efee26702a3
   - enabled: 1
-    path: Assets/Scenes/KoTH_KnifeFight.unity
+    path: Assets/Scenes/KotH_KnifeFight.unity
     guid: ba79353b8558f9a47945a14f7275f6fa
   - enabled: 1
-    path: Assets/Scenes/KoTH_Olympus.unity
+    path: Assets/Scenes/KotH_Olympus.unity
     guid: 0e173c22e9808054ab8dad8d34c8a7d6
   - enabled: 1
-    path: Assets/Scenes/KoTH_Bracket.unity
+    path: Assets/Scenes/KotH_Bracket.unity
     guid: 489b54b317f34f84e9947a843cd547f7
   m_configObjects: {}

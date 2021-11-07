@@ -29,7 +29,7 @@ public class GameObjectiveController : MonoBehaviour
 
     public MapController Map;
     public CommandController CommandInterface;
-
+    public CameraController Cameras;
     public MusicPlayerController MusicPlayer;
     
     #endregion
@@ -67,33 +67,40 @@ public class GameObjectiveController : MonoBehaviour
 
         //create teams based on battle config
         bool spectator = BattleConfig.IsPlayerSpectator;
-        for(int i = 0; i < BattleConfig.Players.Count; i++)
+        for(int i = 0; i < SpawnPoints.Length; i++)
         {
-            var teamConfig = BattleConfig.Players[i];
-            TeamController team = null;
-            if(teamConfig.Controller == PlayerConfigModel.ControlType.AI)
+            if(i < BattleConfig.Players.Count)
             {
-                team = Instantiate(AITeamTemplate, transform);
-                
-                var ai = team.GetComponent<AIController>();
-                ai.GameObjective = this;
-                ai.Config = AIConfigTemplates.GetAIConfigList()[teamConfig.AIIndex];//select ai for ai player
-                ai.Map = Map;
-                if (!spectator)
+                var teamConfig = BattleConfig.Players[i];
+                TeamController team = null;
+                if (teamConfig.Controller == PlayerConfigModel.ControlType.AI)
                 {
-                    team.HideUnitUI = true;
+                    team = Instantiate(AITeamTemplate, transform);
+
+                    var ai = team.GetComponent<AIController>();
+                    ai.GameObjective = this;
+                    ai.Config = AIConfigTemplates.GetAIConfigList()[teamConfig.AIIndex];//select ai for ai player
+                    ai.Map = Map;
+                    if (!spectator)
+                    {
+                        team.HideUnitUI = true;
+                    }
                 }
+                else if (teamConfig.Controller == PlayerConfigModel.ControlType.Player)
+                {
+                    team = Instantiate(PlayerTeamTemplate, transform);
+                    team.UnitSlotManager = PlayerSlotManager;
+                    PlayerUnitActions.Setup(team);
+                    Cameras.PanToMapLocation(SpawnPoints[i].transform.position);
+                }
+                team.Team = teamConfig.TeamId;
+                team.DefaultSpawnPoint = SpawnPoints[i];
+                Teams.Add(team);
             }
-            else if(teamConfig.Controller == PlayerConfigModel.ControlType.Player)
+            else
             {
-                team = Instantiate(PlayerTeamTemplate, transform);
-                team.UnitSlotManager = PlayerSlotManager;
-                PlayerUnitActions.Setup(team);
+                SpawnPoints[i].ControllingTeam = -1;
             }
-            team.Team = teamConfig.TeamId;
-            team.DefaultSpawnPoint = SpawnPoints[i];
-            team.DefaultSpawnPoint.IsActive = true;
-            Teams.Add(team);
         }
         if (spectator)
         {
