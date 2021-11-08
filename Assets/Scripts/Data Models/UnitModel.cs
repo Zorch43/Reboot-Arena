@@ -17,7 +17,6 @@ namespace Assets.Scripts.Data_Models
         public bool IsMoving { get; set; }
         public bool IsActing { get; set; }
         public float ActionCooldown { get; set; }//time until another action can be performed
-        public bool IsSelected { get; set; }
         #endregion
         public UnitModel (UnitClassModel unitClass)
         {

@@ -35,6 +35,7 @@ namespace Assets.Scripts.Data_Models
             }
         }//unit class that this slot will spawn once current unit dies
         public Vector3? RallyPoint { get; set; }
+        public bool IsSelected { get; set; }
         #endregion
         #region public methods
         public void DoUnitDeath()

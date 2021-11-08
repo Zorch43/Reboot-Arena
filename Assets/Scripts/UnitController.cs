@@ -89,7 +89,7 @@ public class UnitController : MonoBehaviour
     {
         float elapsedTime = Time.deltaTime;
         //update selection state
-        Selector.gameObject.SetActive(Data.IsSelected);
+        Selector.gameObject.SetActive(SpawnSlot.IsSelected);
         if (Agent.hasPath)
         {
             collider.radius = hitBoxSize + PERSONAL_SPACE;
@@ -149,6 +149,7 @@ public class UnitController : MonoBehaviour
         {
             d.Invoke();
         }
+        SpawnSlot.IsSelected = false;
         Destroy(gameObject);
     }
     public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot, bool hideUI)
@@ -252,11 +253,6 @@ public class UnitController : MonoBehaviour
         {
             //TODO: immediately activate ability
         }
-    }
-    //set the rally point for this unit's slot.  when another unit spawns from this slot, order it to the rally point
-    public void SetRallypoint(Vector3 location)
-    {
-        SpawnSlot.RallyPoint = location;
     }
     //cancel all orders given to this unit
     public void CancelOrders()

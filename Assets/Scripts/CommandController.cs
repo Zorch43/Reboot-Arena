@@ -66,7 +66,7 @@ public class CommandController : MonoBehaviour
             {
                 if(GetMouseMapPosition(out mapPos))
                 {
-                    GiveAttackMoveOrder(GetSelectedUnits(), mapPos);
+                    GiveAttackMoveOrder(mapPos);
                 }
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveModeKey)
@@ -147,7 +147,7 @@ public class CommandController : MonoBehaviour
         else
         {
             //left-click on minimap will always pan the camera to the clicked location
-            if(Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButtonDown(0))
+            if(Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButton(0))
             {
                 if(GetMouseMapPosition(out mapPos))
                 {
@@ -193,7 +193,7 @@ public class CommandController : MonoBehaviour
                     {
                         if (GetMouseMapPosition(out mapPos))
                         {
-                            GiveAttackMoveOrder(GetSelectedUnits(), mapPos);
+                            GiveAttackMoveOrder(mapPos);
                         }
 
                     }
@@ -256,27 +256,26 @@ public class CommandController : MonoBehaviour
     #region public methods
     public void SelectUnits(List<UnitController> units, bool addToSelection = false)
     {
-        var allUnits = GetAllUnits();
-        List<UnitController> selectedUnits = new List<UnitController>();
+        var selectedSlots = GetSelectedSlots();
+        var selectedUnits = GetSelectedUnits();
         if (!addToSelection)
         {
-            foreach (var u in allUnits)
+            foreach(var s in selectedSlots)
             {
-                u.Data.IsSelected = false;
+                s.Data.IsSelected = false;
             }
         }
         bool responseGiven = false;
         foreach (var u in units)
         {
-            u.Data.IsSelected = !GameObjectiveController.BattleConfig.IsAITeam(u.Data.Team) && (!addToSelection || !u.Data.IsSelected);
-            if(u.Data.IsSelected)
+            u.SpawnSlot.IsSelected = !GameObjectiveController.BattleConfig.IsAITeam(u.Data.Team) && (!addToSelection || !u.SpawnSlot.IsSelected);
+            if(u.SpawnSlot.IsSelected)
             {
                 if (!responseGiven)
                 {
                     responseGiven = true;
                     u.UnitVoice.PlaySelectionResponse();
                 }
-                selectedUnits.Add(u);
             }
         }
         UnitActionUI.PopulateAbilityButtons(selectedUnits);
@@ -340,8 +339,9 @@ public class CommandController : MonoBehaviour
         selectedUnit.DoMove(targetLocation, true);
         selectedUnit.CommandTarget = null;
     }
-    public void GiveAttackMoveOrder(List<UnitController> selectedUnits, Vector3 location)
+    public void GiveAttackMoveOrder(Vector3 location)
     {
+        var selectedUnits = GetSelectedUnits();
         bool firstResponse = false;
         //give each unit an attack-move command to the given location
         foreach(var u in selectedUnits)
@@ -378,13 +378,13 @@ public class CommandController : MonoBehaviour
     }
     public void GiveRallyOrder(Vector3 location)
     {
-        //get all selected units
-        var selectedUnits = GetSelectedUnits();
+        //get all selected slots
+        var selectedUnits = GetSelectedSlots();
         bool firstResponse = false;
         //set each selected unit's rally point to the given location
         foreach (var u in selectedUnits)
         {
-            u.SetRallypoint(location);
+            u.Data.RallyPoint = location;
             if (!firstResponse)
             {
                 firstResponse = true;
@@ -575,6 +575,48 @@ public class CommandController : MonoBehaviour
         }
         return null;
     }
+    //get selected units from slots
+    public List<UnitSlotController> GetSelectedSlots()
+    {
+        var allSlots = UnitSlotUI.UnitSlots;
+        var selectedSlots = new List<UnitSlotController>();
+        foreach (var u in allSlots)
+        {
+            //add to list if selected
+            if (u.Data.IsSelected)
+            {
+                selectedSlots.Add(u);
+            }
+        }
+        return selectedSlots;
+    }
+    public List<UnitController> GetSelectedUnits()
+    {
+        var selectedSlots = GetSelectedSlots();
+        var selectedUnits = new List<UnitController>();
+        foreach (var s in selectedSlots)
+        {
+            if (s.Data.CurrentUnit != null)
+            {
+                selectedUnits.Add(s.Data.CurrentUnit);
+            }
+        }
+        return selectedUnits;
+    }
+    public List<UnitController> GetAllUnits()
+    {
+        var allUnits = new List<UnitController>();
+        var allSlots = UnitSlotUI.UnitSlots;
+        foreach (var s in allSlots)
+        {
+            if (s.Data.CurrentUnit != null)
+            {
+                allUnits.Add(s.Data.CurrentUnit);
+            }
+        }
+
+        return allUnits;
+    }
     #endregion
     #region private methods
     private void SelectUnitsInRect(Rect rect)
@@ -641,23 +683,6 @@ public class CommandController : MonoBehaviour
 
         return GetMapPositionFromScreen(Input.mousePosition, out mapPos, fromCamera);
     }
-    private List<UnitController> GetSelectedUnits()
-    {
-        var allUnits = GetAllUnits();
-        var selectedUnits = new List<UnitController>();
-        foreach(var u in allUnits)
-        {
-            if (u.Data.IsSelected)
-            {
-                selectedUnits.Add(u);
-            }
-        }
-        return selectedUnits;
-    }
-    private List<UnitController> GetAllUnits()
-    {
-        var allUnits = Map.GetComponentsInChildren<UnitController>();
-        return new List<UnitController>(allUnits);
-    }
+    
     #endregion
 }

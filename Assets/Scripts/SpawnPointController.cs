@@ -123,6 +123,28 @@ public class SpawnPointController : MonoBehaviour
         }
         return null;
     }
+    public void MassSpawn(List<UnitSlotModel> unitSlots, bool hideUI)
+    {
+        //place all units in a 3x3 grid in the center of the spawn field
+        int i = 0;
+        Vector3 startPoint = RespawnArea.transform.position + new Vector3(-1, 0, -1) * 2 * SEARCH_GRID_SIZE;
+        for(int x = 0; x < 3; x++)
+        {
+            for(int y = 0; y < 3; y++)
+            {
+                if(i >= unitSlots.Count)
+                {
+                    return;
+                }
+                var u = unitSlots[i];
+                //spawn unit and stop looking for an open spot
+                var spawnedUnit = Instantiate(u.NextUnitClass, transform.parent);
+                spawnedUnit.SpawnSetup(startPoint, _team, u, hideUI);
+                startPoint += new Vector3(0, 0, 1) * 2 * SEARCH_GRID_SIZE;
+            }
+            startPoint += new Vector3(1, 0, 0) * 2 * SEARCH_GRID_SIZE;
+        }
+    }
     #endregion
     #region private methods
 

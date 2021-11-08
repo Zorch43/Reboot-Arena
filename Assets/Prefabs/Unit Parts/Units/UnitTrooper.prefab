@@ -21641,8 +21641,28 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7007349561897394061, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+      propertyPath: VelocityModule.x.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7007349561897394061, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+      propertyPath: VelocityModule.y.scalar
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7007349561897394061, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.5
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7008315494835856399, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7008315494835856399, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7008315494835856399, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
+      propertyPath: m_AllowRoll
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7173743031940173447, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
       propertyPath: m_LocalScale.x
@@ -21662,7 +21682,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7173743031940173447, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.15
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 7173743031940173447, guid: 1db7c84e67116264a8048f175fa1d27d, type: 3}
       propertyPath: m_LocalPosition.z

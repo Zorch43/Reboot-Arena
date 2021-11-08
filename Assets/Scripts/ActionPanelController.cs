@@ -192,34 +192,16 @@ public class ActionPanelController : MonoBehaviour
 
     public void UpdateSpecialActions()
     {
-        bool canUse = false;
-        if(lastSelectedUnits != null && lastSelectedUnits.Count > 0)
-        {
-            foreach(var u in lastSelectedUnits)
-            {
-                if(u != null)
-                {
-                    canUse = true;
-                    break;
-                }
-            }
-        }
-        if (canUse)
-        {
-            //enable all ability buttons
-            MoveAttackButton.interactable = true;
-            ForceAttackButton.interactable = true;
-            SetRallyButton.interactable = true;
-            StopActionButton.interactable = true;
-        }
-        else
-        {
-            //disable ability buttons, as no units are selected
-            MoveAttackButton.interactable = false;
-            ForceAttackButton.interactable = false;
-            SetRallyButton.interactable = false;
-            StopActionButton.interactable = false;
-        }
+        var selectedSlots = CommandInterface.GetSelectedSlots();
+        bool slotsSelected = selectedSlots.Count > 0;
+        var selectedUnits = CommandInterface.GetSelectedUnits();
+        bool unitsSelected = selectedUnits.Count > 0;
+
+        //set all ability buttons
+        MoveAttackButton.interactable = unitsSelected;
+        ForceAttackButton.interactable = unitsSelected;
+        SetRallyButton.interactable = slotsSelected;
+        StopActionButton.interactable = unitsSelected;
     }
     #endregion
     #region private methods

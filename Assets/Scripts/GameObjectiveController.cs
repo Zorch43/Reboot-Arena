@@ -36,9 +36,46 @@ public class GameObjectiveController : MonoBehaviour
     #region private fields
 
     private KotHTimerController timers;
+    private TeamController playerTeam;
     #endregion
     #region properties
     public List<TeamController> Teams { get; set; } = new List<TeamController>();
+    public List<UnitController> AllUnits
+    {
+        get
+        {
+            var units = new List<UnitController>();
+            foreach(var t in Teams)
+            {
+                foreach(var u in t.UnitSlots)
+                {
+                    if(u.CurrentUnit != null)
+                    {
+                        units.Add(u.CurrentUnit);
+                    }
+                }
+            }
+            return units;
+        }
+    }
+    public List<UnitController> PlayerUnits
+    {
+        get
+        {
+            var units = new List<UnitController>();
+            if(playerTeam != null)
+            {
+                foreach (var u in playerTeam.UnitSlots)
+                {
+                    if (u.CurrentUnit != null)
+                    {
+                        units.Add(u.CurrentUnit);
+                    }
+                }
+            }
+            return units;
+        }
+    }
 
     #endregion
     #region unity methods
@@ -89,6 +126,7 @@ public class GameObjectiveController : MonoBehaviour
                 else if (teamConfig.Controller == PlayerConfigModel.ControlType.Player)
                 {
                     team = Instantiate(PlayerTeamTemplate, transform);
+                    playerTeam = team;
                     team.UnitSlotManager = PlayerSlotManager;
                     PlayerUnitActions.Setup(team);
                     Cameras.PanToMapLocation(SpawnPoints[i].transform.position);

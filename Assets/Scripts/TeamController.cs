@@ -7,7 +7,7 @@ public class TeamController : MonoBehaviour
 {
     #region constants
     public const float BASE_RESPAWN_TIME = 30;
-    public const float MIN_QUEUE_TIME = 0.25f;//minimum time between spawns
+    public const float MIN_QUEUE_TIME = 0.1f;//minimum time between spawns
     #endregion
     #region public fields
     public UnitSlotManager UnitSlotManager;//9 unit slots
@@ -42,7 +42,7 @@ public class TeamController : MonoBehaviour
                 UnitSlots.Add(s.Data);
                 s.Data.SlotNumber = i + 1;
                 s.Data.NextUnitClass = UnitTemplates[0];
-                s.Data.RespawnProgress = 0.99f - i * 0.25f / BASE_RESPAWN_TIME;
+                s.Data.RespawnProgress = 1f;
             }
         }
         else
@@ -53,9 +53,10 @@ public class TeamController : MonoBehaviour
                 UnitSlots.Add(slot);
                 slot.SlotNumber = i + 1;
                 slot.NextUnitClass = UnitTemplates[0];
-                slot.RespawnProgress = 0.99f - i * 0.25f / BASE_RESPAWN_TIME;
+                slot.RespawnProgress = 1f;
             }
         }
+        //SpawnPoint.MassSpawn(UnitSlots, HideUnitUI);
     }
 
     // Update is called once per frame

@@ -61,8 +61,6 @@ public class UnitSlotController : MonoBehaviour
             //TODO: update portrait and symbol
             PortraitImage.sprite = Data.CurrentUnit.Portrait;
             ClassSymbol.sprite = Data.CurrentUnit.Symbol;
-            //update selection state
-            SelectionIndicator.SetActive(unitData.IsSelected);
 
             //update tooltip
             ToolTip.Clear();
@@ -91,32 +89,28 @@ public class UnitSlotController : MonoBehaviour
                 string.Format("Respawning... {0}%", (int)Mathf.Min(Data.RespawnProgress * 100, 100))
             };
         }
+        //update selection state
+        SelectionIndicator.SetActive(Data.IsSelected);
     }
     #endregion
     #region public methods
-    public void SelectUnitSlot()//TODO: select units through the command interface
+    public void SelectUnitSlot()
     {
-        if(Data.CurrentUnit != null)
+        if (!Input.GetKey(KeyCode.LeftShift))
         {
-            if (!Input.GetKey(KeyCode.LeftShift))
+            foreach (var u in Manager.UnitSlots)
             {
-                foreach (var u in Manager.UnitSlots)
-                {
-                    if (u.Data.CurrentUnit != null)
-                    {
-                        u.Data.CurrentUnit.Data.IsSelected = false;
-                    }
-                }
-                Data.CurrentUnit.Data.IsSelected = true;
+                u.Data.IsSelected = false;
             }
-            else
-            {
-                Data.CurrentUnit.Data.IsSelected = !Data.CurrentUnit.Data.IsSelected;
-            }
-            if (Data.CurrentUnit.Data.IsSelected)
-            {
-                Data.CurrentUnit.UnitVoice.PlaySelectionResponse();
-            }
+            Data.IsSelected = true;
+        }
+        else
+        {
+            Data.IsSelected = !Data.IsSelected;
+        }
+        if (Data.IsSelected && Data.CurrentUnit != null)
+        {
+            Data.CurrentUnit.UnitVoice.PlaySelectionResponse();
         }
     }
     #endregion
