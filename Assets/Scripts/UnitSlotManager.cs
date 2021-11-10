@@ -39,11 +39,6 @@ public class UnitSlotManager : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     #endregion
     #region public methods
     public void SelectSlot(int slotNumber)

@@ -46,10 +46,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitSlotManager: {fileID: 0}
   UnitTemplates:
-  - {fileID: 3547829160376237368, guid: bb732ae2e9079b44b8139e80252c8e25, type: 3}
+  - {fileID: 2534812876650324765, guid: 43d854505b556e745a631c602cb16639, type: 3}
   DefaultSpawnPoint: {fileID: 0}
   Team: 1
-  HideUnitUI: 1
 --- !u!114 &6008542786956288643
 MonoBehaviour:
   m_ObjectHideFlags: 0
