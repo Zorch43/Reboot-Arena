@@ -46,6 +46,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UnitSlotManager: {fileID: 0}
   UnitTemplates:
+  - {fileID: 720498032445922394, guid: 849697edc5708ce428fa19259972ae0b, type: 3}
   - {fileID: 2534812876650324765, guid: 43d854505b556e745a631c602cb16639, type: 3}
   DefaultSpawnPoint: {fileID: 0}
   Team: 1

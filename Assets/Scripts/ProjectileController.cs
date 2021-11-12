@@ -109,7 +109,7 @@ public class ProjectileController : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        else if (unit != null && unit.Data.Team != AllyTeam)
+        else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
         {
             if (!DoImpact(transform.position, unit))
             {
@@ -148,7 +148,8 @@ public class ProjectileController : MonoBehaviour
         //otherwise damage the unit
         else
         {
-            unit.Data.HP -= Weapon.Damage / Weapon.ProjectileBurstSize;
+            unit.DamageUnit(Weapon.HealthDamage / Weapon.ProjectileBurstSize);
+            unit.DrainUnit(Weapon.AmmoDamage / Weapon.ProjectileBurstSize);
         }
 
         //return whether the projectile should continue
@@ -175,7 +176,8 @@ public class ProjectileController : MonoBehaviour
             var unit = h.GetComponent<UnitController>();
             if (unit != null && unit.Data.Team != AllyTeam)
             {
-                unit.Data.HP -= Weapon.Damage / Weapon.ProjectileBurstSize;
+                unit.DamageUnit(Weapon.HealthDamage / Weapon.ProjectileBurstSize);
+                unit.DrainUnit(Weapon.AmmoDamage / Weapon.ProjectileBurstSize);
             }
         }
         //play explosion effect

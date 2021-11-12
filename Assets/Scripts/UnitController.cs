@@ -14,6 +14,7 @@ public class UnitController : MonoBehaviour
     private const float ORDER_RADIUS = 1f;
     #endregion
     #region public fields
+    public UnitClassTemplates.UnitClasses UnitClass;
     public GameObject UnitAppearance;
     public SpriteRenderer MiniMapIcon;
     public TextMeshPro MinimapNumber;
@@ -37,7 +38,7 @@ public class UnitController : MonoBehaviour
     public VariableEffect ReloadEffect;
     public SpecialEffectController DeathExplosion;
     public ToolTipContentController ToolTip;
-    public MeshRenderer[] TeamColorParts;
+    public MeshRecolorModel[] TeamColorParts;
     
     #endregion
     #region private fields
@@ -50,7 +51,8 @@ public class UnitController : MonoBehaviour
     public Vector3 SpacingVector { get; set; }
     public UnitModel Data { get; set; }
     public UnitController CommandTarget { get; set; }
-    public UnitController AutoTarget { get; set; }
+    public UnitController AutoTarget1 { get; set; }
+    public UnitController AutoTarget2 { get; set; }
     public Vector3? ForceTarget { get; set; }
     public Vector3? AbilityTarget { get; set; }
     public Vector3? AttackMoveDestination { get; set; }
@@ -64,7 +66,8 @@ public class UnitController : MonoBehaviour
         //TEMP: initialize data model
         if(Data == null)
         {
-            Data = new UnitModel(UnitClassTemplates.GetTrooperClass());
+            //get data class from class name
+            Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         }
         
         initialRotation = UnitEffects.transform.rotation;
@@ -154,7 +157,7 @@ public class UnitController : MonoBehaviour
     }
     public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot, bool hideUI)
     {
-        Data = new UnitModel(UnitClassTemplates.GetTrooperClass());//TEMP: decide on either model-first or gameobject first
+        Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         Data.Team = team;
         Agent.enabled = false;//disable the agent while manually placing the unit
         transform.position = position;
@@ -182,7 +185,7 @@ public class UnitController : MonoBehaviour
     {
         if(Data == null)
         {
-            return new UnitModel(UnitClassTemplates.GetTrooperClass());
+            return new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         }
         else
         {
@@ -202,10 +205,23 @@ public class UnitController : MonoBehaviour
         //return amount healed
         return amountHealed;
     }
+    public float DamageUnit(float amount)
+    {
+        if(amount <= 0)
+        {
+            return HealUnit(-amount);
+        }
+        float oldHealth = Data.HP;
+        Data.HP -= amount;
+        Data.HP = Math.Max(0, Data.HP);
+
+        var damage = oldHealth - Data.HP;
+        return damage;
+    }
     public float ReloadUnit(float amount)
     {
         //resupply the unit by amount, up to max mp
-        float oldAmmo = Data.HP;
+        float oldAmmo = Data.MP;
         Data.MP += amount;
         Data.MP = Mathf.Min(Data.UnitClass.MaxMP, Data.MP);
         //scale and play the reload effect
@@ -214,6 +230,19 @@ public class UnitController : MonoBehaviour
         ReloadEffect.PlayEffect(effectStrength);
         //return amount loaded
         return amountLoaded;
+    }
+    public float DrainUnit(float amount)
+    {
+        if (amount <= 0)
+        {
+            return ReloadUnit(-amount);
+        }
+        float oldAmmo = Data.MP;
+        Data.MP -= amount;
+        Data.MP = Math.Max(0, Data.MP);
+
+        var drain = oldAmmo - Data.MP;
+        return drain;
     }
     public void DoAttack(UnitController target)
     {
@@ -333,7 +362,6 @@ public class UnitController : MonoBehaviour
     }
     #endregion
     #region private methods
-    //when right-clicking on a unit
     private void DoUnitAction()
     {
         bool hasCommandTarget = false;
@@ -345,8 +373,16 @@ public class UnitController : MonoBehaviour
         else if(Data.Team == CommandTarget.Data.Team)
         {
             //perform support action (if it exists)
-            //else clear command attack
-            CommandTarget = null;
+            if(Data.UnitClass.PrimaryWeapon.TargetsAllies() || Data.UnitClass.SecondaryWeapon.TargetsAllies())
+            {
+                hasCommandTarget = DoCommandAttack();
+            }
+            else
+            {
+                //else move to friendly unit's position
+                DoMove(CommandTarget.transform.position, true);
+                CommandTarget = null;
+            }
         }
         else
         {
@@ -356,7 +392,7 @@ public class UnitController : MonoBehaviour
         if (!hasCommandTarget)
         {
             //autoattack
-            DoAutoAttack();
+            DoAutoAttacks();
         }
     }
     //if the command target is within range, attack it.
@@ -365,12 +401,13 @@ public class UnitController : MonoBehaviour
     private bool DoCommandAttack()
     {
         Vector3? targetPosition = null;
-
+        bool isAlly = false;
         DoAttackMove();//if unit is set to attack-move, this will choose a command target if available
 
         if(CommandTarget != null)
         {
             targetPosition = CommandTarget.transform.position;
+            isAlly = CommandTarget.Data.Team == Data.Team;
         }
         else if(ForceTarget != null)
         {
@@ -384,7 +421,10 @@ public class UnitController : MonoBehaviour
         if(targetPosition != null)
         {
             var target = targetPosition ?? new Vector3();
-            var activeWeapon = GetActiveWeapon(target, false, false);
+
+            var activeWeapon = GetActiveWeapon(target, false, false, isAlly);
+           
+
 
             //perform attack action on unit
             //if can attack (not counting cooldowns), do so
@@ -392,13 +432,31 @@ public class UnitController : MonoBehaviour
             {
 
                 DoPreAttack(activeWeapon, target, true);
+                //if ambidextrous:
+                if (Data.UnitClass.IsAmbidextrous)
+                {
+                    //get an auto-attack target for the other weapon
+                    //get rotation for command target
+                    var flatTarget = new Vector3(AutoTarget1.transform.position.x, transform.position.y, AutoTarget1.transform.position.z);//only look on the y-axis
+                    var commandRotation = Quaternion.LookRotation(flatTarget - transform.position);
+                    //get other weapon
+                    if (activeWeapon == Data.UnitClass.PrimaryWeapon)
+                    {
+                        var otherWeapon = Data.UnitClass.SecondaryWeapon;
+                        AutoTarget2 = GetAutoAttackTarget(otherWeapon, AutoTarget2, Agent.hasPath, true, commandRotation, activeWeapon.FiringArc);
+                        DoPreAttack(otherWeapon, AutoTarget2.transform.position, true, false);
+                    }
+                    else
+                    {
+                        var otherWeapon = Data.UnitClass.PrimaryWeapon;
+                        AutoTarget1 = GetAutoAttackTarget(otherWeapon, AutoTarget1, Agent.hasPath, true, commandRotation, activeWeapon.FiringArc);
+                        DoPreAttack(otherWeapon, AutoTarget1.transform.position, true, false);
+                    }
+                }
                 return true;
             }
             else//move to engage
             {
-                //move into position
-                //TODO: only do if not in range
-                //Agent.SetDestination(target);
                 DoMove(target, false);
                 return false;
             }
@@ -426,21 +484,71 @@ public class UnitController : MonoBehaviour
             }
         }
     }
+    private void DoAutoAttacks()
+    {
+        //if ambidextrous:
+        if (Data.UnitClass.IsAmbidextrous)
+        {
+            //get an auto-attack target for primary and secondary weapon
+            //prefer existing auto-attack targets
+            AutoTarget1 = GetAutoAttackTarget(Data.UnitClass.PrimaryWeapon, AutoTarget1, Agent.hasPath, true);
+            Quaternion primaryRotation = new Quaternion();
+            float primaryArc = 360;
+            if(AutoTarget1 != null)
+            {
+                var flatTarget = new Vector3(AutoTarget1.transform.position.x, transform.position.y, AutoTarget1.transform.position.z);//only look on the y-axis
+                primaryRotation = Quaternion.LookRotation(flatTarget - transform.position);
+                primaryArc = Data.UnitClass.PrimaryWeapon.FiringArc;
+            }
+            AutoTarget2 = GetAutoAttackTarget(Data.UnitClass.SecondaryWeapon, AutoTarget2, Agent.hasPath, true, primaryRotation, primaryArc);
+            
+            //if either the primary or secondary weapons have targets
+            if(AutoTarget1 != null || AutoTarget2 != null)
+            {
+                //do pre attack and stop agent steering
+                if(AutoTarget1 != null && AutoTarget2 != null)
+                {
+                    DoPreAttacks(AutoTarget1.transform.position, AutoTarget2.transform.position, false);
+                }
+                else if(AutoTarget1 != null)
+                {
+                    DoPreAttack(Data.UnitClass.PrimaryWeapon, AutoTarget1.transform.position, false);
+                }
+                else if (AutoTarget2 != null)
+                {
+                    DoPreAttack(Data.UnitClass.SecondaryWeapon, AutoTarget2.transform.position, false);
+                }
+                //disable agent turning
+                Agent.angularSpeed = 0;
+            }
+            else
+            {
+                //else re-enable agent steering
+                Agent.angularSpeed = Data.UnitClass.TurnSpeed / Mathf.PI * 180;
+            }
+            
+        }
+        else
+        {
+            DoAutoAttack();
+        }
 
+        //if single-weapon: do a single attack, preferring the primary target
+    }
     private void DoAutoAttack()
     {
         //get weapon to attack with
-        var activeWeapon = GetActiveWeapon(AutoTarget, Agent.hasPath, true);
+        var activeWeapon = GetActiveWeapon(AutoTarget1, Agent.hasPath, true);
         //check existing autoattack target
         //if invalid, get new target
         if (activeWeapon == null)
         {
-            AutoTarget = GetAutoAttackTarget();
-            activeWeapon = GetActiveWeapon(AutoTarget, Agent.hasPath, true);
+            AutoTarget1 = GetAutoAttackTarget();
+            activeWeapon = GetActiveWeapon(AutoTarget1, Agent.hasPath, true);
         }
         if(activeWeapon != null)
         {
-            DoPreAttack(activeWeapon, AutoTarget.transform.position, false);
+            DoPreAttack(activeWeapon, AutoTarget1.transform.position, false);
             //disable agent turning
             Agent.angularSpeed = 0;
         }
@@ -450,14 +558,28 @@ public class UnitController : MonoBehaviour
         }
 
     }
-    private void DoPreAttack(WeaponModel activeWeapon, Vector3 target, bool stopMoving)
+    private void DoPreAttacks(Vector3 primaryTarget, Vector3 secondaryTarget, bool stopMoving)
+    {
+        //turn towards the target whose weapon has the smaller arc (if equal, turn towards primary target)
+        var primaryWeapon = Data.UnitClass.PrimaryWeapon;
+        var secondaryWeapon = Data.UnitClass.SecondaryWeapon;
+        DoPreAttack(primaryWeapon, primaryTarget, stopMoving, primaryWeapon.FiringArc >= secondaryWeapon.FiringArc);
+        DoPreAttack(secondaryWeapon, secondaryTarget, stopMoving, secondaryWeapon.FiringArc > primaryWeapon.FiringArc);
+    }
+    private void DoPreAttack(WeaponModel activeWeapon, Vector3 target, bool stopMoving, bool turnUnit = true)
     {
         //turn towards target
-        var flatTarget = new Vector3(target.x, transform.position.y, target.z);//only turn on the y-axis
-        var targetRotation = Quaternion.LookRotation(flatTarget - transform.position);
-        transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
-        var remainingAngle = Quaternion.Angle(targetRotation, transform.rotation);
-        if (remainingAngle < 5)
+        if (turnUnit)
+        {
+            var flatTarget = new Vector3(target.x, transform.position.y, target.z);//only turn on the y-axis
+            var targetRotation = Quaternion.LookRotation(flatTarget - transform.position);
+            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
+            var remainingAngle = Quaternion.Angle(targetRotation, transform.rotation);
+        }
+        var weaponMount = GetWeaponController(activeWeapon);
+        //if facing the the target, and mounts are either also facing the target, or cannot rotate more, fire the weapon
+        bool weaponReady = weaponMount.TraverseMounts(activeWeapon, target, transform.rotation);
+        if (weaponReady)
         {
             //once facing target, fire weapon
             DoAttack(activeWeapon, target);
@@ -472,19 +594,24 @@ public class UnitController : MonoBehaviour
             //Debug.Log("Remaining Angle: " + remainingAngle);
         }
     }
+    private WeaponController GetWeaponController(WeaponModel activeWeapon)
+    {
+        WeaponController weaponMount = PrimaryWeaponMount;
+        if (activeWeapon == Data.UnitClass.SecondaryWeapon)
+        {
+            weaponMount = SecondaryWeaponMount;
+        }
+        else if (activeWeapon == Data.UnitClass.SpecialAbility.AbilityWeapon)
+        {
+            weaponMount = AbilityWeaponMount;
+        }
+        return weaponMount;
+    }
     private void DoAttack(WeaponModel activeWeapon, Vector3 target)
     {
         if(activeWeapon != null && activeWeapon.IsCooledDown())
         {
-            WeaponController weaponMount = PrimaryWeaponMount;
-            if(activeWeapon == Data.UnitClass.SecondaryWeapon)
-            {
-                weaponMount = SecondaryWeaponMount;
-            }
-            else if(activeWeapon == Data.UnitClass.SpecialAbility.AbilityWeapon)
-            {
-                weaponMount = AbilityWeaponMount;
-            }
+            var weaponMount = GetWeaponController(activeWeapon);
 
             weaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
             activeWeapon.StartCooldown();
@@ -496,7 +623,7 @@ public class UnitController : MonoBehaviour
             }
         }
     }
-    private int CanAttackWithWeapon(WeaponModel weapon, Vector3 target, bool isMoving, bool isAutoAttack)
+    private int CanAttackWithWeapon(WeaponModel weapon, Vector3 target, bool isMoving, bool isAutoAttack, bool isAlly)
     {
         //reason code:
         //0: can attack as normal
@@ -506,7 +633,12 @@ public class UnitController : MonoBehaviour
         //4: out of ammo
         //5: can't auto-attack
         //6: can't attack while moving
+        //7: invalid unit team
         int reason = 0;
+        if(weapon.TargetsAllies() != isAlly)
+        {
+            reason = 7;
+        }
         if(isMoving && !weapon.FireWhileMoving)
         {
             reason = 6;
@@ -533,12 +665,12 @@ public class UnitController : MonoBehaviour
 
         return reason;
     }
-    private WeaponModel GetActiveWeapon(Vector3 target, bool isMoving, bool isAutoAttack)
+    private WeaponModel GetActiveWeapon(Vector3 target, bool isMoving, bool isAutoAttack, bool isAlly)
     {
         if(AbilityTarget != null && Data.UnitClass.SpecialAbility.IsWeaponAbility)
         {
             var abilityWeapon = Data.UnitClass.SpecialAbility.AbilityWeapon;
-            int abiltyReason = CanAttackWithWeapon(abilityWeapon, target, isMoving, isAutoAttack);
+            int abiltyReason = CanAttackWithWeapon(abilityWeapon, target, isMoving, isAutoAttack, isAlly);
             if (abiltyReason == 0 || abiltyReason == 1)
             {
                 return abilityWeapon;
@@ -546,13 +678,13 @@ public class UnitController : MonoBehaviour
         }
         else
         {
-            int primaryReason = CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon, target, isMoving, isAutoAttack);
+            int primaryReason = CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon, target, isMoving, isAutoAttack, isAlly);
             if (primaryReason == 0 || primaryReason == 1)
             {
                 return Data.UnitClass.PrimaryWeapon;
             }
 
-            int secondaryReason = CanAttackWithWeapon(Data.UnitClass.SecondaryWeapon, target, isMoving, isAutoAttack);
+            int secondaryReason = CanAttackWithWeapon(Data.UnitClass.SecondaryWeapon, target, isMoving, isAutoAttack, isAlly);
             if (secondaryReason == 0 || secondaryReason == 1)
             {
                 return Data.UnitClass.SecondaryWeapon;
@@ -565,7 +697,8 @@ public class UnitController : MonoBehaviour
     {
         if(target != null)
         {
-            return GetActiveWeapon(target.transform.position, isMoving, isAutoAttack);
+            bool isAlly = target.Data.Team == Data.Team;
+            return GetActiveWeapon(target.transform.position, isMoving, isAutoAttack, isAlly);
         }
         return null;
     }
@@ -613,7 +746,67 @@ public class UnitController : MonoBehaviour
             return bestTarget;
         }
     }
-    
+    private UnitController GetAutoAttackTarget(WeaponModel weapon, UnitController target, bool isMoving, bool autoAttackOnly = true, Quaternion otherRotation = new Quaternion(), float otherArc = 360)
+    {
+        if (target != null)
+        {
+            bool isAlly = target.Data.Team == Data.Team;
+            var reason = CanAttackWithWeapon(weapon, target.transform.position, isMoving, true, isAlly);
+            if (reason == 0 || reason == 1)
+            {
+                return target;
+            }
+        }
+        //get a new target
+        UnitController newTarget = null;
+        UnitController bestTarget = null;
+        //get the nearest valid target and attack it
+        var map = transform.parent.gameObject;
+        var units = map.GetComponentsInChildren<UnitController>();
+        float bestDistance = 0;
+        foreach (var u in units)
+        {
+            if (u.Data.Team == Data.Team == weapon.TargetsAllies())
+            {
+                //choose closest target in line-of-sight
+                //and within arc
+                float arc = Mathf.Max(weapon.FiringArc, otherArc);
+                if(arc < 360)
+                {
+                    //calculate angle to potential target
+                    var flatTarget = new Vector3(u.transform.position.x, transform.position.y, u.transform.position.z);//only look on the y-axis
+                    var targetRotation = Quaternion.LookRotation(flatTarget - transform.position);
+                    var angle = Quaternion.Angle(targetRotation, otherRotation);
+                    if(angle > arc)
+                    {
+                        continue;//skip this as a valid target
+                    }
+                }
+                
+
+                var distance = Vector3.Distance(u.transform.position, transform.position);
+                if (newTarget == null || distance < bestDistance)
+                {
+                    //prefer units in line-of-sight
+                    bestDistance = distance;
+                    newTarget = u;
+                    if ((!weapon.NeedsLineOfSight() && (!autoAttackOnly || weapon.CanAutoAttack))
+                        || HasLineOfSight(u.transform.position))
+                    {
+                        bestTarget = u;
+                    }
+                }
+            }
+        }
+        if (bestTarget == null)
+        {
+            return newTarget;
+        }
+        else
+        {
+            return bestTarget;
+        }
+    }
     private void DoLootDrop()
     {
         var loot = Instantiate(DeathLoot, transform.parent);
@@ -629,7 +822,7 @@ public class UnitController : MonoBehaviour
         var color = TeamTools.GetTeamColor(team);
         foreach (var p in TeamColorParts)
         {
-            p.material.color = color;
+            p.Part.materials[p.TeamColorIndex].color = color;
         }
         var particleMain = JetStream.main;
         particleMain.startColor = color;
@@ -644,8 +837,8 @@ public class UnitController : MonoBehaviour
         var secondaryWeapon = Data.UnitClass.SecondaryWeapon;
         ToolTip.Stats = new string[]
         {
-            string.Format("Primary Weapon: {0} ({1} damage, {2}/s)", primaryWeapon.Name, primaryWeapon.Damage, 1/primaryWeapon.Cooldown),
-            string.Format("Secondary Weapon: {0} ({1} damage, {2}/s)", secondaryWeapon.Name, secondaryWeapon.Damage, 1/secondaryWeapon.Cooldown),
+            string.Format("Primary Weapon: {0} ({1} damage, {2}/s)", primaryWeapon.Name, primaryWeapon.HealthDamage, 1/primaryWeapon.Cooldown),
+            string.Format("Secondary Weapon: {0} ({1} damage, {2}/s)", secondaryWeapon.Name, secondaryWeapon.HealthDamage, 1/secondaryWeapon.Cooldown),
             string.Format("Special Ability: {0}", Data.UnitClass.SpecialAbility.Name)
         };
         ToolTip.AmmoCost = Data.MP + "/" + Data.UnitClass.MaxMP;

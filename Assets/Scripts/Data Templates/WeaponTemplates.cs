@@ -16,7 +16,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Assault Rifle (Semi-Auto)",
                 Cooldown = .5f,
-                Damage = 10,
+                HealthDamage = 10,
                 DamageFalloff = 0.25f,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
                 CanAutoAttack = true,
@@ -34,7 +34,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Assault Rifle (Full Auto)",
                 Cooldown = .2f,
-                Damage = 10,
+                HealthDamage = 10,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_LONG,
                 ProjectileSpeed = 20f,
                 InAccuracy = 10,
@@ -52,7 +52,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Frag Grenade",
                 Cooldown = 1,
-                Damage = 50,
+                HealthDamage = 50,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
                 Explodes = true,
                 ExplosionSize = 2f,
@@ -71,7 +71,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Grenade Launcher",
                 Cooldown = 2,
-                Damage = 60,
+                HealthDamage = 60,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
                 Explodes = true,
                 ExplosionSize = 0.64f,
@@ -88,7 +88,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Railgun",
                 Cooldown = 4,
-                Damage = 100,
+                HealthDamage = 100,
                 MaxRange = WeaponModel.WEAPON_RANGE_LONG,
                 ProjectileSpeed = 0,
                 PiercesUnits = true,
@@ -106,7 +106,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Flame Thrower",
                 Cooldown = 0.1f,
-                Damage = 1.5f,
+                HealthDamage = 1.5f,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_SHORT,
                 ProjectileSpeed = 1.6f,
                 ProjectileStartSize = .08f,
@@ -125,7 +125,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Shotgun",
                 Cooldown = 1.5f,
-                Damage = 45,
+                HealthDamage = 45,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
                 ProjectileSpeed = 6.4f,
                 ProjectileBurstSize = 5,
@@ -144,7 +144,7 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Buzz Saw",
                 Cooldown = .1f,
-                Damage = 5,
+                HealthDamage = 5,
                 MaxRange = WeaponModel.WEAPON_RANGE_SHORT,
                 ProjectileStartSize = 0.16f,
                 ProjectileEndSize = 0.02f,
@@ -153,5 +153,50 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
+        //fabricator weapon
+        public static WeaponModel CreatePlasmaGun()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Plasma Gun",
+                Cooldown = 1f,
+                HealthDamage = 25,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
+                CanAutoAttack = true,
+                FireWhileMoving = true,
+                ProjectileSpeed = 7f,
+                ProjectileStartSize = 0.25f,
+                ProjectileEndSize = 0.25f,
+                FiringArc = 360,
+                TraversalSpeed = 6
+            };
+            return weapon;
+        }
+        //turret weapon
+        public static WeaponModel CreatePlasmaTurret()
+        {
+            var weapon = CreatePlasmaGun();
+
+            weapon.Name = "Plasma Turret";
+            weapon.AmmoCost = 5;
+
+            return weapon;
+        }
+        public static WeaponModel CreateMunitionsPrinter()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Munitions Printer",
+                Cooldown = 0.25f,
+                AmmoDamage = 20,
+                AmmoCost = 20,
+                ProjectileBurstSize = 2,
+                CanAutoAttack = true,
+                MaxRange = WeaponModel.WEAPON_RANGE_MELEE,
+                ProjectileStartSize = 0.25f
+            };
+            return weapon;
+        }
+
     }
 }

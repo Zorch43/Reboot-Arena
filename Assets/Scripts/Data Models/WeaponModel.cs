@@ -24,13 +24,13 @@ namespace Assets.Scripts.Data_Models
         public float MaxRange { get; set; }//maximum range of weapon
         public float MinRange { get; set; }//minimum range of the weapon
         public float ProjectileSpeed { get; set; }//speed of weapon projectiles
-        //public AttackArea WeaponAOE { get; set; }//type of weapon area-of-effect
         public bool Explodes { get; set; }//whether the projectile produces an explosion on impact
         public float ExplosionSize { get; set; }//size of impact explosion, if generated
         public bool ArcingAttack { get; set; }//whether the attacks arcs over obstacles - projectile speed is ignored
         public float DamageFalloff { get; set; }//determines damage falloff at max range.  can be used to ramp up damage at long range as well
         public float Cooldown { get; set; }//time between attacks
-        public float Damage { get; set; }//damage per attack
+        public float HealthDamage { get; set; }//damage dealt to target's health per attack.  Negative numbers heal target
+        public float AmmoDamage { get; set; }//damage dealt to target's ammo per attack. Negative numbers restore ammo
         public float ProjectileStartSize { get; set; } = .02f;//initial size of the projectile
         public float ProjectileEndSize { get; set; } = .02f;//size of the projectile by the end of range
         public int ProjectileBurstSize { get; set; } = 1;//number of projectiles produced by a single firing.  damge is divided evenly between projectiles
@@ -39,9 +39,11 @@ namespace Assets.Scripts.Data_Models
         public bool PiercesUnits { get; set; }//whether weapon projectiles pass through units
         public bool PiercesWalls { get; set; }//whether weapon projectiles pass through environmental obstacles
         public float AmmoCost { get; set; }//ammo cost, if any, to fire this weapon
-        //TODO: what effects to apply on hit
         public bool FireWhileMoving { get; set; }//whether this weapon can be fired while moving
         public bool CanAutoAttack { get; set; }//whether this weapon can be used on autoattack targets
+        public float FiringArc { get; set; }//the range of traversal (in degrees) this weapon has
+        public float TraversalSpeed { get; set; }//speed that the weapon rotates to face targets
+        //TODO: what effects to apply on hit
         #endregion
         #region dynamic properties
 
@@ -71,6 +73,10 @@ namespace Assets.Scripts.Data_Models
         public bool NeedsLineOfSight()
         {
             return !(ArcingAttack || PiercesWalls);
+        }
+        public bool TargetsAllies()
+        {
+            return HealthDamage < 0.1f && AmmoDamage < 0.1f;
         }
         #endregion
     }

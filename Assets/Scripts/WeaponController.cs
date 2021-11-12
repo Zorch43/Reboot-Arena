@@ -7,28 +7,20 @@ public class WeaponController : MonoBehaviour
 
     #endregion
     #region public fields
-    public GameObject Barrel;
+    public GameObject[] Mounts;
+    public GameObject[] Barrels;
     public ProjectileController Projectile;
     public AudioSource FiringSound;
     public ParticleSystem MuzzleFlashEffect;
     #endregion
     #region private fields
+    private int currentBarrel;
     #endregion
     #region properties
 
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     #endregion
     #region public methods
 
@@ -37,16 +29,56 @@ public class WeaponController : MonoBehaviour
         for(int i = 0; i < data.ProjectileBurstSize; i++)
         {
             var projectile = Instantiate(Projectile, map.transform);
-            projectile.transform.position = Barrel.transform.position;
+            projectile.transform.position = Barrels[currentBarrel].transform.position;
             projectile.TargetLocation = CalcFiringSolution(data, target, i);
             projectile.Weapon = data;
             projectile.AllyTeam = unit.Data.Team;
+            currentBarrel++;
+            if(currentBarrel >= Barrels.Length)
+            {
+                currentBarrel = 0;
+            }
         }
 
         FiringSound.Play();//TODO: if firing speed is fast, instead loop a clip
 
-        MuzzleFlashEffect.transform.position = Barrel.transform.position;
+        MuzzleFlashEffect.transform.position = Barrels[currentBarrel].transform.position;
         MuzzleFlashEffect.Play();
+    }
+    public bool TraverseMounts(WeaponModel weapon, Vector3 target, Quaternion facing)
+    {
+        bool ready = false;
+        //rotate mounts to face the target.
+        foreach(var m in Mounts)
+        {
+            //turn towards target
+            var flatTarget = new Vector3(target.x, m.transform.position.y, target.z);//only turn on the y-axis
+            var targetRotation = Quaternion.LookRotation(flatTarget - transform.position);
+            
+            var currentRotation = Quaternion.Lerp(m.transform.rotation, targetRotation, Mathf.Min(weapon.TraversalSpeed * Time.deltaTime, 1));
+            //contrain to arc - easy version: prevent turret from traversing if at traversal bounds
+            var traverseAngle = Quaternion.Angle(currentRotation, facing);
+            if(Mathf.Abs(traverseAngle) <  weapon.FiringArc/ 2)
+            {
+                m.transform.rotation = currentRotation;
+            }
+            //else
+            //{
+            //    //return true if cannot traverse anymore
+            //    ready = true;
+            //}
+            var remainingAngle = Quaternion.Angle(targetRotation, m.transform.rotation);
+
+            //return true if facing the target
+            if (remainingAngle < 2)
+            {
+                ready = true;
+            }
+        }
+
+        //return false if not facing the target
+        return ready;
+
     }
     #endregion
     #region private methods
@@ -66,10 +98,10 @@ public class WeaponController : MonoBehaviour
         }
         if(Mathf.Abs(totalDeviation) > 0.1f)
         {
-            var firingVector = perfectTarget - Barrel.transform.position;
+            var firingVector = perfectTarget - Barrels[currentBarrel].transform.position;
             firingVector = Quaternion.AngleAxis(totalDeviation, Vector3.up) * firingVector;
 
-            var targetPos = firingVector + Barrel.transform.position;
+            var targetPos = firingVector + Barrels[currentBarrel].transform.position;
             return targetPos;
         }
         else

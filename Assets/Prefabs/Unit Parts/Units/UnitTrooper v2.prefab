@@ -5435,7 +5435,8 @@ MonoBehaviour:
   DeathExplosion: {fileID: 8270483927021890600, guid: f80942e1a1b484d4597e1a23ad21a971, type: 3}
   ToolTip: {fileID: 1508890778563881171}
   TeamColorParts:
-  - {fileID: 5705343711503959049}
+  - Part: {fileID: 5705343711503959049}
+    TeamColorIndex: 0
 --- !u!114 &1174238694324332553
 MonoBehaviour:
   m_ObjectHideFlags: 0

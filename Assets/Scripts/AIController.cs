@@ -198,12 +198,12 @@ public class AIController : MonoBehaviour
                 targetInternalScore -= u.Data.HP / 100;
                 //prefer units near death
                 float unitsKilled = 0;
-                if (primaryWeapon.Damage/primaryWeapon.Cooldown >= u.Data.HP)
+                if (primaryWeapon.HealthDamage/primaryWeapon.Cooldown >= u.Data.HP)
                 {
                     unitsKilled += 1;
                 }
 
-                targetScore += unitsKilled + (primaryWeapon.Damage / primaryWeapon.Cooldown) / 100 * damageReduction;
+                targetScore += unitsKilled + (primaryWeapon.HealthDamage / primaryWeapon.Cooldown) / 100 * damageReduction;
                 //targetScore -= primaryWeapon.AmmoCost / primaryWeapon.Cooldown;
 
                 if (targetUnit == null || targetScore + targetInternalScore > score + internalScore)
@@ -253,7 +253,7 @@ public class AIController : MonoBehaviour
                             <= unit.Data.UnitClass.SpecialAbility.AbilityWeapon.ExplosionSize)
                         {
                             targetsHit += 1f;
-                            if (abilityWeapon.Damage >= o.Data.HP)
+                            if (abilityWeapon.HealthDamage >= o.Data.HP)
                             {
                                 unitsKilled += 1f;
                             }
@@ -273,7 +273,7 @@ public class AIController : MonoBehaviour
                     targetInternalScore -= u.Data.HP / 100;
                     //prefer units near death
                     
-                    if(abilityWeapon.Damage >= u.Data.HP)
+                    if(abilityWeapon.HealthDamage >= u.Data.HP)
                     {
                         unitsKilled += 1;
                     }
@@ -283,7 +283,7 @@ public class AIController : MonoBehaviour
                     {
                         targetInternalScore += 1;
                     }
-                    targetScore += targetsHit * abilityWeapon.Damage / 100 + unitsKilled;
+                    targetScore += targetsHit * abilityWeapon.HealthDamage / 100 + unitsKilled;
                     //targetScore -= abilityWeapon.AmmoCost;
 
                     if (!hasTarget || targetScore + targetInternalScore > score + internalScore)

@@ -10,7 +10,6 @@ namespace Assets.Scripts.Data_Models
     {
         #region properties
         public string Name { get; set; }
-        public string Portrait { get; set; }
         public string Description { get; set; }
         #region stats
         public int MaxHP { get; set; }//maximum health points
@@ -23,7 +22,8 @@ namespace Assets.Scripts.Data_Models
         public WeaponModel SecondaryWeapon { get; set; }
         //special ability
         public UnitAbilityModel SpecialAbility { get; set; }
-        //TODO: passive abilities
+        //passive abilities
+        public bool IsAmbidextrous { get; set; }//whether the unit can fire primary and secondary weapons simultaneously, conditions permitting
         #endregion
     }
 }

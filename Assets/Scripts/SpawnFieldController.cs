@@ -10,7 +10,8 @@ public class SpawnFieldController : MonoBehaviour
         var unit = other.gameObject.GetComponent<UnitController>();
         if (unit?.Data.Team == SpawnPoint.ControllingTeam)
         {
-            unit.Data.Restore();
+            unit.HealUnit(unit.Data.UnitClass.MaxHP);
+            unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
         }
     }
 }
