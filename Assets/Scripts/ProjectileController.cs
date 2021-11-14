@@ -191,27 +191,47 @@ public class ProjectileController : MonoBehaviour
         Vector3 endPoint = firingVector * Weapon.MaxRange; //if the beam does not collide with anything that can stop it, draw it out to its full length
         //for each object in the path of the beam, determine whether the beam can continue
         //if it can, draw the line out to that collision point
+        var beamLength = Weapon.MaxRange;
         foreach (var h in beamHits)
         {
+            //var unit = h.collider.GetComponent<UnitController>();
+            //if(unit != null && (unit.Data.Team == AllyTeam == Weapon.TargetsAllies()))
+            //{
+            //    if (!DoImpact(h.point, unit))
+            //    {
+            //        endPoint = h.point;
+            //        break;
+            //    }
+            //}
+            //else if(!h.collider.isTrigger)
+            //{
+            //    if (!DoImpact(h.point))
+            //    {
+            //        endPoint = h.point;
+            //        break;
+            //    }
+            //}
             var unit = h.collider.GetComponent<UnitController>();
-            if(unit != null && unit.Data.Team != AllyTeam)
-            {
-                if (!DoImpact(h.point, unit))
-                {
-                    endPoint = h.point;
-                    break;
-                }
-            }
-            else
+            if (h.collider.gameObject.tag != "NonBlocking" && !h.collider.isTrigger && unit == null)
             {
                 if (!DoImpact(h.point))
                 {
-                    endPoint = h.point;
+                    //endPoint = h.point;
+                    beamLength = h.distance;
+                    break;
+                }
+            }
+            else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
+            {
+                if (!DoImpact(h.point, unit))
+                {
+                    //endPoint = h.point;
+                    beamLength = h.distance;
                     break;
                 }
             }
         }
-        var beamLength = (endPoint - transform.position).magnitude;
+        //var beamLength = (endPoint - transform.position).magnitude;
         Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, beamLength) });
         var size = Weapon.ProjectileStartSize;
         Line.startWidth = size;

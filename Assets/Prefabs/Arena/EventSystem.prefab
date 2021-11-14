@@ -79,16 +79,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bf61b35e595c00947aded2ab9a57f330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SelectionRect: {fileID: 0}
   Map: {fileID: 0}
   UnitSlotUI: {fileID: 0}
   UnitActionUI: {fileID: 0}
+  SelectionRect: {fileID: 0}
   GameMenuUI: {fileID: 0}
+  Cameras: {fileID: 0}
   AttackMoveCursor: {fileID: 2800000, guid: cfacb3c9c8116914aa1a1570caee49f5, type: 3}
   ForceAttackCursor: {fileID: 2800000, guid: b37386781e8e05e43a93ed9f4f9c54fc, type: 3}
   SetRallyPointCursor: {fileID: 2800000, guid: 52c79983cef7bf34f88971dc75221d06, type: 3}
   MarkerTemplate: {fileID: 5848984215307789728, guid: d68b656d5b6dc0b4e8813a3eb64c75ad, type: 3}
   AttackMarker: {fileID: 21300000, guid: 0cd452407426a93448f79791b7aa8734, type: 3}
+  SupportMarker: {fileID: 21300000, guid: 152555beb3bdc4346a9d23307c510b74, type: 3}
   MoveMarker: {fileID: 21300000, guid: 0f9fd0f01ce785749a4d376a42cdcb72, type: 3}
   AttackMoveMarker: {fileID: 21300000, guid: c5434da2481c98b4681002548640056c, type: 3}
   ForceAttackMarker: {fileID: 21300000, guid: aab32c325bf62f74b8f05a4697796003, type: 3}

@@ -15,6 +15,7 @@ public class UnitVoiceController : MonoBehaviour
     public AudioClip[] SelectionResponses;
     public AudioClip[] MoveResponses;
     public AudioClip[] AttackResponses;
+    public AudioClip[] SupportResponses;
     public AudioClip[] AbilityResponses;
     //reports are played automatically. always on private channel
     //only one report may be playing at the same time
@@ -53,6 +54,10 @@ public class UnitVoiceController : MonoBehaviour
     public void PlayAttackResponse()
     {
         PlayClip(AttackResponses, PrivateChannel);
+    }
+    public void PlaySupportResponse()
+    {
+        PlayClip(SupportResponses, PrivateChannel);
     }
     public void PlayAbilityResponse()
     {

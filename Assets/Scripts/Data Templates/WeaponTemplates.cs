@@ -165,8 +165,8 @@ namespace Assets.Scripts.Data_Templates
                 CanAutoAttack = true,
                 FireWhileMoving = true,
                 ProjectileSpeed = 7f,
-                ProjectileStartSize = 0.25f,
-                ProjectileEndSize = 0.25f,
+                ProjectileStartSize = 0.15f,
+                ProjectileEndSize = 0.15f,
                 FiringArc = 360,
                 TraversalSpeed = 6
             };
@@ -188,9 +188,9 @@ namespace Assets.Scripts.Data_Templates
             {
                 Name = "Munitions Printer",
                 Cooldown = 0.25f,
-                AmmoDamage = 20,
+                HealthDamage = -20,//temp
+                AmmoDamage = 0,//temp
                 AmmoCost = 20,
-                ProjectileBurstSize = 2,
                 CanAutoAttack = true,
                 MaxRange = WeaponModel.WEAPON_RANGE_MELEE,
                 ProjectileStartSize = 0.25f

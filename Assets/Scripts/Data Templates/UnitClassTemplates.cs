@@ -52,7 +52,7 @@ namespace Assets.Scripts.Data_Templates
                 MaxHP = 300,
                 MaxMP = 800,
                 MoveSpeed = 3,
-                TurnSpeed = 1,
+                TurnSpeed = 6,
                 PrimaryWeapon = WeaponTemplates.CreateMunitionsPrinter(),
                 SecondaryWeapon = WeaponTemplates.CreatePlasmaGun(),
                 SpecialAbility = UnitAbilityTemplates.CreateFragGrenade(),//TODO: replace with build

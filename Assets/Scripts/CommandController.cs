@@ -30,6 +30,7 @@ public class CommandController : MonoBehaviour
     public Texture2D SetRallyPointCursor;
     public ActionMarker MarkerTemplate;
     public Sprite AttackMarker;
+    public Sprite SupportMarker;
     public Sprite MoveMarker;
     public Sprite AttackMoveMarker;
     public Sprite ForceAttackMarker;
@@ -310,8 +311,10 @@ public class CommandController : MonoBehaviour
                         }
                         else
                         {
-                            //TODO: play support response, if it makes sense
-                            //TODO: place support marker, if it makes sense
+                            //play support response, if it makes sense
+                            u.UnitVoice.PlaySupportResponse();
+                            //place support marker, if it makes sense
+                            MarkerTemplate.Instantiate(SupportMarker, unit.transform, unit.transform.position, true);
                         }
                     }
                 }

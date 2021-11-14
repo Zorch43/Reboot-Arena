@@ -24,7 +24,7 @@ public class WeaponController : MonoBehaviour
     #endregion
     #region public methods
 
-    public void Fire(UnitController unit, WeaponModel data, GameObject map, Vector3 target)
+    public void Fire(DroneController unit, WeaponModel data, GameObject map, Vector3 target)
     {
         for(int i = 0; i < data.ProjectileBurstSize; i++)
         {
