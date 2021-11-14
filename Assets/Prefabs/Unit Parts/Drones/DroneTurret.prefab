@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3478716039886143798}
   - component: {fileID: 3153322874995729734}
-  - component: {fileID: 409404543165153555}
+  - component: {fileID: 8154679873146422607}
   m_Layer: 0
   m_Name: DroneTurret
   m_TagString: Untagged
@@ -53,7 +53,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!111 &409404543165153555
+--- !u!111 &8154679873146422607
 Animation:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -62,8 +62,11 @@ Animation:
   m_GameObject: {fileID: 4031018455800280272}
   m_Enabled: 1
   serializedVersion: 3
-  m_Animation: {fileID: 7400000, guid: 426c388fd8c0e964ab381987060f3d68, type: 2}
-  m_Animations: []
+  m_Animation: {fileID: 7400000, guid: 974fda0c3577bcc4ead2c4a9b30ca093, type: 2}
+  m_Animations:
+  - {fileID: 7400000, guid: 974fda0c3577bcc4ead2c4a9b30ca093, type: 2}
+  - {fileID: 7400000, guid: 7fd6ed70c867c854ca76582663f64852, type: 2}
+  - {fileID: 7400000, guid: fcebfddb71ab14942b932985090968af, type: 2}
   m_WrapMode: 0
   m_PlayAutomatically: 1
   m_AnimatePhysics: 0

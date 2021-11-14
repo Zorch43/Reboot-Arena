@@ -33,10 +33,7 @@ public class DroneController : MonoBehaviour
     
     #endregion
     #region private fields
-    private Quaternion initialRotation;
-    private float hitBoxSize;
-    private new SphereCollider collider;
-    private float zoneMultiplier = 1;
+    protected Quaternion initialRotation;
     #endregion
     #region properties
     public UnitModel Data { get; set; }
@@ -69,8 +66,6 @@ public class DroneController : MonoBehaviour
         {
             Data.Team = Team;
         }
-        collider = GetComponent<SphereCollider>();
-        hitBoxSize = collider.radius;
         //TEMP: set teamcolor
         Recolor(Data.Team);
         MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);

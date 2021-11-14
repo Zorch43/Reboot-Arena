@@ -25,7 +25,6 @@ public class UnitController : DroneController
     
     #endregion
     #region private fields
-    private Quaternion initialRotation;
     private float hitBoxSize;
     private new SphereCollider collider;
     private float zoneMultiplier = 1;

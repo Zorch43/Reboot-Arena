@@ -40,6 +40,7 @@ namespace Assets.Scripts.Data_Models
         #region public methods
         public void DoUnitDeath()
         {
+            IsSelected = false;
             RespawnProgress = 0;
             respawnUnit = NextUnitClass;
             CurrentUnit = null;
