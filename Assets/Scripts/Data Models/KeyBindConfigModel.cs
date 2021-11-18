@@ -30,7 +30,8 @@ namespace Assets.Scripts.Data_Models
             StopAction,
             SetRallyPointMode,
             SetRallyPoint,
-            AbilityGrenade
+            AbilityGrenade,
+            AbilityTurret
         }
         #endregion
         public KeyBindModel GameMenuKey { get; set; }
@@ -54,6 +55,7 @@ namespace Assets.Scripts.Data_Models
         public KeyBindModel SetRallyPointKey { get; set; }
         //ability hotkeys
         public KeyBindModel AbilityGrenadeKey { get; set; }
+        public KeyBindModel AbilityTurretKey { get; set; }
 
         public List<KeyBindModel> AllKeyBinds { get; set; }
 
@@ -91,6 +93,7 @@ namespace Assets.Scripts.Data_Models
 
             //special abilities
             AbilityGrenadeKey = new KeyBindModel(KeyBindId.AbilityGrenade, "Grenade", "Throw a high-explosive grenade at the targeted location", KeyCode.G);
+            AbilityTurretKey = new KeyBindModel(KeyBindId.AbilityTurret, "Turret", "Start building a turret drone armed with a plasma gun.", KeyCode.T);
 
             //integration
             AllKeyBinds = new List<KeyBindModel>()
@@ -112,7 +115,8 @@ namespace Assets.Scripts.Data_Models
                 StopActionKey,
                 SetRallyPointModeKey,
                 SetRallyPointKey,
-                AbilityGrenadeKey
+                AbilityGrenadeKey,
+                AbilityTurretKey
             };
             AllKeyBinds.Sort();
 

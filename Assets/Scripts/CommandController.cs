@@ -19,7 +19,7 @@ public class CommandController : MonoBehaviour
     }
     #endregion
     #region public fields
-    public GameObject Map;
+    public MapController Map;
     public UnitSlotManager UnitSlotUI;
     public ActionPanelController UnitActionUI;
     public SelectionRectController SelectionRect;
@@ -144,6 +144,10 @@ public class CommandController : MonoBehaviour
             {
                 UnitActionUI.ActivateUnitAbility("Grenade");
             }
+            else if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AbilityTurretKey)
+            {
+                UnitActionUI.ActivateUnitAbility("Turret");
+            }
         }
         else
         {
@@ -265,6 +269,7 @@ public class CommandController : MonoBehaviour
             {
                 s.Data.IsSelected = false;
             }
+            selectedUnits.Clear();
         }
         bool responseGiven = false;
         foreach (var u in units)
@@ -272,6 +277,7 @@ public class CommandController : MonoBehaviour
             u.SpawnSlot.IsSelected = !GameObjectiveController.BattleConfig.IsAITeam(u.Data.Team) && (!addToSelection || !u.SpawnSlot.IsSelected);
             if(u.SpawnSlot.IsSelected)
             {
+                selectedUnits.Add(u);
                 if (!responseGiven)
                 {
                     responseGiven = true;
@@ -292,7 +298,7 @@ public class CommandController : MonoBehaviour
             var mapPoint = hit.point;
             //action
             var selectedUnits = GetSelectedUnits();
-            var unit = hit.collider.GetComponent<UnitController>();
+            var unit = hit.collider.GetComponent<DroneController>();
             bool responseGiven = false;//only one response given per order.
             foreach (var u in selectedUnits)
             {
@@ -332,7 +338,7 @@ public class CommandController : MonoBehaviour
             }
         }
     }
-    public void GiveUnitAttackOrder(UnitController selectedUnit, UnitController targetUnit)
+    public void GiveUnitAttackOrder(UnitController selectedUnit, DroneController targetUnit)
     {
         selectedUnit.CancelOrders();
         selectedUnit.CommandTarget = targetUnit;
@@ -606,19 +612,9 @@ public class CommandController : MonoBehaviour
         }
         return selectedUnits;
     }
-    public List<UnitController> GetAllUnits()
+    public List<DroneController> GetAllUnits()
     {
-        var allUnits = new List<UnitController>();
-        var allSlots = UnitSlotUI.UnitSlots;
-        foreach (var s in allSlots)
-        {
-            if (s.Data.CurrentUnit != null)
-            {
-                allUnits.Add(s.Data.CurrentUnit);
-            }
-        }
-
-        return allUnits;
+        return Map.Units;
     }
     #endregion
     #region private methods
@@ -633,7 +629,11 @@ public class CommandController : MonoBehaviour
                 var unitPoint = Cameras.MainCamera.WorldToScreenPoint(u.transform.position);
                 if (rect.Contains(unitPoint))
                 {
-                    selectedUnits.Add(u);
+                    var selectedUnit = u as UnitController;
+                    if(selectedUnit != null)
+                    {
+                        selectedUnits.Add(selectedUnit);
+                    }
                 }
             }
             SelectUnits(selectedUnits, false);
@@ -652,7 +652,7 @@ public class CommandController : MonoBehaviour
         }
         foreach (var h in hits)
         {
-            if (h.collider.gameObject.GetComponent<UnitController>() != null)
+            if (h.collider.gameObject.GetComponent<DroneController>() != null)
             {
                 hit = h;
                 break;

@@ -12,6 +12,7 @@ public class UnitController : DroneController
     #region constants
     private const float PERSONAL_SPACE = 0.02f;
     private const float ORDER_RADIUS = 1f;
+    private const float MIN_ATTACK_RANGE = 1f;
     #endregion
     #region public fields
     public TextMeshPro MinimapNumber;
@@ -28,9 +29,10 @@ public class UnitController : DroneController
     private float hitBoxSize;
     private new SphereCollider collider;
     private float zoneMultiplier = 1;
+    private DroneController droneTemplate;
     #endregion
     #region properties
-    public UnitController CommandTarget { get; set; }
+    public DroneController CommandTarget { get; set; }
     public Vector3? ForceTarget { get; set; }
     public Vector3? AbilityTarget { get; set; }
     public Vector3? AttackMoveDestination { get; set; }
@@ -66,9 +68,11 @@ public class UnitController : DroneController
         }
         collider = GetComponent<SphereCollider>();
         hitBoxSize = collider.radius;
-        //TEMP: set teamcolor
+        //set teamcolor
         Recolor(Data.Team);
         MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
+        //cache drone template
+        droneTemplate = Resources.Load<DroneController>(Data.UnitClass.SpecialAbility.DroneTemplate);
     }
 
     // Update is called once per frame
@@ -107,16 +111,16 @@ public class UnitController : DroneController
 
     private void OnCollisionStay(Collision collision)
     {
-        var unit = collision.collider.GetComponent<UnitController>();
+        var unit = collision.collider.GetComponent<DroneController>();
         if (Agent.hasPath && unit != null)
         {
             if(Vector3.Distance(transform.position, Agent.destination) <= ORDER_RADIUS
-            || (!unit.Agent.hasPath && Vector3.Distance(unit.transform.position, Agent.destination) <= ORDER_RADIUS/2 * zoneMultiplier))
+            || (!unit.IsMoving && Vector3.Distance(unit.transform.position, Agent.destination) <= ORDER_RADIUS/2 * zoneMultiplier))
             {
                 StopMoving();
                 if(AttackMoveDestination != null 
                 && (Vector3.Distance(transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS
-                || (!unit.Agent.hasPath && Vector3.Distance(unit.transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS / 2 * zoneMultiplier)))
+                || (!unit.IsMoving && Vector3.Distance(unit.transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS / 2 * zoneMultiplier)))
                 {
                     AttackMoveDestination = null;//stop attack-move
                 }
@@ -147,10 +151,13 @@ public class UnitController : DroneController
             UnitNumber.gameObject.SetActive(false);
             AmmoBar.gameObject.SetActive(false);
         }
+        var map = GetComponentInParent<MapController>();
+        map.RegisterUnit(this);
 
         DeathActions.Add(SpawnSlot.DoUnitDeath);
         DeathActions.Add(DoLootDrop);
         DeathActions.Add(DoDeathExplosion);
+        DeathActions.Add(UnRegister);
 
         //if unit has a rally point, issue a move order to the rally point
         Agent.enabled = true;
@@ -264,13 +271,11 @@ public class UnitController : DroneController
     private bool DoCommandAttack()
     {
         Vector3? targetPosition = null;
-        bool isAlly = false;
         DoAttackMove();//if unit is set to attack-move, this will choose a command target if available
 
         if(CommandTarget != null)
         {
-            targetPosition = CommandTarget.transform.position;
-            isAlly = CommandTarget.Data.Team == Data.Team;
+            targetPosition = CommandTarget.TargetingPosition;
         }
         else if(ForceTarget != null)
         {
@@ -309,22 +314,22 @@ public class UnitController : DroneController
                     var flatTarget = new Vector3(target.x, transform.position.y, target.z);//only look on the y-axis
                     var commandRotation = Quaternion.LookRotation(flatTarget - transform.position);
                     //get other weapon
-                    if (activeWeapon == Data.UnitClass.PrimaryWeapon)
+                    if (activeWeapon == Data.UnitClass.SecondaryWeapon)
                     {
-                        var otherWeapon = Data.UnitClass.SecondaryWeapon;
-                        AutoTarget2 = GetAutoAttackTarget(otherWeapon, AutoTarget2, Agent.hasPath, true, commandRotation, activeWeapon.FiringArc);
-                        if(AutoTarget2 != null)
+                        var otherWeapon = Data.UnitClass.PrimaryWeapon;
+                        AutoTarget1 = GetAutoAttackTarget(otherWeapon, AutoTarget1, IsMoving, true, commandRotation, activeWeapon.FiringArc);
+                        if (AutoTarget1 != null)
                         {
-                            DoPreAttack(otherWeapon, AutoTarget2.transform.position, true, false);
+                            DoPreAttack(otherWeapon, AutoTarget1.TargetingPosition, true, false);
                         }
                     }
                     else
                     {
                         var otherWeapon = Data.UnitClass.PrimaryWeapon;
-                        AutoTarget1 = GetAutoAttackTarget(otherWeapon, AutoTarget1, Agent.hasPath, true, commandRotation, activeWeapon.FiringArc);
-                        if(AutoTarget1 != null)
+                        AutoTarget2 = GetAutoAttackTarget(otherWeapon, AutoTarget2, IsMoving, true, commandRotation, activeWeapon.FiringArc);
+                        if (AutoTarget2 != null)
                         {
-                            DoPreAttack(otherWeapon, AutoTarget1.transform.position, true, false);
+                            DoPreAttack(otherWeapon, AutoTarget2.TargetingPosition, true, false);
                         }
                     }
                 }
@@ -332,7 +337,16 @@ public class UnitController : DroneController
             }
             else//move to engage
             {
-                DoMove(target, false);
+                var flatDistance = Vector2.Distance(new Vector2(target.x, target.z), new Vector2(transform.position.x, transform.position.z));
+                if(flatDistance  > MIN_ATTACK_RANGE)
+                {
+                    DoMove(target, false);
+                }
+                else
+                {
+                    StopMoving();
+                }
+                
                 return false;
             }
         }
@@ -413,13 +427,22 @@ public class UnitController : DroneController
             activeWeapon.StartCooldown();
             Data.MP -= activeWeapon.AmmoCost;
             var specialAbility = Data.UnitClass.SpecialAbility;
-            if (activeWeapon == specialAbility.AbilityWeapon && !specialAbility.IsContinuous)
+            if (activeWeapon == specialAbility.AbilityWeapon)
             {
-                CancelOrders();
+                if (specialAbility.IsBuildAbility)
+                {
+                    //get drone template and spawn it at the ability target
+                    var drone = Instantiate(droneTemplate, transform.parent);
+                    drone.SpawnSetup(target, Data.Team, false);   
+                }
+                if (!specialAbility.IsContinuous)
+                {
+                    CancelOrders();
+                }
             }
         }
     }
-    protected override WeaponModel GetActiveWeapon(UnitController target, bool isMoving, bool isAutoAttack)
+    protected override WeaponModel GetActiveWeapon(DroneController target, bool isMoving, bool isAutoAttack)
     {
         if (AbilityTarget != null && Data.UnitClass.SpecialAbility.IsWeaponAbility)
         {

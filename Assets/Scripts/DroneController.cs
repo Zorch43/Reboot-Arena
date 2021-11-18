@@ -15,6 +15,7 @@ public class DroneController : MonoBehaviour
     #region public fields
     public UnitClassTemplates.UnitClasses UnitClass;
     public GameObject UnitAppearance;
+    public Animator Animations;
     public SpriteRenderer MiniMapIcon;
     public GameObject UnitEffects;
     public ResourceBarController HealthBar;
@@ -30,6 +31,8 @@ public class DroneController : MonoBehaviour
     public ToolTipContentController ToolTip;
     public ParticleSystem JetStream;
     public MeshRecolorModel[] TeamColorParts;
+    public bool CanAttack = true;
+    public Vector3 TargetOffset;
     
     #endregion
     #region private fields
@@ -37,14 +40,21 @@ public class DroneController : MonoBehaviour
     #endregion
     #region properties
     public UnitModel Data { get; set; }
-    public UnitController AutoTarget1 { get; set; }
-    public UnitController AutoTarget2 { get; set; }
+    public DroneController AutoTarget1 { get; set; }
+    public DroneController AutoTarget2 { get; set; }
     public List<Action> DeathActions { get; set; } = new List<Action>();
     public virtual bool IsMoving
     {
         get
         {
             return false;
+        }
+    }
+    public Vector3 TargetingPosition
+    {
+        get
+        {
+            return transform.position + TargetOffset;
         }
     }
     #endregion
@@ -105,7 +115,7 @@ public class DroneController : MonoBehaviour
         }
         Destroy(gameObject);
     }
-    public void SpawnSetup(Vector3 position, int team, bool hideUI)
+    public virtual void SpawnSetup(Vector3 position, int team, bool hideUI)
     {
         Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         Data.Team = team;
@@ -115,8 +125,12 @@ public class DroneController : MonoBehaviour
         {
             AmmoBar.gameObject.SetActive(false);
         }
+        var map = GetComponentInParent<MapController>();
+        map.RegisterUnit(this);
+
         DeathActions.Add(DoLootDrop);
         DeathActions.Add(DoDeathExplosion);
+        DeathActions.Add(UnRegister);
     }
     public UnitModel GetData()
     {
@@ -129,7 +143,7 @@ public class DroneController : MonoBehaviour
             return Data;
         }
     }
-    public float HealUnit(float amount)
+    public virtual float HealUnit(float amount)
     {
         //heal the unit by amount, up to max hp
         float oldHealth = Data.HP;
@@ -142,7 +156,7 @@ public class DroneController : MonoBehaviour
         //return amount healed
         return amountHealed;
     }
-    public float DamageUnit(float amount)
+    public virtual float DamageUnit(float amount)
     {
         if(amount <= 0)
         {
@@ -155,7 +169,7 @@ public class DroneController : MonoBehaviour
         var damage = oldHealth - Data.HP;
         return damage;
     }
-    public float ReloadUnit(float amount)
+    public virtual float ReloadUnit(float amount)
     {
         //resupply the unit by amount, up to max mp
         float oldAmmo = Data.MP;
@@ -168,7 +182,7 @@ public class DroneController : MonoBehaviour
         //return amount loaded
         return amountLoaded;
     }
-    public float DrainUnit(float amount)
+    public virtual float DrainUnit(float amount)
     {
         if (amount <= 0)
         {
@@ -192,9 +206,9 @@ public class DroneController : MonoBehaviour
         var hits = Physics.RaycastAll(pos, target - pos, Vector3.Distance(pos, target));
         foreach (var h in hits)
         {
-            var unit = h.collider.GetComponent<UnitController>();
+            var unit = h.collider.GetComponent<DroneController>();
             if (!h.collider.CompareTag("NonBlocking") && !h.collider.isTrigger
-                && unit == null)
+                && unit == null && Vector3.Distance(h.point, target) > 0.01f)
             {
                 return false;
             }
@@ -206,15 +220,15 @@ public class DroneController : MonoBehaviour
         //}
         //return false;
     }
-    public bool HasTrueLineOfSight(UnitController target)
+    public bool HasTrueLineOfSight(DroneController target)
     {
         var pos = transform.position;
-        var targetPos = target.transform.position;
+        var targetPos = target.TargetingPosition;
 
         var hits = Physics.RaycastAll(pos, targetPos - pos, Vector3.Distance(pos, targetPos));
         foreach (var h in hits)
         {
-            var unit = h.collider.GetComponent<UnitController>();
+            var unit = h.collider.GetComponent<DroneController>();
             if(unit == target)
             {
                 return true;
@@ -259,15 +273,15 @@ public class DroneController : MonoBehaviour
                 //do pre attack(s) and stop agent steering
                 if(AutoTarget1 != null && AutoTarget2 != null)
                 {
-                    DoPreAttacks(AutoTarget1.transform.position, AutoTarget2.transform.position, false);
+                    DoPreAttacks(AutoTarget1.transform.position, AutoTarget2.TargetingPosition, false);
                 }
                 else if(AutoTarget1 != null)
                 {
-                    DoPreAttack(Data.UnitClass.PrimaryWeapon, AutoTarget1.transform.position, false);
+                    DoPreAttack(Data.UnitClass.PrimaryWeapon, AutoTarget1.TargetingPosition, false);
                 }
                 else if (AutoTarget2 != null)
                 {
-                    DoPreAttack(Data.UnitClass.SecondaryWeapon, AutoTarget2.transform.position, false);
+                    DoPreAttack(Data.UnitClass.SecondaryWeapon, AutoTarget2.TargetingPosition, false);
                 }
                 //disable agent turning
                 return true;
@@ -299,7 +313,7 @@ public class DroneController : MonoBehaviour
         }
         if(activeWeapon != null)
         {
-            DoPreAttack(activeWeapon, AutoTarget1.transform.position, false);
+            DoPreAttack(activeWeapon, AutoTarget1.TargetingPosition, false);
             //disable agent turning
             return true;
         }
@@ -319,9 +333,11 @@ public class DroneController : MonoBehaviour
     }
     protected void DoPreAttack(WeaponModel activeWeapon, Vector3 target, bool stopMoving, bool turnUnit = true)
     {
-        var weaponMount = GetWeaponController(activeWeapon);
-        //if facing the the target, and mounts are either also facing the target, or cannot rotate more, fire the weapon
-        bool weaponReady = weaponMount.TraverseMounts(activeWeapon, target, transform.rotation);
+        if(activeWeapon == null)
+        {
+            return;
+        }
+        
         //turn towards target
         if (turnUnit)
         {
@@ -333,7 +349,9 @@ public class DroneController : MonoBehaviour
                 transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
             }
         }
-        
+        var weaponMount = GetWeaponController(activeWeapon);
+        //if facing the the target, and mounts are either also facing the target, or cannot rotate more, fire the weapon
+        bool weaponReady = weaponMount.TraverseMounts(activeWeapon, target, transform.rotation);
         if (weaponReady)
         {
             //once facing target, fire weapon
@@ -343,10 +361,6 @@ public class DroneController : MonoBehaviour
                 //Agent.ResetPath();//stop moving
                 StopMoving();
             }
-        }
-        else
-        {
-            //Debug.Log("Remaining Angle: " + remainingAngle);
         }
     }
     protected virtual WeaponController GetWeaponController(WeaponModel activeWeapon)
@@ -369,9 +383,10 @@ public class DroneController : MonoBehaviour
             Data.MP -= activeWeapon.AmmoCost;
         }
     }
-    protected bool CanAttackWithWeapon(WeaponModel weapon, UnitController target, bool isMoving, bool isAutoAttack)
+    protected bool CanAttackWithWeapon(WeaponModel weapon, DroneController target, bool isMoving, bool isAutoAttack)
     {
-        return target != null
+        return weapon != null 
+            && target != null
             && target != this
             && (!isMoving || weapon.FireWhileMoving)
             && (!isAutoAttack || weapon.CanAutoAttack)
@@ -380,17 +395,18 @@ public class DroneController : MonoBehaviour
             && (weapon.AmmoDamage >= 0 || target.Data.MP < target.Data.UnitClass.MaxMP)
             && (weapon.HealthDamage >= 0 || target.Data.HP < target.Data.UnitClass.MaxHP)
             && (weapon.MaxRange >= Vector3.Distance(target.transform.position, transform.position))
-            && (!weapon.NeedsLineOfSight() || HasLineOfSight(target.transform.position));
+            && (!weapon.NeedsLineOfSight() || HasLineOfSight(target.TargetingPosition));
     }
     protected bool CanAttackWithWeapon(WeaponModel weapon, Vector3 target, bool isMoving, bool isAutoAttack)
     {
-        return (!isMoving || weapon.FireWhileMoving)
+        return weapon != null
+            && (!isMoving || weapon.FireWhileMoving)
             && (!isAutoAttack || weapon.CanAutoAttack)
             && (weapon.AmmoCost <= Data.MP)
             && (weapon.MaxRange >= Vector3.Distance(target, transform.position))
             && (!weapon.NeedsLineOfSight() || HasLineOfSight(target));
     }
-    protected virtual WeaponModel GetActiveWeapon(UnitController target, bool isMoving, bool isAutoAttack)
+    protected virtual WeaponModel GetActiveWeapon(DroneController target, bool isMoving, bool isAutoAttack)
     {
         if (CanAttackWithWeapon(Data.UnitClass.PrimaryWeapon, target, isMoving, isAutoAttack))
         {
@@ -419,16 +435,16 @@ public class DroneController : MonoBehaviour
     protected void DoWeaponCooldown(float time)
     {
         Data.UnitClass.PrimaryWeapon.DoCooldown(time);
-        Data.UnitClass.SecondaryWeapon.DoCooldown(time);
-        Data.UnitClass.SpecialAbility.AbilityWeapon.DoCooldown(time);
+        Data.UnitClass.SecondaryWeapon?.DoCooldown(time);
+        Data.UnitClass.SpecialAbility?.AbilityWeapon.DoCooldown(time);
     }
 
-    protected UnitController GetAutoAttackTarget(bool autoAttackOnly = true)
+    protected DroneController GetAutoAttackTarget(bool autoAttackOnly = true)
     {
-        UnitController bestTarget = null;
+        DroneController bestTarget = null;
         float bestDistance = 0;
-        var map = transform.parent.gameObject;
-        var units = map.GetComponentsInChildren<UnitController>();
+        var map = GetComponentInParent<MapController>();
+        var units = map.Units;
         foreach(var u in units)
         {
             //get active weapon for each unit
@@ -447,10 +463,10 @@ public class DroneController : MonoBehaviour
         }
         return bestTarget;
     }
-    protected UnitController GetAutoAttackTarget(WeaponModel weapon, UnitController target, bool isMoving, bool autoAttackOnly = true, Quaternion otherRotation = new Quaternion(), float otherArc = 360)
+    protected DroneController GetAutoAttackTarget(WeaponModel weapon, DroneController target, bool isMoving, bool autoAttackOnly = true, Quaternion otherRotation = new Quaternion(), float otherArc = 360)
     {
         //if doing autoattack (and not an attack-move or defense), only weapons that can autoattack get targets
-        if(autoAttackOnly && !weapon.CanAutoAttack)
+        if(weapon == null || (autoAttackOnly && !weapon.CanAutoAttack))
         {
             return null;
         }
@@ -462,10 +478,10 @@ public class DroneController : MonoBehaviour
             }
         }
         //get a new target
-        UnitController newTarget = null;
+        DroneController newTarget = null;
         //get the nearest valid target and attack it
-        var map = transform.parent.gameObject;
-        var units = map.GetComponentsInChildren<UnitController>();
+        var map = GetComponentInParent<MapController>();
+        var units = map.Units;
         float bestDistance = 0;
         foreach (var u in units)
         {
@@ -478,7 +494,7 @@ public class DroneController : MonoBehaviour
                 if (arc < 360)
                 {
                     //calculate angle to potential target
-                    var flatTarget = new Vector3(u.transform.position.x, transform.position.y, u.transform.position.z);//only look on the y-axis
+                    var flatTarget = new Vector3(u.TargetingPosition.x, transform.position.y, u.TargetingPosition.z);//only look on the y-axis
                     var targetRotation = Quaternion.LookRotation(flatTarget - transform.position);
                     var angle = Quaternion.Angle(targetRotation, otherRotation);
                     if (angle > arc)
@@ -502,6 +518,14 @@ public class DroneController : MonoBehaviour
     {
         DeathExplosion.Instantiate(transform.parent, transform.position);
     }
+    protected void UnRegister()
+    {
+        var map = GetComponentInParent<MapController>();
+        if(map != null)
+        {
+            map.UnRegisterUnit(this);
+        }
+    }
     protected void Recolor(int team)
     {
         var color = TeamTools.GetTeamColor(team);
@@ -520,10 +544,16 @@ public class DroneController : MonoBehaviour
         ToolTip.Body = Data.UnitClass.Description;
         var primaryWeapon = Data.UnitClass.PrimaryWeapon;
         var secondaryWeapon = Data.UnitClass.SecondaryWeapon;
+        var primaryWeaponInfo = string.Format("Primary Weapon: {0} ({1} damage, {2}/s)", primaryWeapon.Name, primaryWeapon.HealthDamage, 1 / primaryWeapon.Cooldown);
+        string secondaryWeaponInfo = "";
+        if(secondaryWeapon != null)
+        {
+            secondaryWeaponInfo = string.Format("Secondary Weapon: {0} ({1} damage, {2}/s)", secondaryWeapon.Name, secondaryWeapon.HealthDamage, 1 / secondaryWeapon.Cooldown);
+        }
+
         ToolTip.Stats = new string[]
         {
-            string.Format("Primary Weapon: {0} ({1} damage, {2}/s)", primaryWeapon.Name, primaryWeapon.HealthDamage, 1/primaryWeapon.Cooldown),
-            string.Format("Secondary Weapon: {0} ({1} damage, {2}/s)", secondaryWeapon.Name, secondaryWeapon.HealthDamage, 1/secondaryWeapon.Cooldown)
+            primaryWeaponInfo, secondaryWeaponInfo
         };
         ToolTip.AmmoCost = Data.MP + "/" + Data.UnitClass.MaxMP;
         ToolTip.HealthCost = Data.HP + "/" + Data.UnitClass.MaxHP;

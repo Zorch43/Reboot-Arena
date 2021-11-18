@@ -27,12 +27,6 @@ public class AIController : MonoBehaviour
     public AIConfigModel Config { get; set; }
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -291,7 +285,7 @@ public class AIController : MonoBehaviour
                         hasTarget = true;
                         score = targetScore;
                         internalScore = targetInternalScore;
-                        targetLocation = u.transform.position;
+                        targetLocation = u.TargetingPosition;
                     }
                 }
             }

@@ -75,7 +75,7 @@ public class ProjectileController : MonoBehaviour
         }
         else if (Weapon.ProjectileSpeed > 0.1f)
         {
-            var distance = firingVector * Weapon.ProjectileSpeed * elapsedTime;
+            var distance = Weapon.ProjectileSpeed * elapsedTime * firingVector;
             transform.position += distance;
             
             //update total distance travelled.
@@ -101,8 +101,8 @@ public class ProjectileController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        var unit = other.gameObject.GetComponent<UnitController>();
-        if (other.tag != "NonBlocking" && !other.isTrigger && unit == null)
+        var unit = other.gameObject.GetComponent<DroneController>();
+        if (!other.CompareTag("NonBlocking") && !other.isTrigger && unit == null)
         {
             if (!DoImpact(transform.position))
             {
@@ -136,7 +136,7 @@ public class ProjectileController : MonoBehaviour
         //return whether the projectile should continue
         return Weapon.PiercesWalls;
     }
-    private bool DoImpact(Vector3 impactPosition, UnitController unit)
+    private bool DoImpact(Vector3 impactPosition, DroneController unit)
     {
         //projectile has collided with a unit
 
@@ -172,8 +172,8 @@ public class ProjectileController : MonoBehaviour
         //damage all enemy units for the weapon damage amount
         foreach(var h in hits2)
         {
-            //var unit = h.collider.GetComponent<UnitController>();
-            var unit = h.GetComponent<UnitController>();
+            //var unit = h.collider.GetComponent<DroneController>();
+            var unit = h.GetComponent<DroneController>();
             if (unit != null && unit.Data.Team != AllyTeam)
             {
                 unit.DamageUnit(Weapon.HealthDamage / Weapon.ProjectileBurstSize);
@@ -194,24 +194,7 @@ public class ProjectileController : MonoBehaviour
         var beamLength = Weapon.MaxRange;
         foreach (var h in beamHits)
         {
-            //var unit = h.collider.GetComponent<UnitController>();
-            //if(unit != null && (unit.Data.Team == AllyTeam == Weapon.TargetsAllies()))
-            //{
-            //    if (!DoImpact(h.point, unit))
-            //    {
-            //        endPoint = h.point;
-            //        break;
-            //    }
-            //}
-            //else if(!h.collider.isTrigger)
-            //{
-            //    if (!DoImpact(h.point))
-            //    {
-            //        endPoint = h.point;
-            //        break;
-            //    }
-            //}
-            var unit = h.collider.GetComponent<UnitController>();
+            var unit = h.collider.GetComponent<DroneController>();
             if (h.collider.gameObject.tag != "NonBlocking" && !h.collider.isTrigger && unit == null)
             {
                 if (!DoImpact(h.point))

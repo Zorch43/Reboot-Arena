@@ -8,7 +8,7 @@ public class SpawnFieldController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         var unit = other.gameObject.GetComponent<UnitController>();
-        if (unit?.Data.Team == SpawnPoint.ControllingTeam)
+        if (unit != null && unit.Data.Team == SpawnPoint.ControllingTeam)
         {
             unit.HealUnit(unit.Data.UnitClass.MaxHP);
             unit.ReloadUnit(unit.Data.UnitClass.MaxMP);

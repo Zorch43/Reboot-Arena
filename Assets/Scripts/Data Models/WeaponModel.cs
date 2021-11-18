@@ -10,7 +10,7 @@ namespace Assets.Scripts.Data_Models
     {
         #region constants
         public const float WEAPON_RANGE_MELEE = 1.5f;
-        public const float WEAPON_RANGE_VERY_SHORT = 2.5f;
+        public const float WEAPON_RANGE_VERY_SHORT = 3f;
         public const float WEAPON_RANGE_SHORT = 5f;
         public const float WEAPON_RANGE_MEDIUM_SHORT = 7.5f;
         public const float WEAPON_RANGE_MEDIUM = 10;

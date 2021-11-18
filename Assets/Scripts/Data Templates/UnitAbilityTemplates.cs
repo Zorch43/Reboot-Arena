@@ -30,5 +30,27 @@ namespace Assets.Scripts.Data_Templates
             };
             return ability;
         }
+        public static UnitAbilityModel CreateTurretDrone()
+        {
+            var ability = new UnitAbilityModel()
+            {
+                Name = "Turret",
+                Description = "Build a structuer that clocks enemy fire and can be upgraded to equip a plasma turret",
+                Icon = ResourceList.ICON_BUILD_TURRET,
+                Cursor = ResourceList.CURSOR_BUILD_TURRET,
+                Marker = ResourceList.MARKER_BUILD_TURRET,
+                IsBuildAbility = true,
+                IsWeaponAbility = true,//uses weapon range
+                DroneTemplate = ResourceList.DRONE_TURRET,
+                IsTargetedAbility = true,
+                GroupActivationRule = UnitAbilityModel.GroupActivationType.Single,
+                ConsiderMostAmmoInGroup = true,
+                ConsiderLeastTotalDistanceToTarget = true,
+                ConsiderMostHealthInGroup = true,
+                AbilityWeapon = WeaponTemplates.CreateBuildTools(),
+                AmmoCostInstant = 200
+            };
+            return ability;
+        }
     }
 }

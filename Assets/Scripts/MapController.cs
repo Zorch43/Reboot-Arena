@@ -24,27 +24,28 @@ public class MapController : MonoBehaviour
         get
         {
             var box = Terrain.GetComponent<BoxCollider>();
-            return new Vector2(box.bounds.size.x, box.bounds.size.z)/2;
+            return new Vector2(box.bounds.size.x, box.bounds.size.z) / 2;
         }
     }
-    public List<SpawnPointController> SpawnPoints { get; set; }
+    public List<DroneController> Units { get; private set; } = new List<DroneController>();
     #endregion
     #region unity methods
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
     #endregion
     #region public methods
-
+    public void RegisterUnit(DroneController unit)
+    {
+        if (!Units.Contains(unit))
+        {
+            Units.Add(unit);
+        }
+    }
+    public void UnRegisterUnit(DroneController unit)
+    {
+        if (Units.Contains(unit))
+        {
+            Units.Remove(unit);
+        }
+    }
     #endregion
     #region private methods
     

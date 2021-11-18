@@ -106,7 +106,7 @@ public class CameraController : MonoBehaviour
         }
         if (panVector.magnitude > 0)
         {
-            panVector = panVector * SCROLL_SPEED * Time.deltaTime;
+            panVector = SCROLL_SPEED * Time.deltaTime * panVector;
             var panVector3d = new Vector3(panVector.x, 0, panVector.y);
 
             MainCamera.transform.position = ClampCameraPosition(MainCamera.transform.position + panVector3d);

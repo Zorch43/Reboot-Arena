@@ -20,17 +20,7 @@ public class KotHTimerController : MonoBehaviour
     #region properties
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
     #endregion
     #region public methods
     public void Setup(float initialSeconds, List<TeamController> teams)

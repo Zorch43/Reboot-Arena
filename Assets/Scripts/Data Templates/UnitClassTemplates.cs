@@ -13,7 +13,8 @@ namespace Assets.Scripts.Data_Templates
         public enum UnitClasses
         {
             Trooper,
-            Fabricator
+            Fabricator,
+            TurretDrone
         }
         public static UnitClassModel GetClassByName(UnitClasses unitClass)
         {
@@ -23,6 +24,8 @@ namespace Assets.Scripts.Data_Templates
                     return GetTrooperClass();
                 case UnitClasses.Fabricator:
                     return GetFabricatorClass();
+                case UnitClasses.TurretDrone:
+                    return GetTurretDroneClass();
             }
             Debug.LogError("Invalid class requested!");
             return null;
@@ -55,8 +58,20 @@ namespace Assets.Scripts.Data_Templates
                 TurnSpeed = 6,
                 PrimaryWeapon = WeaponTemplates.CreateMunitionsPrinter(),
                 SecondaryWeapon = WeaponTemplates.CreatePlasmaGun(),
-                SpecialAbility = UnitAbilityTemplates.CreateFragGrenade(),//TODO: replace with build
+                SpecialAbility = UnitAbilityTemplates.CreateTurretDrone(),
                 IsAmbidextrous = true
+            };
+            return template;
+        }
+        public static UnitClassModel GetTurretDroneClass()
+        {
+            var template = new UnitClassModel()
+            {
+                Name="Turret Drone",
+                Description = "Sentry turret that fires plasma at enemy units.  Uses ammo to regenerate.",
+                MaxHP = 500,
+                MaxMP = 800,
+                PrimaryWeapon = WeaponTemplates.CreatePlasmaTurret()
             };
             return template;
         }

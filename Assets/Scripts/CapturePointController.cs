@@ -26,7 +26,6 @@ public class CapturePointController : MonoBehaviour
     float decayTimer = 0;
     float maxProgressSize;
     float progressSoundTimer = PROGRESS_SOUND_INTERVAL;
-    float lastCaptureProgress;
     #endregion
     #region properties
     public int NextOwner { get; set; } = -1;//the next owner of the point, if current capture attempt succeeds
@@ -165,8 +164,6 @@ public class CapturePointController : MonoBehaviour
                 PlayCaptureSound();
             }
         }
-        //update last capture status for next frame
-        lastCaptureProgress = CaptureProgress;
 
         //update ownership visual
         var teamColor = TeamTools.GetTeamColor(NextOwner);

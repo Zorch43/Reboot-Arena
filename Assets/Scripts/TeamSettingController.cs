@@ -111,12 +111,12 @@ public class TeamSettingController : MonoBehaviour
         result.Data = new PlayerConfigModel();
         result.TeamLabel.text = label;
 
-        //mark each option with team color
-        for(int i = 0; i < result.ColorSelector.options.Count; i++)
-        {
-            var o = result.ColorSelector.options[i];
+        ////mark each option with team color
+        //for(int i = 0; i < result.ColorSelector.options.Count; i++)
+        //{
+        //    var o = result.ColorSelector.options[i];
 
-        }
+        //}
 
         return result;
     }

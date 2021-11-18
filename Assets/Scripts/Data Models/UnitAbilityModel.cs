@@ -25,7 +25,9 @@ namespace Assets.Scripts.Data_Models
         public string Marker { get; set; }//ability marker, if it needs one
         //Type
         public bool IsTargetedAbility { get; set; }//whether the ability needs a target.
-        public bool IsWeaponAbility { get; set; }//whether the ability just firing a special weapon
+        public bool IsWeaponAbility { get; set; }//whether the ability fires the ability weapon
+        public bool IsBuildAbility { get; set; }//whether the ability deploys a drone
+        public string DroneTemplate { get; set; }//name of drone prefab to deploy
         public bool IsContinuous { get; set; }//whether the effect repeats until it can't be activated anymore.  if false, only fires once
         public bool IsToggledAbility { get; set; }//whether the ability activates a passive ability until it is deactivated
         //ability properties

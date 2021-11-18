@@ -64,6 +64,19 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
+        public static WeaponModel CreateBuildTools()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Build Tools",
+                Cooldown = 2,
+                MaxRange = WeaponModel.WEAPON_RANGE_VERY_SHORT,
+                FiringArc = 60,
+                TraversalSpeed = 6,
+                AmmoCost = 200
+            };
+            return weapon;
+        }
         //test explosions
         public static WeaponModel CreateGrenadeLauncher()
         {
