@@ -1,5 +1,6 @@
 using Assets.Scripts.Data_Models;
 using Assets.Scripts.Data_Templates;
+using Assets.Scripts.Interfaces;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
@@ -36,6 +37,7 @@ public class UnitController : DroneController
     public Vector3? ForceTarget { get; set; }
     public Vector3? AbilityTarget { get; set; }
     public Vector3? AttackMoveDestination { get; set; }
+    public IActionTracker ActionTracker { get; set; }
     public UnitSlotModel SpawnSlot { get; set; }
     public override bool IsMoving
     {
@@ -188,14 +190,25 @@ public class UnitController : DroneController
         //set force-attack target
         ForceTarget = location;
     }
-    public void DoSpecialAbility(Vector3 location)
+    public void DoSpecialAbility(Vector3 location, IActionTracker actionTracker = null)
     {
         CancelOrders();
         var specialAbility = Data.UnitClass.SpecialAbility;
         //if ability is targeted, activate ability at location
         if (specialAbility.IsTargetedAbility)
         {
-            AbilityTarget = location;
+            if(actionTracker != null)
+            {
+                ActionTracker = actionTracker.StartAction(this);
+                if (ActionTracker != null)
+                {
+                    AbilityTarget = location;
+                }
+            }
+            else
+            {
+                AbilityTarget = location;
+            }
         }
         else
         {
@@ -203,7 +216,7 @@ public class UnitController : DroneController
         }
     }
     //cancel all orders given to this unit
-    public void CancelOrders()
+    public void CancelOrders(bool cancelTracker = true)
     {
         //stop unit
         //Agent.ResetPath();
@@ -216,7 +229,12 @@ public class UnitController : DroneController
         ForceTarget = null;
         //stop targeting ability
         AbilityTarget = null;
-
+        //remove action tracker
+        if(ActionTracker != null && cancelTracker)
+        {
+            ActionTracker.CancelAction();
+        }
+        ActionTracker = null;
     }
     public void DoMove(Vector3 location, bool cancelOrders = false)
     {
@@ -423,22 +441,33 @@ public class UnitController : DroneController
         {
             var weaponMount = GetWeaponController(activeWeapon);
 
-            weaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
-            activeWeapon.StartCooldown();
-            Data.MP -= activeWeapon.AmmoCost;
+            bool success = true;
             var specialAbility = Data.UnitClass.SpecialAbility;
             if (activeWeapon == specialAbility.AbilityWeapon)
             {
                 if (specialAbility.IsBuildAbility)
                 {
-                    //get drone template and spawn it at the ability target
-                    var drone = Instantiate(droneTemplate, transform.parent);
-                    drone.SpawnSetup(target, Data.Team, false);   
+                    if (ActionTracker != null && ActionTracker.FinishAction())
+                    {
+                        //get drone template and spawn it at the ability target
+                        var drone = Instantiate(droneTemplate, transform.parent);
+                        drone.SpawnSetup(target, Data.Team, false);
+                    }
+                    else
+                    {
+                        success = false;
+                    }
                 }
                 if (!specialAbility.IsContinuous)
                 {
                     CancelOrders();
                 }
+            }
+            if (success)
+            {
+                weaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
+                activeWeapon.StartCooldown();
+                Data.MP -= activeWeapon.AmmoCost;
             }
         }
     }

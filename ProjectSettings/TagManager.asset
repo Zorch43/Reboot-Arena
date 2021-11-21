@@ -6,6 +6,16 @@ TagManager:
   tags:
   - Blocking
   - NonBlocking
+  - Pickup
+  - Objective
+  - SpawnPoint
+  - Drone
+  - Unit
+  - Bullet
+  - Terrain
+  - Wall
+  - Stands
+  - Hologram
   layers:
   - Default
   - TransparentFX

@@ -53,7 +53,7 @@ namespace Assets.Scripts.Data_Templates
                 Name = "Fabricator",
                 Description = "Defensive backliner that can build walls and turrets, and refill ammo",
                 MaxHP = 300,
-                MaxMP = 800,
+                MaxMP = 400,
                 MoveSpeed = 3,
                 TurnSpeed = 6,
                 PrimaryWeapon = WeaponTemplates.CreateMunitionsPrinter(),
@@ -68,10 +68,12 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitClassModel()
             {
                 Name="Turret Drone",
-                Description = "Sentry turret that fires plasma at enemy units.  Uses ammo to regenerate.",
-                MaxHP = 500,
+                Description = "Sentry turret that fires plasma at enemy units.  Uses ammo to repair and upgrade itself.",
+                MaxHP = 600,
                 MaxMP = 800,
-                PrimaryWeapon = WeaponTemplates.CreatePlasmaTurret()
+                PrimaryWeapon = WeaponTemplates.CreatePlasmaTurret(),
+                SecondaryWeapon = WeaponTemplates.CreateWeakPlasmaTurret(),
+                AutoRepairStrength = 40
             };
             return template;
         }

@@ -38,6 +38,7 @@ public class CommandController : MonoBehaviour
     #endregion
     #region private fields
     bool isSpectating;
+    private BuildHologramController currentHologram;
     #endregion
     #region properties
     public SpecialCommands SelectedCommand { get; set; }
@@ -56,16 +57,18 @@ public class CommandController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        var hotKeyCommand = GetKeyCommand();
-        //hotKey commands
+        float deltaTime = Time.deltaTime;
+        bool isRunning = deltaTime > 0;
         Vector3 mapPos = new Vector3();
+        Vector2 mousePosition = Input.mousePosition;
+        //hotKey commands
+        var hotKeyCommand = GetKeyCommand();
 
-        if(!isSpectating && hotKeyCommand != null && hotKeyCommand.PressedKey != KeyCode.None)
+        if (!isSpectating && hotKeyCommand != null && hotKeyCommand.PressedKey != KeyCode.None)
         {
             if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveKey)
             {
-                if(GetMouseMapPosition(out mapPos))
+                if(GetMouseMapPosition(mousePosition, out mapPos))
                 {
                     GiveAttackMoveOrder(mapPos);
                 }
@@ -76,7 +79,7 @@ public class CommandController : MonoBehaviour
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.ForceAttackKey)
             {
-                if (GetMouseMapPosition(out mapPos))
+                if (GetMouseMapPosition(mousePosition, out mapPos))
                 {
                     GiveForceAttackOrder(mapPos);
                 }   
@@ -91,7 +94,7 @@ public class CommandController : MonoBehaviour
             }
             else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.SetRallyPointKey)
             {
-                if (GetMouseMapPosition(out mapPos))
+                if (GetMouseMapPosition(mousePosition, out mapPos))
                 {
                     GiveRallyOrder(mapPos);
                 }
@@ -154,7 +157,7 @@ public class CommandController : MonoBehaviour
             //left-click on minimap will always pan the camera to the clicked location
             if(Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButton(0))
             {
-                if(GetMouseMapPosition(out mapPos))
+                if(GetMouseMapPosition(mousePosition, out mapPos))
                 {
                     Cameras.PanToMapLocation(mapPos);
                 }
@@ -170,7 +173,7 @@ public class CommandController : MonoBehaviour
                         var ray = Cameras.MainCamera.ScreenPointToRay(Input.mousePosition);
                         RaycastHit hit;
                         UnitController selectedUnit = null;
-                        if (GetRayHit(ray, out hit))
+                        if (GetRayHit(ray, out hit, true))
                         {
                             selectedUnit = hit.transform.GetComponent<UnitController>();
                             if (selectedUnit != null)
@@ -196,7 +199,7 @@ public class CommandController : MonoBehaviour
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
-                        if (GetMouseMapPosition(out mapPos))
+                        if (GetMouseMapPosition(mousePosition, out mapPos))
                         {
                             GiveAttackMoveOrder(mapPos);
                         }
@@ -212,7 +215,7 @@ public class CommandController : MonoBehaviour
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
-                        if (GetMouseMapPosition(out mapPos))
+                        if (GetMouseMapPosition(mousePosition, out mapPos))
                         {
                             GiveForceAttackOrder(mapPos);
                         }
@@ -227,7 +230,7 @@ public class CommandController : MonoBehaviour
                 {
                     if (Input.GetMouseButtonDown(0))
                     {
-                        if (GetMouseMapPosition(out mapPos))
+                        if (GetMouseMapPosition(mousePosition, out mapPos))
                         {
                             GiveRallyOrder(mapPos);
                         }
@@ -243,7 +246,7 @@ public class CommandController : MonoBehaviour
                     if (Input.GetMouseButtonDown(0))
                     {
                         //activate special ability
-                        if (GetMouseMapPosition(out mapPos))
+                        if (GetMouseMapPosition(mousePosition, out mapPos))
                         {
                             GiveSpecialAbilityOrder(mapPos);
                         }
@@ -256,6 +259,16 @@ public class CommandController : MonoBehaviour
             }
             
         }
+        //general updates
+        //update hologram if it is valid
+        if (isRunning && UpdateHologramVisibility(mousePosition))
+        {
+            if (GetMouseMapPosition(mousePosition, out mapPos))
+            {
+                currentHologram.transform.position = mapPos;
+            }
+        }
+
     }
     #endregion
     #region public methods
@@ -293,7 +306,7 @@ public class CommandController : MonoBehaviour
 
         var ray = fromCamera.ScreenPointToRay(targetLocation);
         RaycastHit hit;
-        if (GetRayHit(ray, out hit))
+        if (GetRayHit(ray, out hit, true))
         {
             var mapPoint = hit.point;
             //action
@@ -422,7 +435,7 @@ public class CommandController : MonoBehaviour
         foreach(var u in abilityUnits)
         {
             //do special ability
-            u.DoSpecialAbility(location);
+            u.DoSpecialAbility(location, currentHologram);
             if (!firstResponse)
             {
                 firstResponse = true;
@@ -531,6 +544,13 @@ public class CommandController : MonoBehaviour
             CommandCompletedCallback = onComplete;
             //set cursor
             SetCursor(SelectedCommand);
+            //if is a build ability, show the appropriate hologram
+            if (ability.IsBuildAbility)
+            {
+                //load and show build hologram
+                var hologramTemplate = Resources.Load<BuildHologramController>(ability.DroneHologram);
+                currentHologram = Instantiate(hologramTemplate, Map.transform);
+            }
         }
         else
         {
@@ -639,7 +659,7 @@ public class CommandController : MonoBehaviour
             SelectUnits(selectedUnits, false);
         }
     }
-    private bool GetRayHit(Ray ray, out RaycastHit hit)
+    private bool GetRayHit(Ray ray, out RaycastHit hit, bool hitDrones)
     {
         var hits = Physics.RaycastAll(ray);
         if(hits.Length > 0)
@@ -650,13 +670,32 @@ public class CommandController : MonoBehaviour
         {
             hit = new RaycastHit();
         }
+        bool firstHit = false;
         foreach (var h in hits)
         {
-            if (h.collider.gameObject.GetComponent<DroneController>() != null)
+            if (!h.collider.isTrigger)
             {
-                hit = h;
-                break;
+                if (h.collider.CompareTag("Drone") || h.collider.CompareTag("Unit"))
+                {
+                    if (hitDrones)
+                    {
+                        hit = h;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (!firstHit)
+                    {
+                        hit = h;
+                        if (!hitDrones)
+                        {
+                            break;
+                        }
+                    }
+                }
             }
+            
         }
 
         return hits.Length > 0;
@@ -672,20 +711,39 @@ public class CommandController : MonoBehaviour
         var ray = fromCamera.ScreenPointToRay(screenPos);
 
         RaycastHit hit;
-        if(GetRayHit(ray, out hit))
+        if(GetRayHit(ray, out hit, false))
         {
             mapPos = hit.point;
             return true;
         }
         return false;
     }
-    private bool GetMouseMapPosition(out Vector3 mapPos)
+    private bool GetMouseMapPosition(Vector2 mousePosition, out Vector3 mapPos)
     {
         //auto-detect which camera to use (main or minimap) based on mouse position
-        var fromCamera = Cameras.GetCommandCamera(Input.mousePosition);
+        var fromCamera = Cameras.GetCommandCamera(mousePosition);
 
-        return GetMapPositionFromScreen(Input.mousePosition, out mapPos, fromCamera);
+        return GetMapPositionFromScreen(mousePosition, out mapPos, fromCamera);
     }
-    
+
+    private bool UpdateHologramVisibility(Vector2 mousePosition)
+    {
+        bool isVisible = SelectedCommand == SpecialCommands.SpecialAbility && SpecialAbility?.IsBuildAbility == true;
+        if (!isVisible)
+        {
+            if(currentHologram != null)
+            {
+                Destroy(currentHologram.gameObject);
+            }
+            
+            currentHologram = null;//remove old hologram if no longer in use
+        }
+        else
+        {
+            isVisible = Cameras.IsPointInMainMapBounds(mousePosition);
+            currentHologram.gameObject.SetActive(isVisible);//hide hologram when cursor is not in the main view
+        }
+        return isVisible;
+    }
     #endregion
 }

@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 1412933084542164909}
   m_Layer: 0
   m_Name: WallMain
-  m_TagString: Untagged
+  m_TagString: Stands
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,7 +110,7 @@ GameObject:
   - component: {fileID: 1412933085693590965}
   m_Layer: 0
   m_Name: WallTop
-  m_TagString: Untagged
+  m_TagString: Stands
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -203,7 +203,7 @@ GameObject:
   - component: {fileID: 1412933085969130960}
   m_Layer: 0
   m_Name: Stands
-  m_TagString: Untagged
+  m_TagString: Stands
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

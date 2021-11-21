@@ -28,6 +28,8 @@ public class TurretDroneController : DroneController
     {
         var points = base.ReloadUnit(amount);
         BuildPoints += points;
+        Animations.SetFloat("BuildPoints", BuildPoints);
+
         return points;
     }
     public override void SpawnSetup(Vector3 position, int team, bool hideUI)

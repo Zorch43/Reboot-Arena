@@ -5355,7 +5355,7 @@ GameObject:
   - component: {fileID: 5133597251994547239}
   m_Layer: 9
   m_Name: UnitTrooper v2
-  m_TagString: Untagged
+  m_TagString: Unit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -5411,32 +5411,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 644d1c1e08ac3064abfd7da3dc05eb4b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  UnitClass: 0
   UnitAppearance: {fileID: 7171717414688294244}
+  Animations: {fileID: 0}
   MiniMapIcon: {fileID: 8808926744130317158}
-  MinimapNumber: {fileID: 5597712306729574724}
-  UnitNumber: {fileID: 5158771049823348392}
   UnitEffects: {fileID: 389008842886913759}
-  Selector: {fileID: 1609315070418026961}
-  Agent: {fileID: 2534812876650324764}
   HealthBar: {fileID: 4068443035355726422}
   AmmoBar: {fileID: 7666261515383664753}
   PrimaryWeaponMount: {fileID: 9133299254316094500}
   SecondaryWeaponMount: {fileID: 5341499275514278184}
-  AbilityWeaponMount: {fileID: 1862439409756725150}
   Team: -1
-  Portrait: {fileID: 21300000, guid: cb405adaa140eb84197071da6d5d3f52, type: 3}
-  Symbol: {fileID: 21300000, guid: 93cb4800de00de844952ac9de917c0a2, type: 3}
-  UnitVoice: {fileID: 1174238694324332553}
   DeathLoot: {fileID: 502637539237251665, guid: 7898b491eac7e5b44a452302f664e157, type: 3}
-  JetStream: {fileID: 1383816301894084160}
   RespawnEffect: {fileID: 7453372330421493268}
   HealEffect: {fileID: 6163000540260815860}
   ReloadEffect: {fileID: 7176505818652466277}
   DeathExplosion: {fileID: 8270483927021890600, guid: f80942e1a1b484d4597e1a23ad21a971, type: 3}
   ToolTip: {fileID: 1508890778563881171}
+  JetStream: {fileID: 1383816301894084160}
   TeamColorParts:
   - Part: {fileID: 5705343711503959049}
     TeamColorIndex: 0
+  CanAttack: 1
+  TargetOffset: {x: 0, y: 0, z: 0}
+  MinimapNumber: {fileID: 5597712306729574724}
+  UnitNumber: {fileID: 5158771049823348392}
+  Selector: {fileID: 1609315070418026961}
+  Agent: {fileID: 2534812876650324764}
+  AbilityWeaponMount: {fileID: 1862439409756725150}
+  Portrait: {fileID: 21300000, guid: cb405adaa140eb84197071da6d5d3f52, type: 3}
+  Symbol: {fileID: 21300000, guid: 93cb4800de00de844952ac9de917c0a2, type: 3}
+  UnitVoice: {fileID: 1174238694324332553}
 --- !u!114 &1174238694324332553
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5458,6 +5462,7 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 41e56ea5e5560044281424288c3f6be5, type: 3}
   AttackResponses:
   - {fileID: 8300000, guid: f1f56a35ca6c9cb41a7c035151f4d3e6, type: 3}
+  SupportResponses: []
   AbilityResponses:
   - {fileID: 8300000, guid: a901fc818183a84449fd569db5cbd62a, type: 3}
   UnderAttackReport: []

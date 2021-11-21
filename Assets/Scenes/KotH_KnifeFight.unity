@@ -3723,7 +3723,7 @@ GameObject:
   - component: {fileID: 4543856066534213420}
   m_Layer: 3
   m_Name: Terrain
-  m_TagString: Untagged
+  m_TagString: Terrain
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 8
@@ -4921,6 +4921,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 899516749343220616}
     m_Modifications:
+    - target: {fileID: 3618516726705428005, guid: 725b70a714b29044bbbc9b1b5509d5ab, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3618516727302549186, guid: 725b70a714b29044bbbc9b1b5509d5ab, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3618516727991134144, guid: 725b70a714b29044bbbc9b1b5509d5ab, type: 3}
       propertyPath: m_Name
       value: CapturePoint

@@ -24,6 +24,8 @@ namespace Assets.Scripts.Data_Models
         public UnitAbilityModel SpecialAbility { get; set; }
         //passive abilities
         public bool IsAmbidextrous { get; set; }//whether the unit can fire primary and secondary weapons simultaneously, conditions permitting
+        public float AutoRepairStrength { get; set; }//how much to heal per second, so long as unit can spend ammo
+        public float AutoRepairEfficiency { get; set; } = 1;//how much MP each repaired HP costs
         #endregion
     }
 }

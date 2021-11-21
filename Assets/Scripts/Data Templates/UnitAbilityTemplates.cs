@@ -42,13 +42,14 @@ namespace Assets.Scripts.Data_Templates
                 IsBuildAbility = true,
                 IsWeaponAbility = true,//uses weapon range
                 DroneTemplate = ResourceList.DRONE_TURRET,
+                DroneHologram = ResourceList.HOLOGRAM_TURRET,
                 IsTargetedAbility = true,
                 GroupActivationRule = UnitAbilityModel.GroupActivationType.Single,
                 ConsiderMostAmmoInGroup = true,
                 ConsiderLeastTotalDistanceToTarget = true,
                 ConsiderMostHealthInGroup = true,
                 AbilityWeapon = WeaponTemplates.CreateBuildTools(),
-                AmmoCostInstant = 200
+                AmmoCostInstant = 100
             };
             return ability;
         }

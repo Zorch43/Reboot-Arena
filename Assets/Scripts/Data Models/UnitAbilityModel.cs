@@ -28,6 +28,7 @@ namespace Assets.Scripts.Data_Models
         public bool IsWeaponAbility { get; set; }//whether the ability fires the ability weapon
         public bool IsBuildAbility { get; set; }//whether the ability deploys a drone
         public string DroneTemplate { get; set; }//name of drone prefab to deploy
+        public string DroneHologram { get; set; }//hologram to display when picking build spot for drone
         public bool IsContinuous { get; set; }//whether the effect repeats until it can't be activated anymore.  if false, only fires once
         public bool IsToggledAbility { get; set; }//whether the ability activates a passive ability until it is deactivated
         //ability properties

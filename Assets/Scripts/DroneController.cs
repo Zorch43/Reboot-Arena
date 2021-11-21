@@ -84,14 +84,19 @@ public class DroneController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float elapsedTime = Time.deltaTime;
+        float deltaTime = Time.deltaTime;
 
-        DoWeaponCooldown(elapsedTime);
+        DoWeaponCooldown(deltaTime);
         DoUnitAction();
 
         UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
         MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
 
+        //update continuous passive abiities
+        //do autoRepair
+        DoAutoRepair(deltaTime);
+
+        //update unit status
         //update resource bars
         HealthBar.UpdateBar(Data.UnitClass.MaxHP, Data.HP);
         AmmoBar.UpdateBar(Data.UnitClass.MaxMP, Data.MP);
@@ -557,6 +562,13 @@ public class DroneController : MonoBehaviour
         };
         ToolTip.AmmoCost = Data.MP + "/" + Data.UnitClass.MaxMP;
         ToolTip.HealthCost = Data.HP + "/" + Data.UnitClass.MaxHP;
+    }
+    private void DoAutoRepair(float deltaTime)
+    {
+        var maxHeal = Mathf.Min(Data.UnitClass.MaxHP - Data.HP, Data.UnitClass.AutoRepairStrength * deltaTime);
+        var maxDrain = Mathf.Min(Data.MP, maxHeal);
+        var drain = DrainUnit(maxDrain);
+        HealUnit(drain);
     }
     #endregion
 

@@ -15,6 +15,7 @@ namespace Assets.Scripts.Utility
         const string CURSORS = "Sprites/Cursors/";
         const string MARKERS = "Sprites/Markers/";
         const string DRONES = "Drones/";
+        const string HOLOGRAMS = DRONES + "Holograms/";
         #endregion
         #region resources
         public const string CURSOR_ABILITY_ATTACK = CURSORS + "SpecialAttackCursor";
@@ -32,6 +33,7 @@ namespace Assets.Scripts.Utility
         public const string CURSOR_BUILD_TURRET = CURSORS + "BuildTurretCursor";
         public const string MARKER_BUILD_TURRET = MARKERS + "BuildTurretMarker";
         public const string DRONE_TURRET = DRONES + "DroneTurret";
+        public const string HOLOGRAM_TURRET = HOLOGRAMS + "TurretHologram";
         #endregion
         #endregion
         #region public methods

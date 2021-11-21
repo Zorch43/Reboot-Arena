@@ -9,6 +9,7 @@ namespace Assets.Scripts.Data_Templates
 {
     public static class WeaponTemplates
     {
+        #region Trooper
         public static WeaponModel CreateAssaultRifle()
         {
             //accurate, needs no ammo, can fire on the move
@@ -64,19 +65,77 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
+        #endregion
+        #region Fabricator
+        //fabricator weapon
+        public static WeaponModel CreatePlasmaGun()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Plasma Gun",
+                Cooldown = 1f,
+                HealthDamage = 25,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
+                CanAutoAttack = true,
+                FireWhileMoving = true,
+                ProjectileSpeed = 7f,
+                ProjectileStartSize = 0.15f,
+                ProjectileEndSize = 0.15f,
+                FiringArc = 360,
+                TraversalSpeed = 6
+            };
+            return weapon;
+        }
+        public static WeaponModel CreateMunitionsPrinter()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Munitions Printer",
+                Cooldown = 0.1f,
+                AmmoDamage = -10,
+                AmmoCost = 5,
+                CanAutoAttack = true,
+                MaxRange = WeaponModel.WEAPON_RANGE_MELEE,
+                ProjectileStartSize = 0.15f,
+                PiercesWalls = true
+            };
+            return weapon;
+        }
         public static WeaponModel CreateBuildTools()
         {
             var weapon = new WeaponModel()
             {
                 Name = "Build Tools",
                 Cooldown = 2,
-                MaxRange = WeaponModel.WEAPON_RANGE_VERY_SHORT,
-                FiringArc = 60,
-                TraversalSpeed = 6,
-                AmmoCost = 200
+                MaxRange = WeaponModel.WEAPON_RANGE_MELEE,
+                AmmoCost = 100,
+                ProjectileStartSize = 0.25f
             };
             return weapon;
         }
+        //turret weapon
+        public static WeaponModel CreatePlasmaTurret()
+        {
+            var weapon = CreatePlasmaGun();
+
+            weapon.Name = "Plasma Turret";
+            weapon.AmmoCost = 5;
+
+            return weapon;
+        }
+        public static WeaponModel CreateWeakPlasmaTurret()
+        {
+            var weapon = CreatePlasmaGun();
+
+            weapon.Name = "Plasma Turret (Weak)";
+            weapon.HealthDamage = 10;
+            weapon.ProjectileStartSize = 0.1f;
+            weapon.ProjectileEndSize = 0.1f;
+
+            return weapon;
+        }
+        #endregion
+        #region toybox
         //test explosions
         public static WeaponModel CreateGrenadeLauncher()
         {
@@ -166,50 +225,7 @@ namespace Assets.Scripts.Data_Templates
             };
             return weapon;
         }
-        //fabricator weapon
-        public static WeaponModel CreatePlasmaGun()
-        {
-            var weapon = new WeaponModel()
-            {
-                Name = "Plasma Gun",
-                Cooldown = 1f,
-                HealthDamage = 25,
-                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
-                CanAutoAttack = true,
-                FireWhileMoving = true,
-                ProjectileSpeed = 7f,
-                ProjectileStartSize = 0.15f,
-                ProjectileEndSize = 0.15f,
-                FiringArc = 360,
-                TraversalSpeed = 6
-            };
-            return weapon;
-        }
-        //turret weapon
-        public static WeaponModel CreatePlasmaTurret()
-        {
-            var weapon = CreatePlasmaGun();
-
-            weapon.Name = "Plasma Turret";
-            weapon.AmmoCost = 5;
-
-            return weapon;
-        }
-        public static WeaponModel CreateMunitionsPrinter()
-        {
-            var weapon = new WeaponModel()
-            {
-                Name = "Munitions Printer",
-                Cooldown = 0.25f,
-                HealthDamage = -20,//temp
-                AmmoDamage = 0,//temp
-                AmmoCost = 20,
-                CanAutoAttack = true,
-                MaxRange = WeaponModel.WEAPON_RANGE_MELEE,
-                ProjectileStartSize = 0.25f
-            };
-            return weapon;
-        }
+        #endregion
 
     }
 }
