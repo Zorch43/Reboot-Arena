@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,33 +41,23 @@ public class AIController : MonoBehaviour
         {
             tacticTime = 0;
             //get all units
-            var slotUnits = new List<UnitController>();
+            var mapUnits = Map.Units;//new List<UnitController>();
 
-            foreach (var t in GameObjective.Teams)
-            {
-                foreach (var s in t.UnitSlots)
-                {
-                    if (s.CurrentUnit != null)
-                    {
-                        slotUnits.Add(s.CurrentUnit);
-                    }
-                }
-            }
-            SetStrategicStance(slotUnits);//pick stance
+            SetStrategicStance(mapUnits);//pick stance
             //var teamUnits = new List<UnitController>();
-            for (int i = 0; i < slotUnits.Count; i++)
+            for (int i = 0; i < mapUnits.Count; i++)
             {
-                var u = slotUnits[i];
-                if (u.Data.Team == Team.Team)
+                var u = mapUnits[i] as UnitController;
+                if (u != null && u.Data.Team == Team.Team)
                 {
-                    DoTacticalActionExplicit(u, slotUnits.ToArray(), strategicStance);
+                    DoTacticalActionExplicit(u, mapUnits.ToArray(), strategicStance);
                 }
             }
         }
     }
     #endregion
     #region public methods
-    public void DoTacticalActionExplicit(UnitController selectedUnit, UnitController[] allUnits, string stance)
+    public void DoTacticalActionExplicit(UnitController selectedUnit, DroneController[] allDrones, string stance)
     {
         //hard-coded behavior tree, doesn't rely on scoring so heavily
         //only valid for Trooper, maybe have individual ai controllers for each class in the future?
@@ -99,18 +90,31 @@ public class AIController : MonoBehaviour
         }
         else
         {
-            UnitController attackTarget = null;
-            float attackScore = ScoreAttack(selectedUnit, allUnits, out attackTarget);
+            DroneController attackTarget = null;
+            float attackScore = ScoreAttack(selectedUnit, allDrones, out attackTarget);
+            DroneController reloadTarget = null;
+            float restoreAmmoScore = ScoreRestoreAmmo(selectedUnit, allDrones, out reloadTarget);
             Vector3 grenadeTarget = new Vector3();
-            float grenadeScore = ScoreFragGrenade(selectedUnit, allUnits, out grenadeTarget);
+            float grenadeScore = ScoreFragGrenade(selectedUnit, allDrones, out grenadeTarget);
+            Vector3 buildTarget = new Vector3();
+            float buildScore = ScoreBuildTurret(selectedUnit, allDrones, out buildTarget);
 
-            //3: if facing a group of enemies, fire grenade if able
+            //3.1: if facing a group of enemies, fire grenade if able
             if (grenadeScore > 0 && grenadeScore > attackScore && roll < Config.Difficulty + Config.SpecialMod)
             {
                 selectedUnit.DoSpecialAbility(grenadeTarget);
             }
-            //4: shoot the closest enemy with the lowest health in range, in true line-of-sight
-            else if (attackScore > 0 && roll < Config.Difficulty)
+            //4.2: restore ammo to allies
+            else if (restoreAmmoScore > 0 && roll < Config.Difficulty + Config.SupportMod)
+            {
+                selectedUnit.DoAttack(reloadTarget);
+            }
+            else if (buildScore > 0 && selectedUnit.Data.MP > 300 && roll < Config.Difficulty + Config.SpecialMod)
+            {
+                selectedUnit.DoSpecialAbility(buildTarget);
+            }
+            //4.3: shoot the closest enemy with the lowest health in range, in true line-of-sight
+            else if (attackScore > 0 && roll < Config.Difficulty + Config.AttackMod)
             {
                 selectedUnit.DoAttack(attackTarget);
             }
@@ -161,15 +165,20 @@ public class AIController : MonoBehaviour
     #region scoring
     //action scoring methods
     //tactical actions
-    private float ScoreAttack(UnitController unit, UnitController[] allUnits, out UnitController targetUnit)
+    private float ScoreAttack(UnitController unit, DroneController[] allDrones, out DroneController targetDrone)
     {
-        targetUnit = null;
+        targetDrone = null;
         float score = 0;
         float internalScore = 0;
-        var primaryWeapon = unit.Data.UnitClass.PrimaryWeapon;
-        float engageDistance = primaryWeapon.MaxRange;
+        var activeWeapon = unit.Data.UnitClass.PrimaryWeapon;
+        //get weapon used for attacking (even support units should have one)
+        if (activeWeapon.TargetsAllies())
+        {
+            activeWeapon = unit.Data.UnitClass.SecondaryWeapon;
+        }
+        float engageDistance = activeWeapon.MaxRange;
         
-        foreach (var u in allUnits)
+        foreach (var u in allDrones)
         {
             if(u.Data.Team != Team.Team)
             {
@@ -184,7 +193,7 @@ public class AIController : MonoBehaviour
                     continue;
                 }
                 //prefer close units (account for inaccuracy, spread, falloff, slow projectiles, etc)
-                float damageReduction = Mathf.Max(1, 1/(Mathf.Tan(primaryWeapon.InAccuracy) * distanceToTarget * 2));
+                float damageReduction = Mathf.Max(1, 1/(Mathf.Tan(activeWeapon.InAccuracy) * distanceToTarget * 2));
                 //targetScore += (engageDistance - Vector3.Distance(u.transform.position, unit.transform.position))/engageDistance;
                 ////prefer units close to the objective
                 //targetScore += (CAPTURE_DISTANCE - Vector3.Distance(u.transform.position, GameObjective.GetAIObjective())) / CAPTURE_DISTANCE;
@@ -192,17 +201,17 @@ public class AIController : MonoBehaviour
                 targetInternalScore -= u.Data.HP / 100;
                 //prefer units near death
                 float unitsKilled = 0;
-                if (primaryWeapon.HealthDamage/primaryWeapon.Cooldown >= u.Data.HP)
+                if (activeWeapon.HealthDamage/activeWeapon.Cooldown >= u.Data.HP)
                 {
                     unitsKilled += 1;
                 }
 
-                targetScore += unitsKilled + (primaryWeapon.HealthDamage / primaryWeapon.Cooldown) / 100 * damageReduction;
+                targetScore += unitsKilled + (activeWeapon.HealthDamage / activeWeapon.Cooldown) / 100 * damageReduction;
                 //targetScore -= primaryWeapon.AmmoCost / primaryWeapon.Cooldown;
 
-                if (targetUnit == null || targetScore + targetInternalScore > score + internalScore)
+                if (targetDrone == null || targetScore + targetInternalScore > score + internalScore)
                 {
-                    targetUnit = u;
+                    targetDrone = u;
                     score = targetScore;
                     internalScore = targetInternalScore;
                 }
@@ -211,17 +220,93 @@ public class AIController : MonoBehaviour
         //make final weight adjustments
         return score;
     }
-    private float ScoreFragGrenade(UnitController unit, UnitController[] allUnits, out Vector3 targetLocation)
+    private float ScoreRestoreAmmo(UnitController unit, DroneController[] allDrones, out DroneController targetDrone)
+    {
+        targetDrone = null;
+        float score = 0;
+        float internalScore = 0;
+        WeaponModel activeWeapon = null;
+        var primaryWeapon = unit.Data.UnitClass.PrimaryWeapon;
+        var secondaryWeapon = unit.Data.UnitClass.SecondaryWeapon;
+        //get weapon used for restoring ammo (if it exists)
+        if (primaryWeapon.AmmoDamage < 0)
+        {
+            activeWeapon = primaryWeapon;
+        }
+        else if(secondaryWeapon.AmmoDamage < 0)
+        {
+            activeWeapon = secondaryWeapon;
+        }
+
+        if(activeWeapon != null)
+        {
+            float engageDistance = activeWeapon.MaxRange;// activeWeapon.MaxRange;//TODO: add engage distance to weapons/unit
+
+            foreach (var u in allDrones)
+            {
+                if (u.Data.Team == Team.Team)
+                {
+                    float distanceToTarget = Vector3.Distance(u.transform.position, unit.transform.position);
+                    float targetScore = 0;
+                    float targetInternalScore = 0;
+                    //score target
+                    //prefer targets with missing ammo
+                    //hard disqualifiers
+                    if ((u.CompareTag("Unit") && distanceToTarget > engageDistance) || u.Data.MP/u.Data.UnitClass.MaxMP > 0.5f)
+                    {
+                        continue;
+                    }
+                    //prefer close units (account for inaccuracy, spread, falloff, slow projectiles, etc)
+                    //float damageReduction = Mathf.Max(1, 1 / (Mathf.Tan(activeWeapon.InAccuracy) * distanceToTarget * 2));
+
+                    //prefer units with lots of remaining capacity or low ammo
+                    targetScore += (u.Data.UnitClass.MaxMP - u.Data.MP) / 100;
+                    
+
+                    targetScore += (-activeWeapon.AmmoDamage / activeWeapon.Cooldown) / 100;
+                    if (u.CompareTag("Drone"))
+                    {
+                        //prefer drones with missing health
+                        targetScore += (u.Data.UnitClass.MaxHP - u.Data.HP) / 100;
+                        targetScore -= distanceToTarget;
+                    }
+                    else
+                    {
+                        //prefer units with high health
+                        targetScore += u.Data.HP / 100;
+                    }
+
+
+                    if (targetDrone == null || targetScore + targetInternalScore > score + internalScore)
+                    {
+                        targetDrone = u;
+                        score = targetScore;
+                        internalScore = targetInternalScore;
+                    }
+                }
+            }
+        }
+        else
+        {
+            score = -1000;
+        }
+        
+        //make final weight adjustments
+        return score;
+    }
+    private float ScoreFragGrenade(UnitController unit, DroneController[] allDrones, out Vector3 targetLocation)
     {
         bool hasTarget = false;
         targetLocation = new Vector3();
         float score = 0;
         float internalScore = 0;
-        var abilityWeapon = unit.Data.UnitClass.SpecialAbility.AbilityWeapon;
-        float engageDistance = Mathf.Min(Config.Speed, 2) * unit.Data.UnitClass.MoveSpeed + abilityWeapon.MaxRange;
-        if (unit.Data.MP >= unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+        
+        if (unit.Data.UnitClass.SpecialAbility.Name == "Grenade" && unit.Data.MP >= unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
         {
-            foreach (var u in allUnits)
+            var abilityWeapon = unit.Data.UnitClass.SpecialAbility.AbilityWeapon;
+
+            float engageDistance = Mathf.Min(Config.Speed, 2) * unit.Data.UnitClass.MoveSpeed + abilityWeapon.MaxRange;
+            foreach (var u in allDrones)
             {
                 if (u.Data.Team != Team.Team)
                 {
@@ -240,7 +325,7 @@ public class AIController : MonoBehaviour
                     }
                     
                     //prefer targets with other units close to them
-                    foreach (var o in allUnits)
+                    foreach (var o in allDrones)
                     {
                         if (o.Data.Team != Team.Team && o != u
                             && Vector3.Distance(u.transform.position, o.transform.position)
@@ -273,7 +358,7 @@ public class AIController : MonoBehaviour
                     }
 
                     //prefer stopped units
-                    if (u.Agent.hasPath)
+                    if (!u.IsMoving)
                     {
                         targetInternalScore += 1;
                     }
@@ -296,6 +381,86 @@ public class AIController : MonoBehaviour
             score = -1000;
         }
         
+        return score;
+    }
+    private float ScoreBuildTurret(UnitController unit, DroneController[] allUnits, out Vector3 buildSite)
+    {
+        float score = -1;
+        float internalScore = 0;
+        buildSite = new Vector3();
+        if(unit.Data.UnitClass.SpecialAbility.Name == "Turret" && unit.Data.MP > unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+        {
+            //search area near unit for valid build sites
+
+            for(float searchRadius = 1; searchRadius <= 10; searchRadius += 1)
+            {
+                for(float searchAngle = 0; searchAngle < 360; searchAngle += 60 / searchRadius)
+                {
+                    //score each valid build site
+                    float currentScore = 0;
+                    float currentInternalScore = 0;
+                    //TODO: raycast down to get height
+                    Vector3 currentSite = unit.transform.position + new Vector3(Mathf.Cos(searchAngle), 0, Mathf.Sin(searchAngle)) * searchRadius;
+                    currentSite.y = 0;
+                    if(BuildTools.IsValidBuildSite(currentSite, 0.5f))
+                    {
+                        //hard preferences
+                        //must be within engagement range and within line-of-sight of an objective
+                        var distanceToObjective = Vector3.Distance(GameObjective.GetAIObjective(), unit.transform.position);
+                        if(distanceToObjective > 10)
+                        {
+                            continue;
+                        }
+                        currentScore -= 1;
+                        //prefer sites closer to current position
+                        //currentScore -= 0.1f * searchRadius;
+                        //prefer sites close to objectives
+                        
+                        currentScore += (10 - distanceToObjective) * 0.2f;
+                        //prefer sites without too many enemies in the immediate vicinity
+                        float enemyCount = 0;
+                        float allyCount = 0;
+                        foreach(var u in allUnits)
+                        {
+                            var distance = Vector3.Distance(u.transform.position, currentSite);
+                            if(distance <= 10)
+                            {
+                                float unitScore = 0.5f;
+                                if (u is UnitController)
+                                {
+                                    unitScore = 1;
+                                }
+                                if (u.Data.Team == Team.Team)
+                                {
+                                    allyCount += unitScore;
+                                }
+                                else
+                                {
+                                    enemyCount += unitScore;
+                                }
+                            }
+                            
+                        }
+                        //enemy numbers can be tolerated if near allies
+                        currentScore += Mathf.Min(allyCount - enemyCount, 0);
+                        //enemy numbers can be tolerated if unit has high health and ammo
+                        //currentScore += (300 - unit.Data.MP)/100;
+                        //return best build site
+
+                        if (currentScore + currentInternalScore > score + internalScore)
+                        {
+                            score = currentScore;
+                            internalScore = currentInternalScore;
+                            buildSite = currentSite;
+                        }
+                    }
+                }
+            } 
+        }
+        else
+        {
+            score = -1000;
+        }
         return score;
     }
     private float ScoreGetHealth(UnitController unit, PickupSpawnerController[] dispensers, HealthPackController[] packs, out Vector3 pickupLocation)
@@ -423,7 +588,7 @@ public class AIController : MonoBehaviour
     }
     #endregion
     #region acting
-    private void SetStrategicStance(List<UnitController> allUnits)
+    private void SetStrategicStance(List<DroneController> allUnits)
     {
         var objectivePoint = GameObjective.GetAIObjective();
         var teamSpawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
@@ -435,6 +600,11 @@ public class AIController : MonoBehaviour
 
         foreach (var u in allUnits)
         {
+            float unitWeight = 0.5f;
+            if(u is UnitController)
+            {
+                unitWeight = 1;
+            }
             var distanceToPoint = Vector3.Distance(objectivePoint, u.transform.position);
             var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
             var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
@@ -442,22 +612,22 @@ public class AIController : MonoBehaviour
             {
                 if (travelTime < 1)
                 {
-                    teamPointUnits++;
+                    teamPointUnits += unitWeight;
                 }
                 else
                 {
-                    teamReserveUnits += 1;
+                    teamReserveUnits += unitWeight;
                 }
             }
             else
             {
                 if (travelTime < 1)
                 {
-                    enemyPointUnits++;
+                    enemyPointUnits += unitWeight;
                 }
                 else
                 {
-                    enemyReserveUnits += 1;
+                    enemyReserveUnits += unitWeight;
                 }
             }
         }

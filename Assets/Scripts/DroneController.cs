@@ -92,9 +92,7 @@ public class DroneController : MonoBehaviour
         UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
         MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
 
-        //update continuous passive abiities
-        //do autoRepair
-        DoAutoRepair(deltaTime);
+        
 
         //update unit status
         //update resource bars
@@ -104,10 +102,15 @@ public class DroneController : MonoBehaviour
         //update tooltip
         UpdateTooltip();
 
+        //death check
         if(Data.HP <= 0)
         {
             Kill();
         }
+
+        //update continuous passive abiities
+        //do autoRepair
+        DoAutoRepair(deltaTime);
     }
 
     #endregion
@@ -136,6 +139,7 @@ public class DroneController : MonoBehaviour
         DeathActions.Add(DoLootDrop);
         DeathActions.Add(DoDeathExplosion);
         DeathActions.Add(UnRegister);
+        
     }
     public UnitModel GetData()
     {

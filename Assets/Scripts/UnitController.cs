@@ -75,6 +75,11 @@ public class UnitController : DroneController
         MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
         //cache drone template
         droneTemplate = Resources.Load<DroneController>(Data.UnitClass.SpecialAbility.DroneTemplate);
+        //set death actions
+        DeathActions.Add(()=>
+        {
+            CancelOrders();
+        });
     }
 
     // Update is called once per frame
@@ -165,7 +170,7 @@ public class UnitController : DroneController
         Agent.enabled = true;
         DoMove(slot.RallyPoint ?? transform.position, false);
     }
-    public void DoAttack(UnitController target)
+    public void DoAttack(DroneController target)
     {
         if(CommandTarget != target)
         {
@@ -447,7 +452,8 @@ public class UnitController : DroneController
             {
                 if (specialAbility.IsBuildAbility)
                 {
-                    if (ActionTracker != null && ActionTracker.FinishAction())
+                    if((ActionTracker == null && BuildTools.IsValidBuildSite(target, 0.5f)) 
+                        || (ActionTracker != null && ActionTracker.FinishAction()))
                     {
                         //get drone template and spawn it at the ability target
                         var drone = Instantiate(droneTemplate, transform.parent);

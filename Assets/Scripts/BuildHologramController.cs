@@ -1,4 +1,5 @@
 using Assets.Scripts.Interfaces;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -45,7 +46,7 @@ public class BuildHologramController : MonoBehaviour, IActionTracker
             InvalidHologram.gameObject.SetActive(!IsValidPlacement);
         }
     }
-   
+
     #endregion
     #region public methods
     public IActionTracker StartAction(UnitController owner)
@@ -105,11 +106,7 @@ public class BuildHologramController : MonoBehaviour, IActionTracker
         //spawn fields block construction
         //objectives block construction
         //pickup spawners block construction (packs don't)
-        if(obj.CompareTag("Drone")
-            || obj.CompareTag("Wall")
-            || obj.CompareTag("SpawnPoint")
-            || obj.CompareTag("Objective")
-            || obj.CompareTag("Pickup")
+        if(BuildTools.BlocksConstruction(obj) 
             || (IsPlaced && obj.CompareTag("Hologram") && obj != gameObject))
         {
             return true;
