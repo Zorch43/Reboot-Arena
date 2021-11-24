@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Assets.Scripts.Data_Templates;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace Assets.Scripts.Utility
 {
@@ -14,6 +16,7 @@ namespace Assets.Scripts.Utility
         const string ICONS = "Sprites/Icons/";
         const string CURSORS = "Sprites/Cursors/";
         const string MARKERS = "Sprites/Markers/";
+        const string UNITS = "Units/";
         const string DRONES = "Drones/";
         const string HOLOGRAMS = DRONES + "Holograms/";
         #endregion
@@ -34,10 +37,30 @@ namespace Assets.Scripts.Utility
         public const string MARKER_BUILD_TURRET = MARKERS + "BuildTurretMarker";
         public const string DRONE_TURRET = DRONES + "DroneTurret";
         public const string HOLOGRAM_TURRET = HOLOGRAMS + "TurretHologram";
+
+        public const string UNIT_TROOPER = UNITS + "UnitTrooper";
+        public const string UNIT_FABRICATOR = UNITS + "UnitFabricator";
         #endregion
         #endregion
         #region public methods
-
+        public static UnitController GetUnitTemplate(UnitClassTemplates.UnitClasses unitClass)
+        {
+            string path = "";
+            switch (unitClass)
+            {
+                case UnitClassTemplates.UnitClasses.Trooper:
+                    path = UNIT_TROOPER;
+                    break;
+                case UnitClassTemplates.UnitClasses.Fabricator:
+                    path = UNIT_FABRICATOR;
+                    break;
+                default:
+                    Debug.LogError("Invalid class type: " + unitClass.ToString());
+                    return null;
+            }
+            var unitTemplate = Resources.Load<UnitController>(path);
+            return unitTemplate;
+        }
         #endregion
         #region private methods
 

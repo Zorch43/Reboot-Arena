@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Assets.Scripts.Data_Templates;
+using Assets.Scripts.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,28 +12,33 @@ namespace Assets.Scripts.Data_Models
     public class UnitSlotModel
     {
         #region private fields
-        private UnitController respawnUnit;
+        private UnitClassModel respawnClass;
         #endregion
         #region properties
         public int SlotNumber;
         public float RespawnProgress { get; set; }//percentage of respawn timer completed
-        public UnitController CurrentUnit { get; set; }//displays shorthand unit status of current unit
-        public UnitController NextUnitClass
+        public UnitController CurrentUnit 
+        {
+            get;
+            set;
+        }//displays shorthand unit status of current unit
+        public UnitClassModel NextUnitClass
         {
             get
             {
-                if (respawnUnit != null)
+                if (respawnClass != null)
                 {
-                    return respawnUnit;
+                    return respawnClass;
                 }
-                else
+                else if(CurrentUnit != null)
                 {
-                    return CurrentUnit;
+                    return CurrentUnit.Data.UnitClass;
                 }
+                return null;
             }
             set
             {
-                respawnUnit = value;
+                respawnClass = value;
             }
         }//unit class that this slot will spawn once current unit dies
         public Vector3? RallyPoint { get; set; }
@@ -42,9 +49,17 @@ namespace Assets.Scripts.Data_Models
         {
             IsSelected = false;
             RespawnProgress = 0;
-            respawnUnit = NextUnitClass;
+            if(respawnClass == null && CurrentUnit != null)
+            {
+                respawnClass = CurrentUnit.Data.UnitClass;
+            }
             CurrentUnit = null;
         }
+        public UnitController GetNextUnitTemplate()
+        {
+            return ResourceList.GetUnitTemplate(NextUnitClass.ClassId);
+        }
+        
         #endregion
     }
 }

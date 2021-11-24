@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Data_Templates;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ namespace Assets.Scripts.Data_Models
     public class UnitClassModel
     {
         #region properties
+        public UnitClassTemplates.UnitClasses ClassId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         #region stats

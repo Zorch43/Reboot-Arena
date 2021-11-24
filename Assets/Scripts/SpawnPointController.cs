@@ -78,7 +78,7 @@ public class SpawnPointController : MonoBehaviour
                 if (open)
                 {
                     //spawn unit and stop looking for an open spot
-                    var spawnedUnit = Instantiate(unitSlot.NextUnitClass, transform.parent);
+                    var spawnedUnit = Instantiate(unitSlot.GetNextUnitTemplate(), transform.parent);
                     spawnedUnit.SpawnSetup(testPoint, _team, unitSlot, hideUI);
 
                     return spawnedUnit;
@@ -127,7 +127,7 @@ public class SpawnPointController : MonoBehaviour
     {
         //place all units in a 3x3 grid in the center of the spawn field
         int i = 0;
-        Vector3 startPoint = RespawnArea.transform.position + new Vector3(-1, 0, -1) * 2 * SEARCH_GRID_SIZE;
+        Vector3 startPoint = 2 * SEARCH_GRID_SIZE * RespawnArea.transform.position + new Vector3(-1, 0, -1);
         for(int x = 0; x < 3; x++)
         {
             for(int y = 0; y < 3; y++)
@@ -138,9 +138,9 @@ public class SpawnPointController : MonoBehaviour
                 }
                 var u = unitSlots[i];
                 //spawn unit and stop looking for an open spot
-                var spawnedUnit = Instantiate(u.NextUnitClass, transform.parent);
+                var spawnedUnit = Instantiate(u.GetNextUnitTemplate(), transform.parent);
                 spawnedUnit.SpawnSetup(startPoint, _team, u, hideUI);
-                startPoint += new Vector3(0, 0, 1) * 2 * SEARCH_GRID_SIZE;
+                startPoint += 2 * SEARCH_GRID_SIZE * new Vector3(0, 0, 1); 
             }
             startPoint += new Vector3(1, 0, 0) * 2 * SEARCH_GRID_SIZE;
         }

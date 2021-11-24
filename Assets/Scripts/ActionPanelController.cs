@@ -88,10 +88,10 @@ public class ActionPanelController : MonoBehaviour
         if (playerTeam != null)
         {
             //add all possible unit ability buttons
-            foreach (var u in playerTeam.UnitTemplates)
+            foreach (var u in playerTeam.UnitClasses)
             {
                 var abilityButton = Instantiate(ButtonTemplate, transform);
-                var specialAbility = u.GetData().UnitClass.SpecialAbility;
+                var specialAbility = u.SpecialAbility;
                 abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
                 abilityButton.Button.onClick.AddListener(() =>
                 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Data_Templates;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,5 +23,18 @@ namespace Assets.Scripts.Data_Models
         //AI settings
         public int AIIndex { get; set; }//if control type is AI, pick the AI from list using index
         //TODO: network player
+
+        //unit selection
+        public List<UnitClassTemplates.UnitClasses> UnitClasses { get; set; }
+
+        //constructor
+        public PlayerConfigModel()
+        {
+            UnitClasses = new List<UnitClassTemplates.UnitClasses>() 
+            { 
+                UnitClassTemplates.UnitClasses.Trooper, 
+                UnitClassTemplates.UnitClasses.Fabricator 
+            };
+        }
     }
 }

@@ -113,7 +113,7 @@ public class GameObjectiveController : MonoBehaviour
                 if (teamConfig.Controller == PlayerConfigModel.ControlType.AI)
                 {
                     team = Instantiate(AITeamTemplate, transform);
-
+                    team.SetUnitClasses(teamConfig.UnitClasses);
                     var ai = team.GetComponent<AIController>();
                     ai.GameObjective = this;
                     ai.Config = AIConfigTemplates.GetAIConfigList()[teamConfig.AIIndex];//select ai for ai player
@@ -126,6 +126,7 @@ public class GameObjectiveController : MonoBehaviour
                 else if (teamConfig.Controller == PlayerConfigModel.ControlType.Player)
                 {
                     team = Instantiate(PlayerTeamTemplate, transform);
+                    team.SetUnitClasses(teamConfig.UnitClasses);
                     playerTeam = team;
                     team.UnitSlotManager = PlayerSlotManager;
                     PlayerUnitActions.Setup(team);

@@ -34,6 +34,7 @@ namespace Assets.Scripts.Data_Templates
         {
             var template = new UnitClassModel()
             {
+                ClassId = UnitClasses.Trooper,
                 Name = "Trooper",
                 Description = "Generalist frontliner, adept at both attacking and holding points.",
                 MaxHP = 500,
@@ -50,6 +51,7 @@ namespace Assets.Scripts.Data_Templates
         {
             var template = new UnitClassModel()
             {
+                ClassId = UnitClasses.Fabricator,
                 Name = "Fabricator",
                 Description = "Defensive backliner that can build walls and turrets, and refill ammo",
                 MaxHP = 300,
@@ -67,6 +69,7 @@ namespace Assets.Scripts.Data_Templates
         {
             var template = new UnitClassModel()
             {
+                ClassId = UnitClasses.TurretDrone,
                 Name="Turret Drone",
                 Description = "Sentry turret that fires plasma at enemy units.  Uses ammo to repair and upgrade itself.",
                 MaxHP = 600,

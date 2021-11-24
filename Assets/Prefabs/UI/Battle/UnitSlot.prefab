@@ -100,12 +100,16 @@ MonoBehaviour:
   RespawnFilter: {fileID: 5281739889565149081}
   SelectionIndicator: {fileID: 1208751503260709112}
   SlotNumberLabel: {fileID: 4613070695627474194}
-  ClassNameLabel: {fileID: 5643817288572715658}
-  PortraitImage: {fileID: 6990930081138467234}
-  ClassSymbol: {fileID: 1476863927896573385}
   HealthBar: {fileID: 6772418921950673925}
   AmmoBar: {fileID: 2066876093410717440}
   ToolTip: {fileID: -1042899436920484449}
+  Animations: {fileID: 4609830452102789574}
+  CurrentClassNameLabel: {fileID: 5643817288572715658}
+  CurrentClassPortrait: {fileID: 6990930081138467234}
+  CurrentClassSymbol: {fileID: 1476863927896573385}
+  NextClassNameLabel: {fileID: 2151128271356604128}
+  NextClassPortrait: {fileID: 2402230746027634462}
+  NextClassSymbol: {fileID: 5783453644883238238}
 --- !u!114 &3873759798958733781
 MonoBehaviour:
   m_ObjectHideFlags: 0

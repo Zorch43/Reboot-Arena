@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Data_Templates;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,7 +12,6 @@ public class TeamController : MonoBehaviour
     #endregion
     #region public fields
     public UnitSlotManager UnitSlotManager;//9 unit slots
-    public UnitController[] UnitTemplates;//unit templates avaialable to spawn (6-9)
     public SpawnPointController DefaultSpawnPoint;//starting spawnpoint
     public int Team;
     #endregion
@@ -26,36 +26,45 @@ public class TeamController : MonoBehaviour
     }
     public SpawnPointController SpawnPoint { get; set; }//current spawnpoint
     public List<UnitSlotModel> UnitSlots { get; set; } = new List<UnitSlotModel>();//unit slots
+    public List<UnitClassModel> UnitClasses { get; set; }
     #endregion
     #region unity methods
     // Start is called before the first frame update
     void Start()
     {
+        //get list of unit classes that this team can use
         SpawnPoint = DefaultSpawnPoint;
         SpawnPoint.ControllingTeam = Team;
-        if(UnitSlotManager != null)
+
+        
+        int classes = UnitClasses.Count;
+
+        if (UnitSlotManager != null)
         {
+            int slots = UnitSlotManager.UnitSlots.Count;
             //fill slots with first unit and spawn all slots
-            for (int i = 0; i < UnitSlotManager.UnitSlots.Count; i++)
+            for (int i = 0; i < slots; i++)
             {
                 var s = UnitSlotManager.UnitSlots[i];
                 UnitSlots.Add(s.Data);
                 s.Data.SlotNumber = i + 1;
-                s.Data.NextUnitClass = UnitTemplates[0];
+                s.Data.NextUnitClass = UnitClasses[Mathf.Min(i / (slots / classes), classes - 1)];
                 s.Data.RespawnProgress = 1f;
             }
         }
         else
         {
-            for(int i = 0; i < 9; i++)
+            int slots = 9;
+            for (int i = 0; i < 9; i++)
             {
                 var slot = new UnitSlotModel();
                 UnitSlots.Add(slot);
                 slot.SlotNumber = i + 1;
-                slot.NextUnitClass = UnitTemplates[0];
+                slot.NextUnitClass = UnitClasses[Mathf.Min(i / (slots / classes), classes - 1)];
                 slot.RespawnProgress = 1f;
             }
         }
+
         //SpawnPoint.MassSpawn(UnitSlots, HideUnitUI);
     }
 
@@ -80,7 +89,16 @@ public class TeamController : MonoBehaviour
     }
     #endregion
     #region public methods
+    public void SetUnitClasses(List<UnitClassTemplates.UnitClasses> classList)
+    {
+        UnitClasses = new List<UnitClassModel>();
+        foreach(var c in classList)
+        {
+            UnitClasses.Add(UnitClassTemplates.GetClassByName(c));
+        }
 
+        
+    }
     #endregion
     #region private methods
 
