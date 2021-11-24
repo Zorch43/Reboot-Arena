@@ -15,12 +15,18 @@ public class UnitSlotController : MonoBehaviour
     public GameObject RespawnFilter;
     public GameObject SelectionIndicator;
     public TextMeshProUGUI SlotNumberLabel;
-    public TextMeshProUGUI ClassNameLabel;
-    public Image PortraitImage;
-    public Image ClassSymbol;
     public UIStatusBarController HealthBar;
     public UIStatusBarController AmmoBar;
     public ToolTipContentController ToolTip;
+    public Animator Animations;
+
+    public TextMeshProUGUI CurrentClassNameLabel;
+    public Image CurrentClassPortrait;
+    public Image CurrentClassSymbol;
+
+    public TextMeshProUGUI NextClassNameLabel;
+    public Image NextClassPortrait;
+    public Image NextClassSymbol;
     #endregion
     #region private fields
     private Button button;
@@ -56,15 +62,16 @@ public class UnitSlotController : MonoBehaviour
             //update health and ammo values
             HealthBar.UpdateBar(unitData.HP, unitData.UnitClass.MaxHP);
             AmmoBar.UpdateBar(unitData.MP, unitData.UnitClass.MaxMP);
-            //update unit name, portrait and symbol
-            ClassNameLabel.text = unitData.UnitClass.Name;
-            //TODO: update portrait and symbol
-            PortraitImage.sprite = Data.CurrentUnit.Portrait;
-            ClassSymbol.sprite = Data.CurrentUnit.Symbol;
+            //update current unit name, portrait and symbol
+            CurrentClassNameLabel.text = unitData.UnitClass.Name;
+            CurrentClassPortrait.sprite = Data.CurrentUnit.Portrait;
+            CurrentClassSymbol.sprite = Data.CurrentUnit.Symbol;
+            //update next unit name, portrait , and symbol
+
 
             //update tooltip
             ToolTip.Clear();
-            ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + ClassNameLabel.text;
+            ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + CurrentClassNameLabel.text;
             ToolTip.Body = "Displays status of unit assigned to slot.  Select the slot to select the unit.";
         }
         else
@@ -82,7 +89,7 @@ public class UnitSlotController : MonoBehaviour
 
             //update tooltip
             ToolTip.Clear();
-            ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + ClassNameLabel.text;
+            ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + CurrentClassNameLabel.text;
             ToolTip.Body = "Unit will respawn at spawn point shortly...";
             ToolTip.Stats = new string[]
             {
