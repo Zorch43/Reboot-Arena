@@ -26,7 +26,7 @@ public class TeamController : MonoBehaviour
     }
     public SpawnPointController SpawnPoint { get; set; }//current spawnpoint
     public List<UnitSlotModel> UnitSlots { get; set; } = new List<UnitSlotModel>();//unit slots
-    public List<UnitClassModel> UnitClasses { get; set; }
+    public List<UnitClassModel> UnitClasses { get; set; }//available classes
     #endregion
     #region unity methods
     // Start is called before the first frame update
@@ -41,6 +41,8 @@ public class TeamController : MonoBehaviour
 
         if (UnitSlotManager != null)
         {
+            //setup class menu
+            UnitSlotManager.ClassMenu.Setup(UnitClasses);
             int slots = UnitSlotManager.UnitSlots.Count;
             //fill slots with first unit and spawn all slots
             for (int i = 0; i < slots; i++)

@@ -8,10 +8,19 @@ public class SpawnFieldController : MonoBehaviour
     private void OnTriggerStay(Collider other)
     {
         var unit = other.gameObject.GetComponent<UnitController>();
+        
         if (unit != null && unit.Data.Team == SpawnPoint.ControllingTeam)
         {
+            //heal unit and restore ammo
             unit.HealUnit(unit.Data.UnitClass.MaxHP);
             unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
+            //if set to respawn with a different class, immediately switch class
+            if (unit.SpawnSlot.ShouldChangeClass())
+            {
+                //despawn unit
+                unit.DeSpawn();
+            }
         }
+
     }
 }

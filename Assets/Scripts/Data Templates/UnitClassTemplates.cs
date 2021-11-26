@@ -1,4 +1,5 @@
 ﻿using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -37,13 +38,17 @@ namespace Assets.Scripts.Data_Templates
                 ClassId = UnitClasses.Trooper,
                 Name = "Trooper",
                 Description = "Generalist frontliner, adept at both attacking and holding points.",
+                Portrait = ResourceList.PORTRAIT_TROOPER,
+                Symbol = ResourceList.SYMBOL_TROOPER,
                 MaxHP = 500,
                 MaxMP = 200,
                 MoveSpeed = 3,
                 TurnSpeed = 12,
                 PrimaryWeapon = WeaponTemplates.CreateMachineGun(),
                 SecondaryWeapon = WeaponTemplates.CreateAssaultRifle(),
-                SpecialAbility = UnitAbilityTemplates.CreateFragGrenade()
+                SpecialAbility = UnitAbilityTemplates.CreateFragGrenade(),
+                AttackerWeight = 2,
+                DefenderWeight = 1
             };
             return template;
         }
@@ -54,6 +59,8 @@ namespace Assets.Scripts.Data_Templates
                 ClassId = UnitClasses.Fabricator,
                 Name = "Fabricator",
                 Description = "Defensive backliner that can build walls and turrets, and refill ammo",
+                Portrait = ResourceList.PORTRAIT_FABRICATOR,
+                Symbol = ResourceList.SYMBOL_FABRICATOR,
                 MaxHP = 300,
                 MaxMP = 400,
                 MoveSpeed = 3,
@@ -61,7 +68,9 @@ namespace Assets.Scripts.Data_Templates
                 PrimaryWeapon = WeaponTemplates.CreateMunitionsPrinter(),
                 SecondaryWeapon = WeaponTemplates.CreatePlasmaGun(),
                 SpecialAbility = UnitAbilityTemplates.CreateTurretDrone(),
-                IsAmbidextrous = true
+                IsAmbidextrous = true,
+                DefenderWeight = 1,
+                SupportWeight = 2
             };
             return template;
         }

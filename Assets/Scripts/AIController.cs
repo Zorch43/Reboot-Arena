@@ -60,7 +60,9 @@ public class AIController : MonoBehaviour
     public void DoTacticalActionExplicit(UnitController selectedUnit, DroneController[] allDrones, string stance)
     {
         //hard-coded behavior tree, doesn't rely on scoring so heavily
-        //only valid for Trooper, maybe have individual ai controllers for each class in the future?
+
+        //set unit classes
+        ReassignClasses();
 
         var pickupDispensers = Map.GetComponentsInChildren<PickupSpawnerController>();
         var healthPacks = Map.GetComponentsInChildren<HealthPackController>();
@@ -588,6 +590,140 @@ public class AIController : MonoBehaviour
     }
     #endregion
     #region acting
+    private void ReassignClasses()
+    {
+        var slots = Team.UnitSlots;
+        //on the offense, aim to have at least 12 (44%) offensive weight among slots
+        //on the defense, aim to have at least 12 (44%) defensive weight among slots
+        //always aim to have between 6 and 12 (22% - 44%) support weight
+
+        //get total class-role weighting for living units
+        var respawningSlots = new List<UnitSlotModel>();
+        var activeSlots = new List<UnitSlotModel>();
+        foreach(var s in slots)
+        {
+            if(s.CurrentUnit == null)
+            {
+                //sort by respawn progress here
+                for(int i = 0; i <= respawningSlots.Count; i++)
+                {
+                    if(i == respawningSlots.Count)
+                    {
+                        respawningSlots.Add(s);
+                        break;
+                    }
+                    var slot = respawningSlots[i];
+                    if(s.RespawnProgress >= slot.RespawnProgress)
+                    {
+                        respawningSlots.Insert(i, s);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                activeSlots.Add(s);
+            }
+        }
+        float activeOffense, activeDefense, activeSupport;
+        var activeWeight = GetRoleWeighting(slots, true, out activeOffense, out activeDefense, out activeSupport);
+        //prioritize changing unit classes to ensure the desired ratio most of the time
+        float minOffenseWeight, minDefenseWeight, minSupportWeight, maxSupportWeight;
+        minSupportWeight = 6/27f;
+        maxSupportWeight = 12 / 27f;
+        if(strategicStance == "Rush")
+        {
+            minOffenseWeight = 12 / 27f;
+            minDefenseWeight = 0;
+        }
+        else
+        {
+            minOffenseWeight = 0;
+            minDefenseWeight = 12 / 27f;
+        }
+        //look at respawning slots first, closer respawns first
+        int activeCount = activeSlots.Count;
+        foreach(var c in respawningSlots)
+        {
+            float a = activeOffense / activeCount;
+            float d = activeDefense / activeCount;
+            float s = activeSupport / activeCount;
+            activeCount++;
+            UnitClassModel bestClass = null;
+            float bestScore = 0;
+            //assign best unit to each respawning slot
+            foreach(var u in Team.UnitClasses)
+            {
+                float testScore = 0;
+                //score each available class
+                float testA = (activeOffense + u.AttackerWeight) / activeCount;
+                float testD = (activeDefense + u.DefenderWeight) / activeCount;
+                float testS = (activeSupport + u.SupportWeight) / activeCount;
+                //prefer classes that bring class role weights into desired balance
+                //if min role balance not achieved, score weight increases
+                if(a < minOffenseWeight)
+                {
+                    testScore += testA - a;
+                }
+                if(d < minDefenseWeight)
+                {
+                    testScore += testD - d;
+                }
+                if(s < minSupportWeight)
+                {
+                    testScore += testS - s;
+                }
+                //if max role balance achieved, score weight decreases
+                else if (s > maxSupportWeight)
+                {
+                    testScore -= testS - s;
+                }
+
+                //evaluate score
+                if(testScore > bestScore || bestClass == null)
+                {
+                    bestScore = testScore;
+                    bestClass = u;
+                }
+                
+            }
+            //add chosen class role weights to active role weights
+            activeOffense += bestClass.AttackerWeight;
+            activeDefense += bestClass.DefenderWeight;
+            activeSupport += bestClass.SupportWeight;
+            //assign class to slot
+            c.NextUnitClass = bestClass;
+        }
+
+
+        //TODO: if final balance still skewed, assign respawn classes to living units
+    }
+    //returns total weight
+    private float GetRoleWeighting(List<UnitSlotModel> slots, bool current, out float offense, out float defense, out float support)
+    {
+        float a = 0;
+        float d = 0;
+        float s = 0;
+        foreach(var c in slots)
+        {
+            UnitClassModel unitClass = null;
+            if (current)
+            {
+                unitClass = c.CurrentUnitClass;
+            }
+            else
+            {
+                unitClass = c.NextUnitClass;
+            }
+            a += unitClass.AttackerWeight;
+            d += unitClass.DefenderWeight;
+            s += unitClass.SupportWeight;
+        }
+        offense = a;
+        defense = d;
+        support = s;
+        return a + d + s;
+    }
     private void SetStrategicStance(List<DroneController> allUnits)
     {
         var objectivePoint = GameObjective.GetAIObjective();

@@ -12,54 +12,80 @@ namespace Assets.Scripts.Data_Models
     public class UnitSlotModel
     {
         #region private fields
-        private UnitClassModel respawnClass;
+        private UnitController _currentUnit;
+        private UnitClassModel _nextUnitClass;
         #endregion
         #region properties
-        public int SlotNumber;
+        public bool IsDirty { get; set; }//whether the model's data has been changed recently
+        public int SlotNumber { get; set; }
         public float RespawnProgress { get; set; }//percentage of respawn timer completed
         public UnitController CurrentUnit 
         {
-            get;
-            set;
+            get
+            {
+                return _currentUnit;
+            }
+            set
+            {
+                if(_currentUnit != value)
+                {
+                    IsDirty = true;
+                }
+                _currentUnit = value;
+            }
         }//displays shorthand unit status of current unit
         public UnitClassModel NextUnitClass
         {
             get
             {
-                if (respawnClass != null)
-                {
-                    return respawnClass;
-                }
-                else if(CurrentUnit != null)
-                {
-                    return CurrentUnit.Data.UnitClass;
-                }
-                return null;
+                return _nextUnitClass;
             }
             set
             {
-                respawnClass = value;
+                if(_nextUnitClass?.ClassId != value?.ClassId)
+                {
+                    IsDirty = true;
+                }
+                _nextUnitClass = value;
             }
         }//unit class that this slot will spawn once current unit dies
+        public UnitClassModel CurrentUnitClass
+        {
+            get
+            {
+                if(CurrentUnit != null)
+                {
+                    return CurrentUnit.Data.UnitClass;
+                }
+                else
+                {
+                    return NextUnitClass;
+                }
+            }
+        }
         public Vector3? RallyPoint { get; set; }
         public bool IsSelected { get; set; }
         #endregion
         #region public methods
         public void DoUnitDeath()
         {
+            //deselect unit (the slot can still be selected later)
             IsSelected = false;
+            //start respawning
             RespawnProgress = 0;
-            if(respawnClass == null && CurrentUnit != null)
-            {
-                respawnClass = CurrentUnit.Data.UnitClass;
-            }
-            CurrentUnit = null;
         }
         public UnitController GetNextUnitTemplate()
         {
             return ResourceList.GetUnitTemplate(NextUnitClass.ClassId);
         }
-        
+        public bool ShouldChangeClass()
+        {
+            return CurrentUnit != null && CurrentUnit.Data.UnitClass.ClassId != NextUnitClass.ClassId;
+        }
+        public bool CanChangeClass()
+        {
+            return CurrentUnit == null;//TODO: detect spawn field quickswap effect
+        }
         #endregion
     }
 }

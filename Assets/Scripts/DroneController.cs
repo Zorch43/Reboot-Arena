@@ -123,6 +123,11 @@ public class DroneController : MonoBehaviour
         }
         Destroy(gameObject);
     }
+    public void DeSpawn()
+    {
+        UnRegister();
+        Destroy(gameObject);
+    }
     public virtual void SpawnSetup(Vector3 position, int team, bool hideUI)
     {
         Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));

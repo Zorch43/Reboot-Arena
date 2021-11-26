@@ -10,6 +10,7 @@ public class UnitSlotManager : MonoBehaviour
     #endregion
     #region public fields
     public UnitSlotController UnitSlotTemplate;
+    public ClassMenuController ClassMenu;
     #endregion
     #region private fields
 

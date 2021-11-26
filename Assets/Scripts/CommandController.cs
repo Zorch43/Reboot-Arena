@@ -566,6 +566,11 @@ public class CommandController : MonoBehaviour
         CommandCompletedCallback = null;
         SetCursor(SelectedCommand);
     }
+    public void SetClassMenuMode()
+    {
+        SelectedCommand = SpecialCommands.ClassMenu;
+        SetCursor(SelectedCommand);
+    }
     public void SetCursor(SpecialCommands mode)
     {
         Texture2D cursorTexture = null;
@@ -635,6 +640,14 @@ public class CommandController : MonoBehaviour
     public List<DroneController> GetAllUnits()
     {
         return Map.Units;
+    }
+    public void SetRespawnClass(UnitClassModel nextClass)
+    {
+        var slots = GetSelectedSlots();
+        foreach(var s in slots)
+        {
+            s.Data.NextUnitClass = nextClass;
+        }
     }
     #endregion
     #region private methods

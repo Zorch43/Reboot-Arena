@@ -16,6 +16,9 @@ namespace Assets.Scripts.Utility
         const string ICONS = "Sprites/Icons/";
         const string CURSORS = "Sprites/Cursors/";
         const string MARKERS = "Sprites/Markers/";
+        const string PORTRAITS = "Sprites/Portraits/";
+        const string SYMBOLS = "Sprites/Symbols/";
+
         const string UNITS = "Units/";
         const string DRONES = "Drones/";
         const string HOLOGRAMS = DRONES + "Holograms/";
@@ -39,7 +42,12 @@ namespace Assets.Scripts.Utility
         public const string HOLOGRAM_TURRET = HOLOGRAMS + "TurretHologram";
 
         public const string UNIT_TROOPER = UNITS + "UnitTrooper";
+        public const string PORTRAIT_TROOPER = PORTRAITS + "PortraitTrooper";
+        public const string SYMBOL_TROOPER = SYMBOLS + "SymbolTrooper";
+
         public const string UNIT_FABRICATOR = UNITS + "UnitFabricator";
+        public const string PORTRAIT_FABRICATOR = PORTRAITS + "PortraitFabricator";
+        public const string SYMBOL_FABRICATOR = SYMBOLS + "SymbolFabricator";
         #endregion
         #endregion
         #region public methods

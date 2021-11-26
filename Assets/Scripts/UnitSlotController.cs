@@ -31,6 +31,7 @@ public class UnitSlotController : MonoBehaviour
     #region private fields
     private Button button;
     private float maxWidth;
+    private bool shouldUpdate;
     #endregion
     #region properties
     public UnitSlotModel Data { get; set; } = new UnitSlotModel();
@@ -50,9 +51,19 @@ public class UnitSlotController : MonoBehaviour
     void Update()
     {
         //update unit status
-        var unitData = Data.CurrentUnit?.Data;
-        if(unitData != null)
+        //update next unit name, portrait , and symbol
+        if (Data.IsDirty)
         {
+            var nextClass = Data.NextUnitClass;
+            NextClassNameLabel.text = nextClass.Name;
+            NextClassPortrait.sprite = Resources.Load<Sprite>(nextClass.Portrait);
+            NextClassSymbol.sprite = Resources.Load<Sprite>(nextClass.Symbol);
+            Data.IsDirty = false;
+        }
+        //if the current unit is active (alive)
+        if (Data.CurrentUnit != null)
+        {
+            var unitData = Data.CurrentUnit.Data;
             //unit has been spawned
             //hide RespawnFilter
             RespawnFilter.SetActive(false);
@@ -66,14 +77,13 @@ public class UnitSlotController : MonoBehaviour
             CurrentClassNameLabel.text = unitData.UnitClass.Name;
             CurrentClassPortrait.sprite = Data.CurrentUnit.Portrait;
             CurrentClassSymbol.sprite = Data.CurrentUnit.Symbol;
-            //update next unit name, portrait , and symbol
-
-
+           
             //update tooltip
             ToolTip.Clear();
             ToolTip.Header = "Unit Slot " + SlotNumberLabel.text + ": " + CurrentClassNameLabel.text;
             ToolTip.Body = "Displays status of unit assigned to slot.  Select the slot to select the unit.";
         }
+        //if the current unit is not active (respawning)
         else
         {
             //if no current unit avaialable, show respawn progress for next unit
@@ -83,7 +93,10 @@ public class UnitSlotController : MonoBehaviour
             //hide unit health and ammo
             HealthBar.gameObject.SetActive(false);
             AmmoBar.gameObject.SetActive(false);
-            //TODO: update class name, symbol, and portrait with next unit (Pending spawn switching)
+            //update class name, symbol, and portrait with next unit (Pending spawn switching)
+            CurrentClassNameLabel.text = NextClassNameLabel.text;
+            CurrentClassPortrait.sprite = NextClassPortrait.sprite;
+            CurrentClassSymbol.sprite = NextClassSymbol.sprite;
             //hide selection state
             SelectionIndicator.SetActive(false);
 
@@ -96,6 +109,10 @@ public class UnitSlotController : MonoBehaviour
                 string.Format("Respawning... {0}%", (int)Mathf.Min(Data.RespawnProgress * 100, 100))
             };
         }
+        //update animation parameters
+        Animations.SetBool("CanChange", Data.CanChangeClass());
+        Animations.SetBool("ChangeClass", Data.ShouldChangeClass());
+
         //update selection state
         SelectionIndicator.SetActive(Data.IsSelected);
     }

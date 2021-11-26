@@ -13,6 +13,7 @@ public class ActionPanelController : MonoBehaviour
     #endregion
     #region public fields
     public CommandController CommandInterface;
+    public ClassMenuController ClassMenu;
     public Button MoveAttackButton;
     public Button ForceAttackButton;
     public Button StopActionButton;
@@ -70,7 +71,7 @@ public class ActionPanelController : MonoBehaviour
     }
     public void ActionToggleClassMenu()
     {
-
+        ClassMenu.ShowClassMenu();
     }
     public void ActionNormalize()
     {
