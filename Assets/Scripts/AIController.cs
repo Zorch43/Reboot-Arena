@@ -59,6 +59,8 @@ public class AIController : MonoBehaviour
     #region public methods
     public void DoTacticalActionExplicit(UnitController selectedUnit, DroneController[] allDrones, string stance)
     {
+        //debug: disable AI
+        return;
         //hard-coded behavior tree, doesn't rely on scoring so heavily
 
         //set unit classes

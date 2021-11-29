@@ -3204,6 +3204,34 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684230, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: data.dataString
+      value: UEsDBBQAAAgIAACAn+t15C3fjgIAAJkFAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGFVNtu2kAQ/RW0z22FScilby0Q0kpJUN0qD3UehvUYr1jvWnsJkIh/787aYJO0qoS05syZy5mZ3VcmlK2RO23mRuR3Okf2ecDom30YdMZb3MJKq1S84IHzKHJXEgki5wc4oQOekJvVFToj+Be1kkQeBtArUWhTzfIVTrR1NsAFSIvBZLQjbxWg1wHbtg679nyhc7APXxyVQ/M/lldcQlVjTtV25PMDe9TQVNDRMqhmrqUUti2CuV0dRaZ1iQZJZS4gaIrZiV6iWJWOovV9H4rCIqHDT2PSBbupMKE5TVj2VTcdq8Cum8KeQfpYwegqFtWEvXtnb6yF0dVtP7ErBV//gB0H63r97MPT07q92oBcw1LiY4nqXs+N9ioPRmc8uXqLo2kv1FHapES+7nhNoW9AX7+fTdLNZh+lbydSVMvYo9G4QVKpY7sT+o8mDOZbqDiuhG1DBZSq+GXxJ6z6u9MaboSxLpjajIrKW2pviMpmsWWkxruJNgpNP0KNCqTbLUIcdzLD97Z/e90AXZM2e2s7bP8blwh3/OHwjWmhN924LH73Vb3QQrkUwfCyF8+WenOHtnzwTgqF3RzIcB+6ONFKNdtn/+KWelMA77k53DpvcAoO4iUINYU9yfuuoaPRQ3kpaSGjCgr+O6ig3xN1uYSQV0aY3WsV78/J+USrsPIiP91yBpfn15fJeDRKYHh5gcuP1xd8fHWd5FfnydmYnwGL90Co0HOQi6Zp7ajCCqlOiwpbf3jJBnMDdbx4uYHNXLxU2nZMoQqdcoOoHpoIR7FoQpLwQuSzXASZKTonVFw+9poxqfka8+wYKIuNnW2dgayLkrFaPGtHSMYm8f3KGMHHi7Uw+CxwQ8kPwfZs/wdQSwMEFAAACAgAAICf61kE6mZtAAAAeAAAAAkAJABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGrVipLLSrOzM9TslIw0TPSMzTXUVBKL0osyCgGihiCOKWZKSB2tFKiuYmluaGpkZFhooG5WWqSrqVZsqmFpWGKhYmhsWmycaJSLFB9SWVBql9ibipET0BiSUZaZl5KZl66nntRZoo7yGil2FoAUEsBAi0AFAAACAgAAICf63XkLd+OAgAAmQUAAAsAJAAAAAAAAAAAAAAAAAAAAGdyYXBoMC5qc29uCgAgAAAAAAABABgAAIA+1d6xnQEAgD7V3rGdAQCAPtXesZ0BUEsBAi0AFAAACAgAAICf61kE6mZtAAAAeAAAAAkAJAAAAAAAAAAAAAAA2wIAAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLBQYAAAAAAgACALgAAACTAwAAAAA=
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684230, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: tagNames.Array.data[1]
+      value: Occupied
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684234, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: penalty
+      value: 100000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684234, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684235, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: unwrap
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684235, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5047504202785684235, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: splitAtEveryPortal
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8112715207345098125, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0

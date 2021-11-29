@@ -16,10 +16,10 @@ public class UnitController : DroneController
     private const float MIN_ATTACK_RANGE = 1f;
     #endregion
     #region public fields
+    public UnitMovementController Locomotion;
     public TextMeshPro MinimapNumber;
     public TextMeshPro UnitNumber;
     public SpriteRenderer Selector;
-    public NavMeshAgent Agent;
     public WeaponController AbilityWeaponMount;
     public Sprite Portrait;
     public Sprite Symbol;
@@ -43,7 +43,7 @@ public class UnitController : DroneController
     {
         get
         {
-            return Agent.hasPath;
+            return Locomotion.HasPath;
         }
     }
     #endregion
@@ -61,7 +61,9 @@ public class UnitController : DroneController
         initialRotation = UnitEffects.transform.rotation;
 
         //set agent speed
-        Agent.speed = Data.UnitClass.MoveSpeed;
+        Locomotion.Speed = Data.UnitClass.MoveSpeed;
+        //set agent turn speed
+        Locomotion.TurnSpeed = (float)(Data.UnitClass.TurnSpeed * 180 / Math.PI);
 
         //TEMP: set team from public property
         if(Team >= 0)
@@ -88,15 +90,7 @@ public class UnitController : DroneController
         float elapsedTime = Time.deltaTime;
         //update selection state
         Selector.gameObject.SetActive(SpawnSlot.IsSelected);
-        if (Agent.hasPath)
-        {
-            collider.radius = hitBoxSize + PERSONAL_SPACE;
-        }
-        else
-        {
-            //backingOff = false;
-            collider.radius = hitBoxSize;
-        }
+        
         DoWeaponCooldown(elapsedTime);
         DoUnitAction();
 
@@ -116,36 +110,13 @@ public class UnitController : DroneController
         }
     }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        var unit = collision.collider.GetComponent<DroneController>();
-        if (Agent.hasPath && unit != null)
-        {
-            if(Vector3.Distance(transform.position, Agent.destination) <= ORDER_RADIUS
-            || (!unit.IsMoving && Vector3.Distance(unit.transform.position, Agent.destination) <= ORDER_RADIUS/2 * zoneMultiplier))
-            {
-                StopMoving();
-                if(AttackMoveDestination != null 
-                && (Vector3.Distance(transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS
-                || (!unit.IsMoving && Vector3.Distance(unit.transform.position, AttackMoveDestination ?? new Vector3()) <= ORDER_RADIUS / 2 * zoneMultiplier)))
-                {
-                    AttackMoveDestination = null;//stop attack-move
-                }
-            }
-            else
-            {
-                zoneMultiplier += 0.02f;
-            }
-        } 
-    }
-
     #endregion
     #region public methods
     public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot, bool hideUI)
     {
         Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         Data.Team = team;
-        Agent.enabled = false;//disable the agent while manually placing the unit
+        //disable the agent while manually placing the unit?
         transform.position = position;
         SpawnSlot = slot;
         SpawnSlot.CurrentUnit = this;
@@ -167,7 +138,6 @@ public class UnitController : DroneController
         DeathActions.Add(UnRegister);
 
         //if unit has a rally point, issue a move order to the rally point
-        Agent.enabled = true;
         DoMove(slot.RallyPoint ?? transform.position, false);
     }
     public void DoAttack(DroneController target)
@@ -181,7 +151,7 @@ public class UnitController : DroneController
     //move to the specified location, stopping to attack all enemies encountered on the way.  Cancel if another order is given
     public void DoAttackMove(Vector3 location)
     {
-        if (!Agent.hasPath || Vector3.Distance(location, Agent.destination) > ORDER_RADIUS)
+        if (!IsMoving || Vector3.Distance(location, Locomotion.Destination) > ORDER_RADIUS)
         {
             CancelOrders();//cancel all other orders
             //set the move-attack destination
@@ -243,19 +213,19 @@ public class UnitController : DroneController
     }
     public void DoMove(Vector3 location, bool cancelOrders = false)
     {
-        if (!Agent.hasPath || Vector3.Distance(location, Agent.destination) > ORDER_RADIUS)
+        if (!IsMoving || Vector3.Distance(location, Locomotion.Destination) > ORDER_RADIUS)
         {
             if (cancelOrders)
             {
                 CancelOrders();
             }
             
-            Agent.SetDestination(location);
+            Locomotion.StartPath(location);
         } 
     }
     public override void StopMoving()
     {
-        Agent.ResetPath();
+        Locomotion.StopPath();
         
         zoneMultiplier = 1;
     }
@@ -402,12 +372,12 @@ public class UnitController : DroneController
         if (hasTarget)
         {
             //disable agent turning
-            Agent.angularSpeed = 0;
+            Locomotion.CanTurn = false;
         }
         else
         {
             //else re-enable agent steering
-            Agent.angularSpeed = Data.UnitClass.TurnSpeed / Mathf.PI * 180;
+            Locomotion.CanTurn = true;
         }
         return hasTarget;
     }
@@ -417,12 +387,12 @@ public class UnitController : DroneController
         if (hasTarget)
         {
             //disable agent turning
-            Agent.angularSpeed = 0;
+            Locomotion.CanTurn = false;
         }
         else
         {
             //else re-enable agent steering
-            Agent.angularSpeed = Data.UnitClass.TurnSpeed / Mathf.PI * 180;
+            Locomotion.CanTurn = true;
         }
         return hasTarget;
     }

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8229806669727253305}
   - component: {fileID: 8229806669727253302}
   - component: {fileID: 8229806669727253303}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WallMain
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -108,7 +108,7 @@ GameObject:
   - component: {fileID: 8229806670622630161}
   - component: {fileID: 8229806670622630190}
   - component: {fileID: 8229806670622630191}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: WallTop
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -201,7 +201,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8229806670883436874}
-  m_Layer: 0
+  - component: {fileID: 8360075214680292759}
+  m_Layer: 7
   m_Name: WallLow
   m_TagString: Wall
   m_Icon: {fileID: 0}
@@ -224,3 +225,21 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8360075214680292759
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8229806670883436875}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21ffa94b775f54641bd8c73c930db320, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 1
+  obstacleMode: 0
+  layer: 2
+  height: 1
+  size: {x: 1, y: 0.5}
+  center: {x: 0, y: 0}

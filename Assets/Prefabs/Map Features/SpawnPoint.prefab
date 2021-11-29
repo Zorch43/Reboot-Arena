@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 449350126179645733}
   - component: {fileID: 449350126179645738}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: TeamColor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 449350126201586492}
   - component: {fileID: 449350126201586493}
   - component: {fileID: 3753615705698406635}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: SpawnPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -171,7 +171,7 @@ GameObject:
   - component: {fileID: 449350127451272697}
   - component: {fileID: 449350127451272696}
   - component: {fileID: 449350127451272699}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: Tower
   m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
@@ -265,7 +265,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6515479329464647936}
   - component: {fileID: 3202157456766733748}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: MinimapMarker
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -351,7 +351,7 @@ GameObject:
   - component: {fileID: 1951164143599843736}
   - component: {fileID: 9100108683505025936}
   - component: {fileID: 4988619073185880200}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: SpawnField
   m_TagString: SpawnPoint
   m_Icon: {fileID: 0}
@@ -5125,7 +5125,7 @@ GameObject:
   - component: {fileID: 2549219536590035297}
   - component: {fileID: 6095430728383573595}
   - component: {fileID: 8081169490969919458}
-  m_Layer: 6
+  m_Layer: 7
   m_Name: TowerBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
