@@ -29,7 +29,6 @@ public class UnitController : DroneController
     #region private fields
     private float hitBoxSize;
     private new SphereCollider collider;
-    private float zoneMultiplier = 1;
     private DroneController droneTemplate;
     #endregion
     #region properties
@@ -213,18 +212,9 @@ public class UnitController : DroneController
     }
     public void DoMove(Vector3 location, bool cancelOrders = false)
     {
-        //if (!IsMoving)
-        //{
-        //    if (cancelOrders)
-        //    {
-        //        CancelOrders();
-        //    }
-            
-        //    Locomotion.StartPath(location);
-        //}
         if (cancelOrders)
         {
-            //CancelOrders();
+            CancelOrders();
         }
 
         Locomotion.StartPath(location);
@@ -232,8 +222,6 @@ public class UnitController : DroneController
     public override void StopMoving()
     {
         Locomotion.Stop();
-        
-        zoneMultiplier = 1;
     }
     #endregion
     #region private methods
