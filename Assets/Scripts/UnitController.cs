@@ -16,7 +16,7 @@ public class UnitController : DroneController
     private const float MIN_ATTACK_RANGE = 1f;
     #endregion
     #region public fields
-    public UnitMovementController Locomotion;
+    public MovementController Locomotion;
     public TextMeshPro MinimapNumber;
     public TextMeshPro UnitNumber;
     public SpriteRenderer Selector;
@@ -43,7 +43,7 @@ public class UnitController : DroneController
     {
         get
         {
-            return Locomotion.HasPath;
+            return Locomotion.IsMoving();
         }
     }
     #endregion
@@ -151,7 +151,7 @@ public class UnitController : DroneController
     //move to the specified location, stopping to attack all enemies encountered on the way.  Cancel if another order is given
     public void DoAttackMove(Vector3 location)
     {
-        if (!IsMoving || Vector3.Distance(location, Locomotion.Destination) > ORDER_RADIUS)
+        if (!IsMoving)
         {
             CancelOrders();//cancel all other orders
             //set the move-attack destination
@@ -213,19 +213,25 @@ public class UnitController : DroneController
     }
     public void DoMove(Vector3 location, bool cancelOrders = false)
     {
-        if (!IsMoving || Vector3.Distance(location, Locomotion.Destination) > ORDER_RADIUS)
-        {
-            if (cancelOrders)
-            {
-                CancelOrders();
-            }
+        //if (!IsMoving)
+        //{
+        //    if (cancelOrders)
+        //    {
+        //        CancelOrders();
+        //    }
             
-            Locomotion.StartPath(location);
-        } 
+        //    Locomotion.StartPath(location);
+        //}
+        if (cancelOrders)
+        {
+            //CancelOrders();
+        }
+
+        Locomotion.StartPath(location);
     }
     public override void StopMoving()
     {
-        Locomotion.StopPath();
+        Locomotion.Stop();
         
         zoneMultiplier = 1;
     }

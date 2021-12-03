@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7888773544992548354}
   - component: {fileID: 7888773544992548476}
   - component: {fileID: 7888773544992548355}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PickupBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -93,7 +93,7 @@ GameObject:
   - component: {fileID: 7888773545199438237}
   - component: {fileID: 7888773545199438232}
   - component: {fileID: 7888773545199438239}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AmmoPack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 1311601460758380289}
   - component: {fileID: -7805704318471962462}
   - component: {fileID: 3269238956728618996}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: AmmoSpawner2
   m_TagString: Pickup
   m_Icon: {fileID: 0}

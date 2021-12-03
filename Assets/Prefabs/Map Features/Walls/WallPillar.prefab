@@ -91,7 +91,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3596950730101849355}
-  - component: {fileID: 4790862181293015884}
   m_Layer: 7
   m_Name: WallPillar
   m_TagString: Wall
@@ -115,24 +114,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4790862181293015884
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3596950730101849352}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 21ffa94b775f54641bd8c73c930db320, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  version: 1
-  obstacleMode: 0
-  layer: 2
-  height: 1
-  size: {x: 0.3, y: 0.3}
-  center: {x: 0, y: 0}
 --- !u!1 &3596950730400470015
 GameObject:
   m_ObjectHideFlags: 0

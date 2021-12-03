@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7158439927344654909}
   - component: {fileID: 4952254859809296384}
   - component: {fileID: 4806970897759569257}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HealthSpawner2
   m_TagString: Pickup
   m_Icon: {fileID: 0}
@@ -197,7 +197,7 @@ GameObject:
   - component: {fileID: 6350282498897764265}
   - component: {fileID: 6350282498897764271}
   - component: {fileID: 6350282498897764270}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: PickupBase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   - component: {fileID: 6350282499850418829}
   - component: {fileID: 6350282499850418928}
   - component: {fileID: 6350282499850418931}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: HealthPack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
