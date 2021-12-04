@@ -5184,7 +5184,6 @@ GameObject:
   - component: {fileID: 6931645414160299874}
   - component: {fileID: 5880412907962814510}
   - component: {fileID: 1565402252791604635}
-  - component: {fileID: 7636234458896630349}
   - component: {fileID: 4391247881183438478}
   m_Layer: 0
   m_Name: DroneTurret
@@ -5316,22 +5315,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!208 &7636234458896630349
-NavMeshObstacle:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4031018455800280272}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Shape: 0
-  m_Extents: {x: 0.375, y: 1, z: 0.375}
-  m_MoveThreshold: 0.1
-  m_Carve: 1
-  m_CarveOnlyStationary: 1
-  m_Center: {x: 0, y: 0, z: 0}
-  m_TimeToStationary: 0.1
 --- !u!136 &4391247881183438478
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -20469,13 +20452,13 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d059dbfbaac36e44da533a52d7d9843d, type: 3}
---- !u!4 &9216207525730789958 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d059dbfbaac36e44da533a52d7d9843d, type: 3}
-  m_PrefabInstance: {fileID: 8677366207194221997}
-  m_PrefabAsset: {fileID: 0}
 --- !u!23 &8047271963567640873 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: -7511558181221131132, guid: d059dbfbaac36e44da533a52d7d9843d, type: 3}
+  m_PrefabInstance: {fileID: 8677366207194221997}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &9216207525730789958 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: d059dbfbaac36e44da533a52d7d9843d, type: 3}
   m_PrefabInstance: {fileID: 8677366207194221997}
   m_PrefabAsset: {fileID: 0}
