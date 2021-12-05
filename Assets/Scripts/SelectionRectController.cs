@@ -9,6 +9,7 @@ public class SelectionRectController : MonoBehaviour
 
     #endregion
     #region public fields
+    public CameraController Cameras;
     public GameObject SelectionRect;
     #endregion
     #region private fields
@@ -54,11 +55,14 @@ public class SelectionRectController : MonoBehaviour
     #region public methods
     public void StartSelection(Vector2 startPoint, Action<Rect> callback)
     {
-        IsDrawingSelection = true;
-        StartingPoint = new Vector2(
-                Mathf.Clamp(startPoint.x, viewRect.min.x, viewRect.max.x),
-                Mathf.Clamp(startPoint.y, viewRect.min.y, viewRect.max.y));
-        this.callback = callback;
+        if (Cameras.IsPointInMainMapBounds(startPoint))
+        {
+            IsDrawingSelection = true;
+            StartingPoint = new Vector2(
+                    Mathf.Clamp(startPoint.x, viewRect.min.x, viewRect.max.x),
+                    Mathf.Clamp(startPoint.y, viewRect.min.y, viewRect.max.y));
+            this.callback = callback;
+        }
     }
     public void ClearSelection()
     {

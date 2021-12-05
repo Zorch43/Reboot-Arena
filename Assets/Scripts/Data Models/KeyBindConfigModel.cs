@@ -31,9 +31,16 @@ namespace Assets.Scripts.Data_Models
             SetRallyPointMode,
             SetRallyPoint,
             AbilityGrenade,
-            AbilityTurret
+            AbilityTurret,
+            ClassMenuOpen,
+            ClassMenuClose,
+            ClassSwitchTrooper,
+            ClassSwitchFabricator,
+            ClassSwitchQuickTrooper,
+            ClassSwitchQuickFabricator
         }
         #endregion
+        #region keybinds
         public KeyBindModel GameMenuKey { get; set; }
         //unit slots
         public KeyBindModel UnitSlot1Key { get; set; }
@@ -56,7 +63,13 @@ namespace Assets.Scripts.Data_Models
         //ability hotkeys
         public KeyBindModel AbilityGrenadeKey { get; set; }
         public KeyBindModel AbilityTurretKey { get; set; }
-
+        public KeyBindModel ClassMenuOpen { get; set; }
+        public KeyBindModel ClassMenuClose { get; set; }
+        public KeyBindModel ClassSwitchTrooper { get; set; }
+        public KeyBindModel ClassSwitchFabricator { get; set; }
+        public KeyBindModel ClassSwitchQuickTrooper { get; set; }
+        public KeyBindModel ClassSwitchQuickFabricator { get; set; }
+        #endregion
         public List<KeyBindModel> AllKeyBinds { get; set; }
 
         public List<KeyCode> ValidHeldKeys { get; set; }
@@ -95,6 +108,20 @@ namespace Assets.Scripts.Data_Models
             AbilityGrenadeKey = new KeyBindModel(KeyBindId.AbilityGrenade, "Grenade", "Throw a high-explosive grenade at the targeted location", KeyCode.G);
             AbilityTurretKey = new KeyBindModel(KeyBindId.AbilityTurret, "Turret", "Start building a turret drone armed with a plasma gun.", KeyCode.T);
 
+            //class menu
+            ClassMenuOpen = new KeyBindModel(KeyBindId.ClassMenuOpen, "Class Menu", 
+                "Open the class menu to change what class selected units will respawn as", KeyCode.Tab);
+            ClassMenuClose = new KeyBindModel(KeyBindId.ClassMenuClose, "Close", 
+                "Close the class menu without changing the selected units' classes", KeyCode.Tab);
+            ClassSwitchTrooper = new KeyBindModel(KeyBindId.ClassSwitchTrooper, "Trooper", 
+                "Change class to Trooper", KeyCode.G);
+            ClassSwitchQuickTrooper = new KeyBindModel(KeyBindId.ClassSwitchQuickTrooper, "Quick-Switch to Trooper", 
+                "Instantly change all selected unit's next class to Trooper", KeyCode.LeftControl, KeyCode.G);
+            ClassSwitchFabricator = new KeyBindModel(KeyBindId.ClassSwitchFabricator, "Fabricator",
+                "Change class to Fabricator", KeyCode.T);
+            ClassSwitchQuickFabricator = new KeyBindModel(KeyBindId.ClassSwitchQuickFabricator, "Quick-Switch to Fabricator",
+                "Instantly change all selected unit's next class to Fabricator", KeyCode.LeftControl, KeyCode.T);
+
             //integration
             AllKeyBinds = new List<KeyBindModel>()
             {
@@ -116,7 +143,13 @@ namespace Assets.Scripts.Data_Models
                 SetRallyPointModeKey,
                 SetRallyPointKey,
                 AbilityGrenadeKey,
-                AbilityTurretKey
+                AbilityTurretKey,
+                ClassMenuOpen,
+                ClassMenuClose,
+                ClassSwitchFabricator,
+                ClassSwitchQuickFabricator,
+                ClassSwitchTrooper,
+                ClassSwitchQuickTrooper
             };
             AllKeyBinds.Sort();
 

@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Data_Templates;
 using Assets.Scripts.Utility;
 using System;
 using System.Collections;
@@ -62,202 +63,225 @@ public class CommandController : MonoBehaviour
         Vector3 mapPos = new Vector3();
         Vector2 mousePosition = Input.mousePosition;
         //hotKey commands
-        var hotKeyCommand = GetKeyCommand();
+        //var hotKeyCommand = GetKeyCommand();
+        var heldKey = GetHeldKey();
 
-        if (!isSpectating && hotKeyCommand != null && hotKeyCommand.PressedKey != KeyCode.None)
+        if (!isSpectating)
         {
-            if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveKey)
+            //if attack-move command is active, lmb gives the order, rmb cancels the order
+            if (SelectedCommand == SpecialCommands.AttackMove)
             {
-                if(GetMouseMapPosition(mousePosition, out mapPos))
+                if (Input.GetMouseButtonDown(0))
                 {
-                    GiveAttackMoveOrder(mapPos);
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveAttackMoveOrder(mapPos);
+                    }
+
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    EndSpecialOrder();
                 }
             }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.AttackMoveModeKey)
+            //if force-attack command is active, lmb gives the order, rmb cancels the order
+            else if (SelectedCommand == SpecialCommands.ForceAttack)
             {
-                UnitActionUI.ActionMoveAttack();
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.ForceAttackKey)
-            {
-                if (GetMouseMapPosition(mousePosition, out mapPos))
+                if (Input.GetMouseButtonDown(0))
                 {
-                    GiveForceAttackOrder(mapPos);
-                }   
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.ForceAttackModeKey)
-            {
-                UnitActionUI.ActionForceAttack();
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.GameMenuKey)
-            {
-                GameMenuUI.ShowMenu();
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.SetRallyPointKey)
-            {
-                if (GetMouseMapPosition(mousePosition, out mapPos))
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveForceAttackOrder(mapPos);
+                    }
+                }
+                else if (Input.GetMouseButtonDown(1))
                 {
-                    GiveRallyOrder(mapPos);
+                    EndSpecialOrder();
                 }
             }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.SetRallyPointModeKey)
+            //if rally point command is active, lmb sets the rally point, rmb cancels order
+            else if (SelectedCommand == SpecialCommands.SetRallyPoint)
             {
-                UnitActionUI.ActionSetRallyPoint();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveRallyOrder(mapPos);
+                    }
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    EndSpecialOrder();
+                }
             }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.StopActionKey)
+            //if special ability command is active, and needs a target, lmb sets the target, rmb cancels the order
+            else if (SelectedCommand == SpecialCommands.SpecialAbility)
             {
-                GiveStopOrder();
+                if (Input.GetMouseButtonDown(0))
+                {
+                    //activate special ability
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveSpecialAbilityOrder(mapPos);
+                    }
+                }
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    EndSpecialOrder();
+                }
             }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot1Key)
+            //if the command mode is normal, lmb selects, rmb peforms action
+            else
             {
-                UnitSlotUI.SelectSlot(1); 
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot2Key)
-            {
-                UnitSlotUI.SelectSlot(2);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot3Key)
-            {
-                UnitSlotUI.SelectSlot(3);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot4Key)
-            {
-                UnitSlotUI.SelectSlot(4);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot5Key)
-            {
-                UnitSlotUI.SelectSlot(5);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot6Key)
-            {
-                UnitSlotUI.SelectSlot(6);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot7Key)
-            {
-                UnitSlotUI.SelectSlot(7);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot8Key)
-            {
-                UnitSlotUI.SelectSlot(8);
-            }
-            else if (hotKeyCommand == KeyBindConfigSettings.KeyBinds.UnitSlot9Key)
-            {
-                UnitSlotUI.SelectSlot(9);
-            }
-            else if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AbilityGrenadeKey)
-            {
-                UnitActionUI.ActivateUnitAbility("Grenade");
-            }
-            else if(hotKeyCommand == KeyBindConfigSettings.KeyBinds.AbilityTurretKey)
-            {
-                UnitActionUI.ActivateUnitAbility("Turret");
+                //selection
+                if (Input.GetMouseButtonDown(0))
+                {
+                    var ray = Cameras.MainCamera.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+                    UnitController selectedUnit = null;
+                    if (GetRayHit(ray, out hit, true))
+                    {
+                        selectedUnit = hit.transform.GetComponent<UnitController>();
+                        if (selectedUnit != null)
+                        {
+                            bool shift = Input.GetKey(KeyCode.LeftShift);
+
+                            SelectUnits(new List<UnitController>() { selectedUnit }, shift);
+                        }
+                    }
+                    if (selectedUnit == null)
+                    {
+                        SelectionRect.StartSelection(Input.mousePosition, SelectUnitsInRect);
+                    }
+                }
+                //perform contextual action
+                else if (Input.GetMouseButtonDown(1))
+                {
+                    GiveOrder(Input.mousePosition);
+                }
+                //class menu mode - class menu is open
+                if (SelectedCommand == SpecialCommands.ClassMenu)
+                {
+                    //close menu
+                    if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ClassMenuClose))
+                    {
+                        UnitActionUI.ClassMenu.ActionHideClassMenu();
+                    }
+                    else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ClassSwitchFabricator))
+                    {
+                        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetFabricatorClass());
+                    }
+                    else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ClassSwitchTrooper))
+                    {
+                        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetTrooperClass());
+                    }
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.AttackMoveKey))
+                {
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveAttackMoveOrder(mapPos);
+                    }
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.AttackMoveModeKey))
+                {
+                    UnitActionUI.ActionMoveAttack();
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ForceAttackKey))
+                {
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveForceAttackOrder(mapPos);
+                    }
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ForceAttackModeKey))
+                {
+                    UnitActionUI.ActionForceAttack();
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.GameMenuKey))
+                {
+                    GameMenuUI.ShowMenu();
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.SetRallyPointKey))
+                {
+                    if (GetMouseMapPosition(mousePosition, out mapPos))
+                    {
+                        GiveRallyOrder(mapPos);
+                    }
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.SetRallyPointModeKey))
+                {
+                    UnitActionUI.ActionSetRallyPoint();
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.StopActionKey))
+                {
+                    GiveStopOrder();
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot1Key))
+                {
+                    UnitSlotUI.SelectSlot(1);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot2Key))
+                {
+                    UnitSlotUI.SelectSlot(2);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot3Key))
+                {
+                    UnitSlotUI.SelectSlot(3);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot4Key))
+                {
+                    UnitSlotUI.SelectSlot(4);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot5Key))
+                {
+                    UnitSlotUI.SelectSlot(5);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot6Key))
+                {
+                    UnitSlotUI.SelectSlot(6);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot7Key))
+                {
+                    UnitSlotUI.SelectSlot(7);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot8Key))
+                {
+                    UnitSlotUI.SelectSlot(8);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.UnitSlot9Key))
+                {
+                    UnitSlotUI.SelectSlot(9);
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.AbilityGrenadeKey))
+                {
+                    UnitActionUI.ActivateUnitAbility("Grenade");
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.AbilityTurretKey))
+                {
+                    UnitActionUI.ActivateUnitAbility("Turret");
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ClassMenuOpen))
+                {
+                    UnitActionUI.ClassMenu.ShowClassMenu();
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ClassSwitchQuickFabricator))
+                {
+                    UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetFabricatorClass());
+                }
+                else if (IsKeyBindActive(heldKey, KeyBindConfigSettings.KeyBinds.ClassSwitchQuickTrooper))
+                {
+                    UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetTrooperClass());
+                }
             }
         }
-        else
+        //left-click on minimap will always pan the camera to the clicked location
+        if (Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButton(0))
         {
-            //left-click on minimap will always pan the camera to the clicked location
-            if(Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButton(0))
+            if (GetMouseMapPosition(mousePosition, out mapPos))
             {
-                if(GetMouseMapPosition(mousePosition, out mapPos))
-                {
-                    Cameras.PanToMapLocation(mapPos);
-                }
+                Cameras.PanToMapLocation(mapPos);
             }
-            else if (!isSpectating)
-            {
-                //if the command mode is normal, lmb selects, rmb peforms action
-                if (SelectedCommand == SpecialCommands.Normal || SelectedCommand == SpecialCommands.ClassMenu)
-                {
-                    //selection
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        var ray = Cameras.MainCamera.ScreenPointToRay(Input.mousePosition);
-                        RaycastHit hit;
-                        UnitController selectedUnit = null;
-                        if (GetRayHit(ray, out hit, true))
-                        {
-                            selectedUnit = hit.transform.GetComponent<UnitController>();
-                            if (selectedUnit != null)
-                            {
-                                bool shift = Input.GetKey(KeyCode.LeftShift);
-
-                                SelectUnits(new List<UnitController>() { selectedUnit }, shift);
-                            }
-                        }
-                        if (selectedUnit == null)
-                        {
-                            SelectionRect.StartSelection(Input.mousePosition, SelectUnitsInRect);
-                        }
-                    }
-                    //perform contextual action
-                    else if (Input.GetMouseButtonDown(1))
-                    {
-                        GiveOrder(Input.mousePosition);
-                    }
-                }
-                //if attack-move command is active, lmb gives the order, rmb cancels the order
-                else if (SelectedCommand == SpecialCommands.AttackMove)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        if (GetMouseMapPosition(mousePosition, out mapPos))
-                        {
-                            GiveAttackMoveOrder(mapPos);
-                        }
-
-                    }
-                    else if (Input.GetMouseButtonDown(1))
-                    {
-                        EndSpecialOrder();
-                    }
-                }
-                //if force-attack command is active, lmb gives the order, rmb cancels the order
-                else if (SelectedCommand == SpecialCommands.ForceAttack)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        if (GetMouseMapPosition(mousePosition, out mapPos))
-                        {
-                            GiveForceAttackOrder(mapPos);
-                        }
-                    }
-                    else if (Input.GetMouseButtonDown(1))
-                    {
-                        EndSpecialOrder();
-                    }
-                }
-                //if rally point command is active, lmb sets the rally point, rmb cancels order
-                else if (SelectedCommand == SpecialCommands.SetRallyPoint)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        if (GetMouseMapPosition(mousePosition, out mapPos))
-                        {
-                            GiveRallyOrder(mapPos);
-                        }
-                    }
-                    else if (Input.GetMouseButtonDown(1))
-                    {
-                        EndSpecialOrder();
-                    }
-                }
-                //if special ability command is active, and needs a target, lmb sets the target, rmb cancels the order
-                else if (SelectedCommand == SpecialCommands.SpecialAbility)
-                {
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        //activate special ability
-                        if (GetMouseMapPosition(mousePosition, out mapPos))
-                        {
-                            GiveSpecialAbilityOrder(mapPos);
-                        }
-                    }
-                    else if (Input.GetMouseButtonDown(1))
-                    {
-                        EndSpecialOrder();
-                    }
-                }
-            }
-            
         }
         //general updates
         //update hologram if it is valid
@@ -597,6 +621,21 @@ public class CommandController : MonoBehaviour
         {
             Cursor.SetCursor(null, new Vector2(), CursorMode.Auto);
         }
+    }
+    public bool IsKeyBindActive(KeyCode heldKey, KeyBindModel keyBind)
+    {
+        return heldKey == keyBind.HeldKey && Input.GetKeyDown(keyBind.PressedKey);
+    }
+    public KeyCode GetHeldKey()
+    {
+        foreach(var k in KeyBindConfigSettings.KeyBinds.ValidHeldKeys)
+        {
+            if (Input.GetKey(k))
+            {
+                return k;
+            }
+        }
+        return KeyCode.None;
     }
     public KeyBindModel GetKeyCommand()
     {
