@@ -32,12 +32,22 @@ namespace Assets.Scripts.Data_Models
             SetRallyPoint,
             AbilityGrenade,
             AbilityTurret,
-            ClassMenuOpen,
-            ClassMenuClose,
+            ClassMenuToggle,
             ClassSwitchTrooper,
             ClassSwitchFabricator,
             ClassSwitchQuickTrooper,
-            ClassSwitchQuickFabricator
+            ClassSwitchQuickFabricator,
+            CameraPanLeft,
+            CameraPanRight,
+            CameraPanUp,
+            CameraPanDown,
+            CameraRotateCW,
+            CameraRotateCCW,
+            CameraTiltUp,
+            CameraTiltDown,
+            CameraZoomIn,
+            CameraZoomOut,
+            CameraReset
         }
         #endregion
         #region keybinds
@@ -63,12 +73,22 @@ namespace Assets.Scripts.Data_Models
         //ability hotkeys
         public KeyBindModel AbilityGrenadeKey { get; set; }
         public KeyBindModel AbilityTurretKey { get; set; }
-        public KeyBindModel ClassMenuOpen { get; set; }
-        public KeyBindModel ClassMenuClose { get; set; }
+        public KeyBindModel ClassMenuToggle { get; set; }
         public KeyBindModel ClassSwitchTrooper { get; set; }
         public KeyBindModel ClassSwitchFabricator { get; set; }
         public KeyBindModel ClassSwitchQuickTrooper { get; set; }
         public KeyBindModel ClassSwitchQuickFabricator { get; set; }
+        public KeyBindModel CameraPanLeft { get; set; }
+        public KeyBindModel CameraPanRight { get; set; }
+        public KeyBindModel CameraPanUp { get; set; }
+        public KeyBindModel CameraPanDown { get; set; }
+        public KeyBindModel CameraRotateCW { get; set; }
+        public KeyBindModel CameraRotateCCW { get; set; }
+        public KeyBindModel CameraTiltUp { get; set; }
+        public KeyBindModel CameraTiltDown { get; set; }
+        public KeyBindModel CameraZoomIn { get; set; }
+        public KeyBindModel CameraZoomOut { get; set; }
+        public KeyBindModel CameraReset { get; set; }
         #endregion
         public List<KeyBindModel> AllKeyBinds { get; set; }
 
@@ -109,10 +129,8 @@ namespace Assets.Scripts.Data_Models
             AbilityTurretKey = new KeyBindModel(KeyBindId.AbilityTurret, "Turret", "Start building a turret drone armed with a plasma gun.", KeyCode.T);
 
             //class menu
-            ClassMenuOpen = new KeyBindModel(KeyBindId.ClassMenuOpen, "Class Menu", 
-                "Open the class menu to change what class selected units will respawn as", KeyCode.Tab);
-            ClassMenuClose = new KeyBindModel(KeyBindId.ClassMenuClose, "Close", 
-                "Close the class menu without changing the selected units' classes", KeyCode.Tab);
+            ClassMenuToggle = new KeyBindModel(KeyBindId.ClassMenuToggle, "Class Menu", 
+                "Open or close the class menu to change what class selected units will respawn as", KeyCode.Tab);
             ClassSwitchTrooper = new KeyBindModel(KeyBindId.ClassSwitchTrooper, "Trooper", 
                 "Change class to Trooper", KeyCode.G);
             ClassSwitchQuickTrooper = new KeyBindModel(KeyBindId.ClassSwitchQuickTrooper, "Quick-Switch to Trooper", 
@@ -121,6 +139,21 @@ namespace Assets.Scripts.Data_Models
                 "Change class to Fabricator", KeyCode.T);
             ClassSwitchQuickFabricator = new KeyBindModel(KeyBindId.ClassSwitchQuickFabricator, "Quick-Switch to Fabricator",
                 "Instantly change all selected unit's next class to Fabricator", KeyCode.LeftControl, KeyCode.T);
+
+            //camera controls
+            CameraPanDown = new KeyBindModel(KeyBindId.CameraPanDown, "Pan Down", "Pan the main camera down", KeyCode.S);
+            CameraPanLeft = new KeyBindModel(KeyBindId.CameraPanLeft, "Pan Left", "Pan the main camera left", KeyCode.A);
+            CameraPanRight = new KeyBindModel(KeyBindId.CameraPanRight, "Pan Right", "Pan the main camera right", KeyCode.D);
+            CameraPanUp = new KeyBindModel(KeyBindId.CameraPanUp, "Pan Up", "Pan the main camera up", KeyCode.W);
+            CameraRotateCCW = new KeyBindModel(KeyBindId.CameraRotateCCW, "Rotate CCW", 
+                "Rotate the main camera counter-clockwise around the focus point", KeyCode.Q);
+            CameraRotateCW = new KeyBindModel(KeyBindId.CameraRotateCW, "Rotate CW", 
+                "Rotate the main camera clockwise around the focus point", KeyCode.E);
+            CameraTiltDown = new KeyBindModel(KeyBindId.CameraTiltDown, "Tilt Down", "Tilt the main camera down", KeyCode.Z);
+            CameraTiltUp = new KeyBindModel(KeyBindId.CameraTiltUp, "Tilt Up", "Tilt the maincamera up", KeyCode.X);
+            CameraZoomIn = new KeyBindModel(KeyBindId.CameraZoomIn, "Zoom In", "Zoom the main camera in", KeyCode.Plus);
+            CameraZoomOut = new KeyBindModel(KeyBindId.CameraZoomOut, "Zoom Out", "Zoom the main camera out", KeyCode.Minus);
+            CameraReset = new KeyBindModel(KeyBindId.CameraReset, "Reset", "Reset main camera orientation", KeyCode.Backspace);
 
             //integration
             AllKeyBinds = new List<KeyBindModel>()
@@ -144,8 +177,7 @@ namespace Assets.Scripts.Data_Models
                 SetRallyPointKey,
                 AbilityGrenadeKey,
                 AbilityTurretKey,
-                ClassMenuOpen,
-                ClassMenuClose,
+                ClassMenuToggle,
                 ClassSwitchFabricator,
                 ClassSwitchQuickFabricator,
                 ClassSwitchTrooper,

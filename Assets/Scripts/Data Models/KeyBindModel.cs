@@ -14,6 +14,9 @@ namespace Assets.Scripts.Data_Models
         public string Description { get; set; }
         public KeyCode HeldKey { get; set; }
         public KeyCode PressedKey { get; set; }
+        public Action BoundAction { get; set; }
+        public bool IsContinuous { get; set; }//whether the keybind can be held to activate continuously
+        public bool IsExclusive { get; set; }//whether the activation of this keybind prevents activation of other commands
 
         public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description)
         {
@@ -36,6 +39,19 @@ namespace Assets.Scripts.Data_Models
             Description = description;
             PressedKey = pressedKey;
             HeldKey = heldKey;
+        }
+        public bool TryInvoke()
+        {
+            if (IsPressed())
+            {
+                BoundAction.Invoke();
+                return true;
+            }
+            return false;
+        }
+        public bool IsPressed()
+        {
+            return (HeldKey == KeyCode.None || Input.GetKey(HeldKey)) && ((IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey));
         }
         public override bool Equals(object obj)
         {
