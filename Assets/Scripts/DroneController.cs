@@ -30,10 +30,10 @@ public class DroneController : MonoBehaviour
     public SpecialEffectController DeathExplosion;
     public ToolTipContentController ToolTip;
     public ParticleSystem JetStream;
-    public MeshRecolorModel[] TeamColorParts;
     public bool CanAttack = true;
     public Vector3 TargetOffset;
-    
+    public MeshRecolorModel[] TeamColorParts;
+
     #endregion
     #region private fields
     protected Quaternion initialRotation;
@@ -57,22 +57,27 @@ public class DroneController : MonoBehaviour
             return transform.position + TargetOffset;
         }
     }
+
     #endregion
     #region unity methods
     // Start is called before the first frame update
     void Start()
     {
+        OnStart();
+    }
+    protected virtual void OnStart()
+    {
         //TEMP: initialize data model
-        if(Data == null)
+        if (Data == null)
         {
             //get data class from class name
             Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         }
-        
+
         initialRotation = UnitEffects.transform.rotation;
 
         //TEMP: set team from public property
-        if(Team >= 0)
+        if (Team >= 0)
         {
             Data.Team = Team;
         }
@@ -80,9 +85,12 @@ public class DroneController : MonoBehaviour
         Recolor(Data.Team);
         MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
     }
-
     // Update is called once per frame
     void Update()
+    {
+        OnUpdate();
+    }
+    protected virtual void OnUpdate()
     {
         float deltaTime = Time.deltaTime;
 
@@ -91,8 +99,6 @@ public class DroneController : MonoBehaviour
 
         UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
         MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
-
-        
 
         //update unit status
         //update resource bars
@@ -103,7 +109,7 @@ public class DroneController : MonoBehaviour
         UpdateTooltip();
 
         //death check
-        if(Data.HP <= 0)
+        if (Data.HP <= 0)
         {
             Kill();
         }
@@ -176,12 +182,19 @@ public class DroneController : MonoBehaviour
         {
             return HealUnit(-amount);
         }
-        float oldHealth = Data.HP;
-        Data.HP -= amount;
-        Data.HP = Math.Max(0, Data.HP);
+        else if (Data.IsDamageable)
+        {
+            float oldHealth = Data.HP;
+            Data.HP -= amount;
+            Data.HP = Math.Max(0, Data.HP);
 
-        var damage = oldHealth - Data.HP;
-        return damage;
+            var damage = oldHealth - Data.HP;
+            return damage;
+        }
+        else
+        {
+            return 0;
+        }
     }
     public virtual float ReloadUnit(float amount)
     {
@@ -402,6 +415,7 @@ public class DroneController : MonoBehaviour
         return weapon != null 
             && target != null
             && target != this
+            && target.Data.IsTargetable
             && (!isMoving || weapon.FireWhileMoving)
             && (!isAutoAttack || weapon.CanAutoAttack)
             && (weapon.AmmoCost <= Data.MP)

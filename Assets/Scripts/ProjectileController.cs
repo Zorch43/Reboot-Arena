@@ -101,21 +101,25 @@ public class ProjectileController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        var unit = other.gameObject.GetComponent<DroneController>();
-        if (!other.CompareTag("NonBlocking") && !other.isTrigger && unit == null)
+        if (!other.isTrigger)
         {
-            if (!DoImpact(transform.position))
+            var unit = other.gameObject.GetComponent<DroneController>();
+            if (!other.CompareTag("NonBlocking") && unit == null)
             {
-                Destroy(gameObject);
+                if (!DoImpact(transform.position))
+                {
+                    Destroy(gameObject);
+                }
+            }
+            else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
+            {
+                if (!DoImpact(transform.position, unit))
+                {
+                    Destroy(gameObject);
+                }
             }
         }
-        else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
-        {
-            if (!DoImpact(transform.position, unit))
-            {
-                Destroy(gameObject);
-            }
-        }
+        
     }
 
     #endregion
@@ -194,25 +198,29 @@ public class ProjectileController : MonoBehaviour
         var beamLength = Weapon.MaxRange;
         foreach (var h in beamHits)
         {
-            var unit = h.collider.GetComponent<DroneController>();
-            if (h.collider.gameObject.tag != "NonBlocking" && !h.collider.isTrigger && unit == null)
+            if (!h.collider.isTrigger)
             {
-                if (!DoImpact(h.point))
+                var unit = h.collider.GetComponent<DroneController>();
+                if (h.collider.gameObject.tag != "NonBlocking" && unit == null)
                 {
-                    //endPoint = h.point;
-                    beamLength = h.distance;
-                    break;
+                    if (!DoImpact(h.point))
+                    {
+                        //endPoint = h.point;
+                        beamLength = h.distance;
+                        break;
+                    }
+                }
+                else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
+                {
+                    if (!DoImpact(h.point, unit))
+                    {
+                        //endPoint = h.point;
+                        beamLength = h.distance;
+                        break;
+                    }
                 }
             }
-            else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
-            {
-                if (!DoImpact(h.point, unit))
-                {
-                    //endPoint = h.point;
-                    beamLength = h.distance;
-                    break;
-                }
-            }
+            
         }
         //var beamLength = (endPoint - transform.position).magnitude;
         Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, beamLength) });

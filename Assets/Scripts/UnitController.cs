@@ -47,68 +47,33 @@ public class UnitController : DroneController
     }
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
+    protected override void OnStart()
     {
-        //TEMP: initialize data model
-        if(Data == null)
-        {
-            //get data class from class name
-            Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
-        }
-        
-        initialRotation = UnitEffects.transform.rotation;
-
+        //base
+        base.OnStart();
         //set agent speed
         Locomotion.Speed = Data.UnitClass.MoveSpeed;
         //set agent turn speed
         Locomotion.TurnSpeed = (float)(Data.UnitClass.TurnSpeed * 180 / Math.PI);
 
-        //TEMP: set team from public property
-        if(Team >= 0)
-        {
-            Data.Team = Team;
-        }
         collider = GetComponent<SphereCollider>();
         hitBoxSize = collider.radius;
-        //set teamcolor
-        Recolor(Data.Team);
-        MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
+
         //cache drone template
         droneTemplate = Resources.Load<DroneController>(Data.UnitClass.SpecialAbility.DroneTemplate);
         //set death actions
-        DeathActions.Add(()=>
+        DeathActions.Add(() =>
         {
             CancelOrders();
         });
     }
-
-    // Update is called once per frame
-    void Update()
+    protected override void OnUpdate()
     {
-        float elapsedTime = Time.deltaTime;
+        //base
+        base.OnUpdate();
         //update selection state
         Selector.gameObject.SetActive(SpawnSlot.IsSelected);
-        
-        DoWeaponCooldown(elapsedTime);
-        DoUnitAction();
-
-        UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
-        MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
-
-        //update resource bars
-        HealthBar.UpdateBar(Data.UnitClass.MaxHP, Data.HP);
-        AmmoBar.UpdateBar(Data.UnitClass.MaxMP, Data.MP);
-
-        //update tooltip
-        UpdateTooltip();
-
-        if(Data.HP <= 0)
-        {
-            Kill();
-        }
     }
-
     #endregion
     #region public methods
     public void SpawnSetup(Vector3 position, int team, UnitSlotModel slot, bool hideUI)

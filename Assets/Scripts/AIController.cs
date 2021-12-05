@@ -182,7 +182,7 @@ public class AIController : MonoBehaviour
         
         foreach (var u in allDrones)
         {
-            if(u.Data.Team != Team.Team)
+            if(u.Data.Team != Team.Team && u.Data.IsDamageable && u.Data.IsTargetable)
             {
                 float distanceToTarget = Vector3.Distance(u.transform.position, unit.transform.position);
                 float targetScore = 0;
@@ -310,7 +310,7 @@ public class AIController : MonoBehaviour
             float engageDistance = Mathf.Min(Config.Speed, 2) * unit.Data.UnitClass.MoveSpeed + abilityWeapon.MaxRange;
             foreach (var u in allDrones)
             {
-                if (u.Data.Team != Team.Team)
+                if (u.Data.Team != Team.Team && u.Data.IsDamageable)
                 {
                     
                     float targetScore = 0;
@@ -329,7 +329,7 @@ public class AIController : MonoBehaviour
                     //prefer targets with other units close to them
                     foreach (var o in allDrones)
                     {
-                        if (o.Data.Team != Team.Team && o != u
+                        if (o.Data.Team != Team.Team && o != u && o.Data.IsDamageable
                             && Vector3.Distance(u.transform.position, o.transform.position)
                             <= unit.Data.UnitClass.SpecialAbility.AbilityWeapon.ExplosionSize)
                         {

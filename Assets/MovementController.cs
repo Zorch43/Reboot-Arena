@@ -26,6 +26,7 @@ public class MovementController : MonoBehaviour, IMove
     private List<UnitController> unitCollisions;
     private bool isStopped = true;
     private Vector3 anchorPosition;
+    private Vector3 destination;
     #endregion
     #region properties
     public float Speed
@@ -141,14 +142,7 @@ public class MovementController : MonoBehaviour, IMove
 
     public Vector3 GetDestination()
     {
-        if (Pathfinder.hasPath)
-        {
-            return Pathfinder.destination;
-        }
-        else
-        {
-            return transform.position;
-        }
+        return destination;
     }
 
     public bool IsMoving()
@@ -176,9 +170,9 @@ public class MovementController : MonoBehaviour, IMove
     {
         //Pathfinder.enabled = true;
         //PathfinderSeeker.enabled = true;
-        isStopped = false;
+        //isStopped = false;
         NormalizeBody();
-        PathfinderSeeker.StartPath(transform.position, destination);
+        PathfinderSeeker.StartPath(transform.position, destination, OnPathComplete);
     }
 
     public void Stop()
@@ -187,6 +181,7 @@ public class MovementController : MonoBehaviour, IMove
         //PathfinderSeeker.enabled = false;
         isStopped = true;
         anchorPosition = transform.position;
+        destination = anchorPosition;
         PathfinderSeeker.StartPath(transform.position, anchorPosition);
     }
 
@@ -216,7 +211,16 @@ public class MovementController : MonoBehaviour, IMove
     
     #endregion
     #region private methods
-
+    private void OnPathComplete(Path path)
+    {
+        var wayPoints = path.vectorPath;
+        if(wayPoints.Count > 0)
+        {
+            destination = wayPoints[wayPoints.Count - 1];
+            isStopped = false;
+        }
+        
+    }
     #endregion
 
 

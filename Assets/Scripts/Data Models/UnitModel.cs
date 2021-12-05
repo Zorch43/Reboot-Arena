@@ -14,9 +14,8 @@ namespace Assets.Scripts.Data_Models
         public int Team { get; set; }//team ID
         public float HP { get; set; }//current health points
         public float MP { get; set; }//current munition points
-        public bool IsMoving { get; set; }
-        public bool IsActing { get; set; }
-        public float ActionCooldown { get; set; }//time until another action can be performed
+        public bool IsTargetable { get; set; } = true;//whether this unit can be a valid target
+        public bool IsDamageable { get; set; } = true;//whetehr this unit can be damaged
         #endregion
         public UnitModel (UnitClassModel unitClass)
         {
