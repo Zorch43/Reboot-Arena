@@ -7,8 +7,15 @@ public class CameraController : MonoBehaviour
 {
     #region constants
     public const float SCROLL_ZONE_WIDTH = 20;
-    public const float SCROLL_SPEED = 10f;
-    const float EDGE_LINE_HEIGHT = 25;
+    public const float PAN_SPEED = 10f;
+    const float EDGE_LINE_HEIGHT = 35;
+    const float MAX_TILT = 90f;
+    const float MIN_TILT = 30.1f;//minimum must be above fov/2, otherwise the minimap view doesn't display correctly
+    const float MAX_ZOOM = -8;//minimum distance from the focus target
+    const float MIN_ZOOM = -32;//maximum distance from the focus target
+    const float TILT_SPEED = 30;
+    const float TURN_SPEED = 60;
+    const float ZOOM_SPEED = (MIN_ZOOM - MAX_ZOOM)  * -2;
     #endregion
     #region public fields
     public Camera MainCamera;
@@ -17,6 +24,10 @@ public class CameraController : MonoBehaviour
     public RectTransform ViewRect_Mini;
     public LineRenderer ViewBounds;
     public MapController Map;
+    public Transform RotationJoint;
+    public Transform PanJoint;
+    public Transform TiltJoint;
+    public Transform ZoomJoint;
     #endregion
     #region private fields
     private Rect viewRectMain;
@@ -24,8 +35,10 @@ public class CameraController : MonoBehaviour
     private Rect scrollRect;
     private Rect screenRect;
     private Bounds mapBox;
-    private Vector3 cameraOffset;
     private Plane terrainPlane = new Plane(new Vector3(0, 1, 0), 0);
+    private float defaultZoom;
+    private float defaultRotation;
+    private float defaultTilt;
     #endregion
     #region properties
     public Rect MainViewRect
@@ -42,10 +55,17 @@ public class CameraController : MonoBehaviour
             return viewRectMini;
         }
     }
+    public Vector2 PanVector { get; set; }
+    public Vector2 TiltVector { get; set; }
+    public float ZoomDelta { get; set; }
     #endregion
     #region unity methods
     void Awake()
     {
+        defaultZoom = ZoomJoint.localPosition.z;
+        defaultRotation = RotationJoint.localEulerAngles.y;
+        defaultTilt = TiltJoint.localEulerAngles.x;
+
         bool isSpectating = GameObjectiveController.BattleConfig.IsPlayerSpectator;
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
 
@@ -71,57 +91,109 @@ public class CameraController : MonoBehaviour
 
         //set minimap camera so that it can see the entire map
         MiniMapCamera.orthographicSize = Mathf.Max(Map.Size.x, Map.Size.y);
-
-        //store the initial camera offset
-        cameraOffset = GetCameraOffset();
-
-        //TODO: set initial viewBounds
-        //TODO: pan them when moving camera
-        //TODO: only update when changing camera rotation or angle
-
-        //pan to initial location
-        //PanToMapLocation(InitialView.transform.position);
+    }
+    private void Start()
+    {
+        RedrawViewBounds();
     }
 
     // Update is called once per frame
     void Update()
     {
+        float deltaTime = Time.deltaTime;
         //if in border zone, scroll the camera
-        var panVector = GetPanVector(Input.mousePosition);
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            panVector.x = -1;
-        }
-        else if (Input.GetKey(KeyCode.RightArrow))
-        {
-            panVector.x = 1;
-        }
-        if (Input.GetKey(KeyCode.DownArrow))
-        {
-            panVector.y = -1;
-        }
-        else if (Input.GetKey(KeyCode.UpArrow))
-        {
-            panVector.y = 1;
-        }
+        var panVector = GetPanVector(Input.mousePosition) + PanVector;
+
+        bool redrawEdge = false;
+
+        //pan the camera
         if (panVector.magnitude > 0)
         {
-            panVector = SCROLL_SPEED * Time.deltaTime * panVector;
+            panVector = PAN_SPEED * deltaTime * panVector;
             var panVector3d = new Vector3(panVector.x, 0, panVector.y);
-
-            MainCamera.transform.position = ClampCameraPosition(MainCamera.transform.position + panVector3d);
-            RedrawViewBounds();
+            //pan the joint in its local space
+            PanJoint.localPosition += panVector3d;
+            //make the pan joint's parent move in world space, clamp that position within map bounds
+            PanJoint.parent.position = ClampCameraPosition(PanJoint.position);
+            //reset the pan joint's local position
+            PanJoint.localPosition = new Vector3();
+        }
+        //rotate the camera
+        if(Mathf.Abs(TiltVector.x) > 0)
+        {
+            var rotateDelta = TURN_SPEED * deltaTime * TiltVector.x;
+            //rotate the rotation joint around the y axis
+            RotationJoint.localEulerAngles += new Vector3(0, rotateDelta, 0);
+        }
+        //tilt the camera
+        if(Mathf.Abs(TiltVector.y) > 0)
+        {
+            var tiltDelta = TILT_SPEED * deltaTime * TiltVector.y;
+            //rotate the tilt joint around the x axis
+            //clamp the total angle
+            var tilt = Mathf.Clamp(tiltDelta + TiltJoint.localEulerAngles.x, MIN_TILT, MAX_TILT);
+            TiltJoint.localEulerAngles = new Vector3(tilt, 0, 0);
+            //update the edge renderer
+            redrawEdge = true;
+        }
+        //zoom the camera
+        if(Mathf.Abs(ZoomDelta) > 0)
+        {
+            var zoomDelta = ZOOM_SPEED * deltaTime * ZoomDelta;
+            //move the zoom joint's local z by the zoom amount
+            //clamp the zoom
+            var zoom = Mathf.Clamp(ZoomJoint.localPosition.z + zoomDelta, MIN_ZOOM, MAX_ZOOM);
+            ZoomJoint.localPosition = new Vector3(0, 0, zoom);
+            //update the edge renderer
+            redrawEdge = true;
         }
 
+        //redraw view bounds
+        if (redrawEdge)
+        {
+            RedrawViewBounds();
+        }
+        
+        PanVector = new Vector2();
+        TiltVector = new Vector2();
+        ZoomDelta = 0;
     }
     #endregion
     #region public methods
     public void PanToMapLocation(Vector3 location)
     {
         //clamp center to map edges
-        var cameraPosNew = ClampCameraPosition(new Vector3(location.x, MainCamera.transform.position.y, location.z) + cameraOffset);
+        var cameraPosNew = ClampCameraPosition(new Vector3(location.x, 0, location.z));
 
-        MainCamera.transform.position = cameraPosNew;
+        PanJoint.parent.position = cameraPosNew;
+    }
+    public void SetRotation(float rotation)
+    {
+        RotationJoint.localEulerAngles = new Vector3(0, rotation, 0);
+    }
+    public void SetTilt(float tilt, bool redraw = true)
+    {
+        tilt = Mathf.Clamp(tilt, MIN_TILT, MAX_TILT);
+        TiltJoint.localEulerAngles = new Vector3(tilt, 0, 0);
+        if (redraw)
+        {
+            RedrawViewBounds();
+        }
+    }
+    public void SetZoom(float zoom, bool redraw = true)
+    {
+        zoom = Mathf.Clamp(zoom, MIN_ZOOM, MAX_ZOOM);
+        ZoomJoint.localPosition = new Vector3(0, 0, zoom);
+        if (redraw)
+        {
+            RedrawViewBounds();
+        }
+    }
+    public void ResetOrientation()
+    {
+        SetRotation(defaultRotation);
+        SetTilt(defaultTilt, false);
+        SetZoom(defaultZoom, false);
         RedrawViewBounds();
     }
     public Camera GetCommandCamera(Vector2 mousePos)
@@ -169,8 +241,8 @@ public class CameraController : MonoBehaviour
     private Vector3 ClampCameraPosition(Vector3 cameraPos)
     {
         //clamp location to terrain
-        var cMax = mapBox.max + cameraOffset;
-        var cMin = mapBox.min + cameraOffset;
+        var cMax = mapBox.max;
+        var cMin = mapBox.min;
 
         var clampedLocation = new Vector3(Mathf.Clamp(cameraPos.x, cMin.x, cMax.x), cameraPos.y, Mathf.Clamp(cameraPos.z, cMin.z, cMax.z));
 
@@ -179,10 +251,10 @@ public class CameraController : MonoBehaviour
     private void RedrawViewBounds()
     {
         //get all corners of the main viewport
-        Vector3 p0 = GetMapPointFromScreenPoint(viewRectMain.min);
-        Vector3 p1 = GetMapPointFromScreenPoint(new Vector2(viewRectMain.min.x, viewRectMain.max.y));
-        Vector3 p2 = GetMapPointFromScreenPoint(viewRectMain.max);
-        Vector3 p3 = GetMapPointFromScreenPoint(new Vector2(viewRectMain.max.x, viewRectMain.min.y));
+        Vector3 p0 = GetMapPointFromScreenPoint(viewRectMain.min) - ViewBounds.transform.position;
+        Vector3 p1 = GetMapPointFromScreenPoint(new Vector2(viewRectMain.min.x, viewRectMain.max.y)) - ViewBounds.transform.position;
+        Vector3 p2 = GetMapPointFromScreenPoint(viewRectMain.max) - ViewBounds.transform.position;
+        Vector3 p3 = GetMapPointFromScreenPoint(new Vector2(viewRectMain.max.x, viewRectMain.min.y)) - ViewBounds.transform.position;
 
         p0.y = EDGE_LINE_HEIGHT;
         p1.y = EDGE_LINE_HEIGHT;
@@ -197,6 +269,10 @@ public class CameraController : MonoBehaviour
         //project a ray from the center of the camera
         //get intersection point with terrain plane
         var mapPoint = GetMapPointFromScreenPoint(viewRectMain.center);
+        return GetCameraOffset(mapPoint);
+    }
+    private Vector3 GetCameraOffset(Vector3 mapPoint)
+    {
         //return xz offset of intersection point in relation to the camera
         var offset = MainCamera.transform.position - mapPoint;
         offset.y = 0;

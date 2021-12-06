@@ -26,8 +26,7 @@ public class ToolTipController : MonoBehaviour
     #region public fields
     public GameObject ToolTipPanel;
     public TextMeshProUGUI Text;
-    public Camera MainCamera;
-    public Camera MiniMapCamera;
+    public CameraController Cameras;
     public GraphicRaycaster CanvasRaycaster;
     #endregion
     #region private fields
@@ -95,7 +94,7 @@ public class ToolTipController : MonoBehaviour
             //normal raycast for map objects
             if (!lastFound)
             {
-                var hits = Physics.RaycastAll(MainCamera.ScreenPointToRay(pointerPos));
+                var hits = Physics.RaycastAll(Cameras.MainCamera.ScreenPointToRay(pointerPos));
                 foreach (var h in hits)
                 {
                     //look for tooltip data to display

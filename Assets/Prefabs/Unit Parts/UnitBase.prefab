@@ -105,9 +105,9 @@ MonoBehaviour:
   DeathExplosion: {fileID: 8270483927021890600, guid: f80942e1a1b484d4597e1a23ad21a971, type: 3}
   ToolTip: {fileID: 690332883046151478}
   JetStream: {fileID: 1031442692948605861}
-  TeamColorParts: []
   CanAttack: 1
   TargetOffset: {x: 0, y: 0.5, z: 0}
+  TeamColorParts: []
   Locomotion: {fileID: 6256869848024091513}
   MinimapNumber: {fileID: 5821808091005975713}
   UnitNumber: {fileID: 6553727970393930573}
@@ -845,7 +845,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4288017876720720060, guid: 25bbaef9d14cb234fa7be54d2a3c35bc, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 25
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4288017876720720060, guid: 25bbaef9d14cb234fa7be54d2a3c35bc, type: 3}
       propertyPath: m_LocalPosition.z

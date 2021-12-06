@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,14 +10,20 @@ namespace Assets.Scripts.Data_Models
 {
     public class KeyBindModel : IComparable
     {
+        public enum KeyCodeExtra
+        {
+            None,
+            MouseWheelUp,
+            MouseWheelDown
+        }
         public KeyBindConfigModel.KeyBindId Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public KeyCode HeldKey { get; set; }
         public KeyCode PressedKey { get; set; }
+        public KeyCodeExtra PressedKeyExtra { get; set; }
         public Action BoundAction { get; set; }
         public bool IsContinuous { get; set; }//whether the keybind can be held to activate continuously
-        public bool IsExclusive { get; set; }//whether the activation of this keybind prevents activation of other commands
 
         public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description)
         {
@@ -24,21 +31,41 @@ namespace Assets.Scripts.Data_Models
             Name = name;
             Description = description;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode pressedKey)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode pressedKey, bool isContinuous = false)
         {
             Id = id;
             Name = name;
             Description = description;
             PressedKey = pressedKey;
             HeldKey = KeyCode.None;
+            IsContinuous = isContinuous;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCode pressedKey)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCodeExtra pressedKey, bool isContinuous = false)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            PressedKeyExtra = pressedKey;
+            HeldKey = KeyCode.None;
+            IsContinuous = isContinuous;
+        }
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCode pressedKey, bool isContinuous = false)
         {
             Id = id;
             Name = name;
             Description = description;
             PressedKey = pressedKey;
             HeldKey = heldKey;
+            IsContinuous = isContinuous;
+        }
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCodeExtra pressedKey, bool isContinuous = false)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            PressedKeyExtra = pressedKey;
+            HeldKey = heldKey;
+            IsContinuous = isContinuous;
         }
         public bool TryInvoke()
         {
@@ -51,7 +78,22 @@ namespace Assets.Scripts.Data_Models
         }
         public bool IsPressed()
         {
-            return (HeldKey == KeyCode.None || Input.GetKey(HeldKey)) && ((IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey));
+            //return (HeldKey == KeyCode.None || Input.GetKey(HeldKey)) 
+            //    && ((PressedKeyExtra != KeyCodeExtra.None 
+            //    && ((IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey)) 
+            //    || (IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey)));
+            if(HeldKey == KeyCode.None || Input.GetKey(HeldKey))
+            {
+                if(PressedKeyExtra != KeyCodeExtra.None)
+                {
+                    return (IsContinuous && ExtraInput.GetKey(PressedKeyExtra)) || ExtraInput.GetKeyDown(PressedKeyExtra);
+                }
+                else
+                {
+                    return (IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey);
+                }
+            }
+            return false;
         }
         public override bool Equals(object obj)
         {

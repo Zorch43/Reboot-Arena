@@ -26,7 +26,7 @@ public class SelectionRectController : MonoBehaviour
     void Start()
     {
         ClearSelection();
-        viewRect = Camera.main.GetComponent<CameraController>().MainViewRect;
+        viewRect = Cameras.MainViewRect;
     }
 
     // Update is called once per frame

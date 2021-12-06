@@ -49,6 +49,7 @@ namespace Assets.Scripts.Data_Models
             CameraZoomOut,
             CameraReset
         }
+        
         #endregion
         #region keybinds
         public KeyBindModel GameMenuKey { get; set; }
@@ -111,13 +112,13 @@ namespace Assets.Scripts.Data_Models
             //advanced commands
             AttackMoveModeKey = new KeyBindModel(KeyBindId.AttackMoveMode, "Set Attack-Move Mode",
                 "Activate the attack-move command mode.  Set location with left-click, cancel with right-click.",
-                KeyCode.A);
+                KeyCode.V);
             AttackMoveKey = new KeyBindModel(KeyBindId.AttackMove, "Attack-Move", "Selected units will attack-move to cursor location");//key bind not set
             ForceAttackModeKey = new KeyBindModel(KeyBindId.ForceAtackMode, "Set Force-Attack Mode",
                 "Activate the force-attack command mode.  Set force-attack with left-click, cancel with right-click",
                 KeyCode.F);
             ForceAttackKey = new KeyBindModel(KeyBindId.ForceAttack, "Force-Attack", "Selected units will force-attack the cursor location", KeyCode.LeftControl, KeyCode.Mouse1);
-            StopActionKey = new KeyBindModel(KeyBindId.StopAction, "Stop", "Selected units stop whatever they were doing", KeyCode.S);
+            StopActionKey = new KeyBindModel(KeyBindId.StopAction, "Stop", "Selected units stop whatever they were doing", KeyCode.C);
             SetRallyPointModeKey = new KeyBindModel(KeyBindId.SetRallyPointMode, "Set Rally-Point Mode",
                 "Activate rally-point mode.  Set the rally point for selected units with left-click, cancel with right-click.",
                 KeyCode.R);
@@ -141,18 +142,18 @@ namespace Assets.Scripts.Data_Models
                 "Instantly change all selected unit's next class to Fabricator", KeyCode.LeftControl, KeyCode.T);
 
             //camera controls
-            CameraPanDown = new KeyBindModel(KeyBindId.CameraPanDown, "Pan Down", "Pan the main camera down", KeyCode.S);
-            CameraPanLeft = new KeyBindModel(KeyBindId.CameraPanLeft, "Pan Left", "Pan the main camera left", KeyCode.A);
-            CameraPanRight = new KeyBindModel(KeyBindId.CameraPanRight, "Pan Right", "Pan the main camera right", KeyCode.D);
-            CameraPanUp = new KeyBindModel(KeyBindId.CameraPanUp, "Pan Up", "Pan the main camera up", KeyCode.W);
+            CameraPanDown = new KeyBindModel(KeyBindId.CameraPanDown, "Pan Down", "Pan the main camera down", KeyCode.S, true);
+            CameraPanLeft = new KeyBindModel(KeyBindId.CameraPanLeft, "Pan Left", "Pan the main camera left", KeyCode.A, true);
+            CameraPanRight = new KeyBindModel(KeyBindId.CameraPanRight, "Pan Right", "Pan the main camera right", KeyCode.D, true);
+            CameraPanUp = new KeyBindModel(KeyBindId.CameraPanUp, "Pan Up", "Pan the main camera up", KeyCode.W, true);
             CameraRotateCCW = new KeyBindModel(KeyBindId.CameraRotateCCW, "Rotate CCW", 
-                "Rotate the main camera counter-clockwise around the focus point", KeyCode.Q);
+                "Rotate the main camera counter-clockwise around the focus point", KeyCode.Q, true);
             CameraRotateCW = new KeyBindModel(KeyBindId.CameraRotateCW, "Rotate CW", 
-                "Rotate the main camera clockwise around the focus point", KeyCode.E);
-            CameraTiltDown = new KeyBindModel(KeyBindId.CameraTiltDown, "Tilt Down", "Tilt the main camera down", KeyCode.Z);
-            CameraTiltUp = new KeyBindModel(KeyBindId.CameraTiltUp, "Tilt Up", "Tilt the maincamera up", KeyCode.X);
-            CameraZoomIn = new KeyBindModel(KeyBindId.CameraZoomIn, "Zoom In", "Zoom the main camera in", KeyCode.Plus);
-            CameraZoomOut = new KeyBindModel(KeyBindId.CameraZoomOut, "Zoom Out", "Zoom the main camera out", KeyCode.Minus);
+                "Rotate the main camera clockwise around the focus point", KeyCode.E, true);
+            CameraTiltDown = new KeyBindModel(KeyBindId.CameraTiltDown, "Tilt Down", "Tilt the main camera down", KeyCode.Z, true);
+            CameraTiltUp = new KeyBindModel(KeyBindId.CameraTiltUp, "Tilt Up", "Tilt the maincamera up", KeyCode.X, true);
+            CameraZoomIn = new KeyBindModel(KeyBindId.CameraZoomIn, "Zoom In", "Zoom the main camera in", KeyBindModel.KeyCodeExtra.MouseWheelUp, true);
+            CameraZoomOut = new KeyBindModel(KeyBindId.CameraZoomOut, "Zoom Out", "Zoom the main camera out", KeyBindModel.KeyCodeExtra.MouseWheelDown, true);
             CameraReset = new KeyBindModel(KeyBindId.CameraReset, "Reset", "Reset main camera orientation", KeyCode.Backspace);
 
             //integration

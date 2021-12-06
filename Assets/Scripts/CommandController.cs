@@ -84,6 +84,17 @@ public class CommandController : MonoBehaviour
         keyBinds.UnitSlot8Key.BoundAction = ActionSlot8;
         keyBinds.UnitSlot9Key.BoundAction = ActionSlot9;
         //TODO: camera binds
+        keyBinds.CameraPanDown.BoundAction = ActionPanCameraDown;
+        keyBinds.CameraPanLeft.BoundAction = ActionPanCameraLeft;
+        keyBinds.CameraPanRight.BoundAction = ActionPanCameraRight;
+        keyBinds.CameraPanUp.BoundAction = ActionPanCameraUp;
+        keyBinds.CameraRotateCCW.BoundAction = ActionCameraRotateCCW;
+        keyBinds.CameraRotateCW.BoundAction = ActionCameraRotateCW;
+        keyBinds.CameraTiltDown.BoundAction = ActionCameraTiltDown;
+        keyBinds.CameraTiltUp.BoundAction = ActionCameraTiltUp;
+        keyBinds.CameraZoomIn.BoundAction = ActionCameraZoomIn;
+        keyBinds.CameraZoomOut.BoundAction = ActionCameraZoomOut;
+        keyBinds.CameraReset.BoundAction = ActionCameraReset;
         //organize binds into lists and sort them
         //populate the main list - available when not spectating
         mainKeyBinds = new List<KeyBindModel>()
@@ -130,7 +141,10 @@ public class CommandController : MonoBehaviour
             keyBinds.CameraRotateCCW,
             keyBinds.CameraRotateCW,
             keyBinds.CameraTiltDown,
-            keyBinds.CameraTiltUp
+            keyBinds.CameraTiltUp,
+            keyBinds.CameraZoomIn,
+            keyBinds.CameraZoomOut,
+            keyBinds.CameraReset
         };
         cameraKeyBinds.Sort();
     }
@@ -260,7 +274,10 @@ public class CommandController : MonoBehaviour
             }
         }
         //TODO: camera controls
-
+        if (!command)
+        {
+            DoBoundCommands(cameraKeyBinds, false);
+        }
         //left-click on minimap will always pan the camera to the clicked location
         if (Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButton(0))
         {
@@ -779,6 +796,50 @@ public class CommandController : MonoBehaviour
     private void ActionSwitchClassTrooper()
     {
         UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetTrooperClass());
+    }
+    private void ActionPanCameraDown()
+    {
+        Cameras.PanVector += new Vector2(0, -1);
+    }
+    private void ActionPanCameraUp()
+    {
+        Cameras.PanVector += new Vector2(0, 1);
+    }
+    private void ActionPanCameraLeft()
+    {
+        Cameras.PanVector += new Vector2(-1, 0);
+    }
+    private void ActionPanCameraRight()
+    {
+        Cameras.PanVector += new Vector2(1, 0);
+    }
+    private void ActionCameraRotateCCW()
+    {
+        Cameras.TiltVector += new Vector2(1, 0);
+    }
+    private void ActionCameraRotateCW()
+    {
+        Cameras.TiltVector += new Vector2(-1, 0);
+    }
+    private void ActionCameraTiltUp()
+    {
+        Cameras.TiltVector += new Vector2(0, 1);
+    }
+    private void ActionCameraTiltDown()
+    {
+        Cameras.TiltVector += new Vector2(0, -1);
+    }
+    private void ActionCameraZoomIn()
+    {
+        Cameras.ZoomDelta += 1;
+    }
+    private void ActionCameraZoomOut()
+    {
+        Cameras.ZoomDelta -= 1;
+    }
+    private void ActionCameraReset()
+    {
+        Cameras.ResetOrientation();
     }
     #endregion
     #region private methods
