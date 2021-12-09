@@ -15,6 +15,7 @@ namespace Assets.Scripts.Data_Templates
         {
             Trooper,
             Fabricator,
+            Ranger,
             TurretDrone
         }
         public static UnitClassModel GetClassByName(UnitClasses unitClass)
@@ -25,6 +26,8 @@ namespace Assets.Scripts.Data_Templates
                     return GetTrooperClass();
                 case UnitClasses.Fabricator:
                     return GetFabricatorClass();
+                case UnitClasses.Ranger:
+                    return GetRangerClass();
                 case UnitClasses.TurretDrone:
                     return GetTurretDroneClass();
             }
@@ -86,6 +89,27 @@ namespace Assets.Scripts.Data_Templates
                 PrimaryWeapon = WeaponTemplates.CreatePlasmaTurret(),
                 SecondaryWeapon = WeaponTemplates.CreateWeakPlasmaTurret(),
                 AutoRepairStrength = 40
+            };
+            return template;
+        }
+        public static UnitClassModel GetRangerClass()
+        {
+            var template = new UnitClassModel()
+            {
+                ClassId = UnitClasses.Ranger,
+                Name="Ranger",
+                Description = "Lightweight, turbo-charged attacker that can dispense Nano-packs.",
+                Portrait = ResourceList.PORTRAIT_RANGER,
+                Symbol = ResourceList.SYMBOL_RANGER,
+                MaxHP = 200,
+                MaxMP = 200,
+                MoveSpeed = 2,//non-boosted speed
+                TurnSpeed = 12,
+                //TODO: primary weapon
+                //TODO: passive abilities
+                //TODO: special ability
+                AttackerWeight = 2,
+                SupportWeight = 1
             };
             return template;
         }

@@ -48,6 +48,10 @@ namespace Assets.Scripts.Utility
         public const string UNIT_FABRICATOR = UNITS + "UnitFabricator";
         public const string PORTRAIT_FABRICATOR = PORTRAITS + "PortraitFabricator";
         public const string SYMBOL_FABRICATOR = SYMBOLS + "SymbolFabricator";
+
+        public const string UNIT_RANGER = UNITS + "UnitRanger";
+        public const string PORTRAIT_RANGER = PORTRAITS + "PortraitRanger";
+        public const string SYMBOL_RANGER = SYMBOLS + "SymbolRanger";
         #endregion
         #endregion
         #region public methods
@@ -61,6 +65,9 @@ namespace Assets.Scripts.Utility
                     break;
                 case UnitClassTemplates.UnitClasses.Fabricator:
                     path = UNIT_FABRICATOR;
+                    break;
+                case UnitClassTemplates.UnitClasses.Ranger:
+                    path = UNIT_RANGER;
                     break;
                 default:
                     Debug.LogError("Invalid class type: " + unitClass.ToString());
