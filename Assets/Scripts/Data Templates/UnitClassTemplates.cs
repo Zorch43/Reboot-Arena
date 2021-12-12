@@ -97,17 +97,21 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitClassModel()
             {
                 ClassId = UnitClasses.Ranger,
-                Name="Ranger",
+                Name = "Ranger",
                 Description = "Lightweight, turbo-charged attacker that can dispense Nano-packs.",
                 Portrait = ResourceList.PORTRAIT_RANGER,
                 Symbol = ResourceList.SYMBOL_RANGER,
                 MaxHP = 200,
                 MaxMP = 200,
                 MoveSpeed = 2,//non-boosted speed
-                TurnSpeed = 12,
-                //TODO: primary weapon
-                //TODO: passive abilities
-                //TODO: special ability
+                TurnSpeed = 6,
+                HasJumpBoost = true,
+                SpeedBoostPower = 4,//boosted speed bonus
+                FuelConsumption = 12,//fuel cost per second while moving
+                HealthPickupEfficiency = 2,
+                AmmoPickupEfficiency = 2,
+                PrimaryWeapon = WeaponTemplates.CreateLaserPistols(),
+                SpecialAbility = UnitAbilityTemplates.CreateNanoPack(),
                 AttackerWeight = 2,
                 SupportWeight = 1
             };

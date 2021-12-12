@@ -30,7 +30,7 @@ public class AmmoPackController : PickupController
 
     public override void ApplyEffectToUnit(UnitController unit)
     {
-        unit.ReloadUnit(AmmoAmount);
+        unit.ReloadUnit(AmmoAmount * unit.Data.UnitClass.AmmoPickupEfficiency);
     }
     #endregion
     #region private methods

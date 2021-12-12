@@ -331,48 +331,51 @@ public class CommandController : MonoBehaviour
     {
         var fromCamera = Cameras.GetCommandCamera(targetLocation);
 
-        var ray = fromCamera.ScreenPointToRay(targetLocation);
-        RaycastHit hit;
-        if (GetRayHit(ray, out hit, true))
+        if(fromCamera != null)
         {
-            var mapPoint = hit.point;
-            //action
-            var selectedUnits = GetSelectedUnits();
-            var unit = hit.collider.GetComponent<DroneController>();
-            bool responseGiven = false;//only one response given per order.
-            foreach (var u in selectedUnits)
+            var ray = fromCamera.ScreenPointToRay(targetLocation);
+            RaycastHit hit;
+            if (GetRayHit(ray, out hit, true))
             {
-                if (unit != null)
+                var mapPoint = hit.point;
+                //action
+                var selectedUnits = GetSelectedUnits();
+                var unit = hit.collider.GetComponent<DroneController>();
+                bool responseGiven = false;//only one response given per order.
+                foreach (var u in selectedUnits)
                 {
-                    GiveUnitAttackOrder(u, unit);
-                    if (!responseGiven)
+                    if (unit != null)
                     {
-                        responseGiven = true;
-                        //TODO: move this logic to the unitcontroller
-                        if (u.Data.Team != unit.Data.Team)
+                        GiveUnitAttackOrder(u, unit);
+                        if (!responseGiven)
                         {
-                            u.UnitVoice.PlayAttackResponse();
-                            //place attack marker on enemy unit
-                            MarkerTemplate.Instantiate(AttackMarker, unit.transform, unit.transform.position, true);
-                        }
-                        else
-                        {
-                            //play support response, if it makes sense
-                            u.UnitVoice.PlaySupportResponse();
-                            //place support marker, if it makes sense
-                            MarkerTemplate.Instantiate(SupportMarker, unit.transform, unit.transform.position, true);
+                            responseGiven = true;
+                            //TODO: move this logic to the unitcontroller
+                            if (u.Data.Team != unit.Data.Team)
+                            {
+                                u.UnitVoice.PlayAttackResponse();
+                                //place attack marker on enemy unit
+                                MarkerTemplate.Instantiate(AttackMarker, unit.transform, unit.transform.position, true);
+                            }
+                            else
+                            {
+                                //play support response, if it makes sense
+                                u.UnitVoice.PlaySupportResponse();
+                                //place support marker, if it makes sense
+                                MarkerTemplate.Instantiate(SupportMarker, unit.transform, unit.transform.position, true);
+                            }
                         }
                     }
-                }
-                else
-                {
-                    GiveUnitMoveOrder(u, mapPoint);
-                    if (!responseGiven)
+                    else
                     {
-                        responseGiven = true;
-                        u.UnitVoice.PlayMoveResponse();
-                        //place move marker on position
-                        MarkerTemplate.Instantiate(MoveMarker, Map.transform, mapPoint, false);
+                        GiveUnitMoveOrder(u, mapPoint);
+                        if (!responseGiven)
+                        {
+                            responseGiven = true;
+                            u.UnitVoice.PlayMoveResponse();
+                            //place move marker on position
+                            MarkerTemplate.Instantiate(MoveMarker, Map.transform, mapPoint, false);
+                        }
                     }
                 }
             }

@@ -111,6 +111,10 @@ PrefabInstance:
       propertyPath: TeamColorParts.Array.data[0].Part
       value: 
       objectReference: {fileID: 5973228659391424956}
+    - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: TeamColorParts.Array.data[1].Part
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 9005709875374152115, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0.5
@@ -129,6 +133,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 3223563115107267156}
     m_Modifications:
+    - target: {fileID: 4418003558552841019, guid: f13541f982a3d0048a9ea5bfd7327dbd, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4986102551757082457, guid: f13541f982a3d0048a9ea5bfd7327dbd, type: 3}
       propertyPath: m_RootOrder
       value: 2

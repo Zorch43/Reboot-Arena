@@ -134,6 +134,21 @@ namespace Assets.Scripts.Data_Templates
 
             return weapon;
         }
+        public static WeaponModel CreateLaserPistols()
+        {
+            var weapon = new WeaponModel()
+            {
+                Name = "Laser Pistols",
+                Cooldown = 0.2f,
+                HealthDamage = 6f,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
+                ProjectileStartSize = 0.05f,
+                CanAutoAttack = true,
+                FireWhileMoving = true,
+                ProjectileSpeed = 0
+            };
+            return weapon;
+        }
         #endregion
         #region toybox
         //test explosions

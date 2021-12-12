@@ -53,5 +53,20 @@ namespace Assets.Scripts.Data_Templates
             };
             return ability;
         }
+        public static UnitAbilityModel CreateNanoPack()
+        {
+            var ability = new UnitAbilityModel()
+            {
+                Name = "NanoPack",
+                Description = "Throw a NanoPack to a random location within a short range",
+                Icon = ResourceList.ICON_THROW_NANOPACK,
+                GroupActivationRule = UnitAbilityModel.GroupActivationType.Single,
+                LootDrop = new PickupController.PickupType[] {PickupController.PickupType.NanoPack},
+                ConsiderMostAmmoInGroup = true,
+                ConsiderLeastHealthInGroup = true,
+                AmmoCostInstant = 50
+            };
+            return ability;
+        }
     }
 }

@@ -32,6 +32,11 @@ namespace Assets.Scripts.Data_Models
         //passive abilities
         public bool IsAmbidextrous { get; set; }//whether the unit can fire primary and secondary weapons simultaneously, conditions permitting
         public float AutoRepairStrength { get; set; }//how much to heal per second, so long as unit can spend ammo
+        public float HealthPickupEfficiency { get; set; } = 1;//effectiveness multiplier for heath pickups
+        public float AmmoPickupEfficiency { get; set; } = 1;//effectiveness multiplier for ammo pickups
+        public float SpeedBoostPower { get; set; }//speed boost while unit has ammo.  set negative to burden unit with ammo
+        public float FuelConsumption { get; set; }//how much ammo is consumed while moving, per distance unit moved
+        public bool HasJumpBoost { get; set; }//whether this unit can jump low obstacles
         #endregion
         #region AI helpers
         public float AttackerWeight { get; set; }//how good this class is at taking objectives and removing defenders from the point

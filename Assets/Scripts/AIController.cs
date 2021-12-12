@@ -235,7 +235,7 @@ public class AIController : MonoBehaviour
         {
             activeWeapon = primaryWeapon;
         }
-        else if(secondaryWeapon.AmmoDamage < 0)
+        else if(secondaryWeapon != null && secondaryWeapon.AmmoDamage < 0)
         {
             activeWeapon = secondaryWeapon;
         }

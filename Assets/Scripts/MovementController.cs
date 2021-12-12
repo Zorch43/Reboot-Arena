@@ -7,7 +7,7 @@ using UnityEngine;
 public class MovementController : MonoBehaviour, IMove
 {
     #region constants
-    const float ORDER_RADIUS = 0.55f;
+    const float ORDER_RADIUS = 0.6f;
     const float ANCHOR_DRIFT = 3;
     const float LIGHT_MASS = 0.2f;
     const float LIGHT_DRAG = 0.05f;
@@ -38,6 +38,7 @@ public class MovementController : MonoBehaviour, IMove
         set
         {
             Pathfinder.maxSpeed = value;
+            Pathfinder.acceleration = value * 2;
         }
     }
     public float TurnSpeed
@@ -60,6 +61,24 @@ public class MovementController : MonoBehaviour, IMove
         set
         {
             Pathfinder.enableRotation = value;
+        }
+    }
+    public bool CanJump
+    {
+        get
+        {
+            return (PathfinderSeeker.graphMask & (1 << 1)) == 1 << 1;
+        }
+        set
+        {
+            if (value)
+            {
+                PathfinderSeeker.graphMask = (1 << 1);
+            }
+            else
+            {
+                PathfinderSeeker.graphMask = 1;
+            }
         }
     }
     #endregion
@@ -221,6 +240,7 @@ public class MovementController : MonoBehaviour, IMove
         }
         
     }
+
     #endregion
 
 

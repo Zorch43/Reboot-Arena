@@ -6,12 +6,17 @@ using UnityEngine;
 public abstract class PickupController : MonoBehaviour
 {
     #region constants
-    const float MIN_ARC_HEIGHT = .32f;
-    const float MAX_ARC_HEIGHT = .64f;
-    const float MIN_SCATTER_RADIUS = .32f;
-    const float MAX_SCATTER_RADIUS = .64f;
+    const float MIN_ARC_HEIGHT = 0.5f;
+    const float MAX_ARC_HEIGHT = 2f;
+    const float MIN_SCATTER_RADIUS = 0.5f;
+    const float MAX_SCATTER_RADIUS = 2f;
     const float DECAY_TIME = 20;
-    const float RE_COLLIDE_TIMER = 1f;
+    const float RE_COLLIDE_TIMER = 0.25f;
+    public enum PickupType
+    {
+        NanoPack,
+        AmmoPack
+    }
     #endregion
     #region public fields
     public SoundPointController SoundPointTemplate;
@@ -49,11 +54,12 @@ public abstract class PickupController : MonoBehaviour
         {
             foreach (var c in ignoredColliders)//reset ignored colliders
             {
-                if(c != null)
+                if (c != null)
                 {
                     Physics.IgnoreCollision(c, boxCollider, false);
                 }
             }
+            ignoredColliders.Clear();
         }
     }
     private void OnCollisionEnter(Collision collision)
@@ -61,9 +67,7 @@ public abstract class PickupController : MonoBehaviour
         var unit = collision.collider.GetComponent<UnitController>();
         if (unit != null)
         {
-            lastCollision = 0;
-            Physics.IgnoreCollision(collision.collider, boxCollider);
-            ignoredColliders.Add(collision.collider);
+            
             //check whether the pickup effect can be applied to that unit
             if (CanApplyEffectToUnit(unit))
             {
@@ -73,6 +77,12 @@ public abstract class PickupController : MonoBehaviour
                 SoundPointTemplate.Instantiate(PickupSound, transform.parent, transform.position);
                 //remove pickup
                 Destroy(gameObject);
+            }
+            else
+            {
+                lastCollision = 0;
+                Physics.IgnoreCollision(collision.collider, boxCollider);
+                ignoredColliders.Add(collision.collider);
             }
         }
     }

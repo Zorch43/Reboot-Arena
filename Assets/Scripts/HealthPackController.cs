@@ -30,7 +30,7 @@ public class HealthPackController : PickupController
 
     public override void ApplyEffectToUnit(UnitController unit)
     {
-        unit.HealUnit(HealPower);
+        unit.HealUnit(HealPower * unit.Data.UnitClass.HealthPickupEfficiency);
     }
     #endregion
     #region private methods

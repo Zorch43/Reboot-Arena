@@ -57,6 +57,7 @@ public class SpawnPointController : MonoBehaviour
 
         //starting from the center of the spawn field, search for an empty space (that is also within bounds of the spawn zone)
         Vector3 testPoint = RespawnArea.bounds.center;
+        testPoint.y = 0;
         Vector3 nextNeighbor = new Vector3(0, 0, 1);
         
         while (true)

@@ -61,6 +61,12 @@ public class UnitController : DroneController
 
         //cache drone template
         droneTemplate = Resources.Load<DroneController>(Data.UnitClass.SpecialAbility.DroneTemplate);
+
+        //set movement graph
+        if (Data.UnitClass.HasJumpBoost)
+        {
+            Locomotion.CanJump = true;
+        }
         //set death actions
         DeathActions.Add(() =>
         {
@@ -71,8 +77,23 @@ public class UnitController : DroneController
     {
         //base
         base.OnUpdate();
+        float deltaTime = Time.deltaTime;
         //update selection state
         Selector.gameObject.SetActive(SpawnSlot.IsSelected);
+        //update boosted movement speed
+        if(Data.MP > 0)
+        {
+            Locomotion.Speed = Data.UnitClass.MoveSpeed + Data.UnitClass.SpeedBoostPower;
+        }
+        else
+        {
+            Locomotion.Speed = Data.UnitClass.MoveSpeed;
+        }
+        //consume fuel
+        if (IsMoving)
+        {
+            DrainUnit(deltaTime * Data.UnitClass.FuelConsumption);
+        }
     }
     #endregion
     #region public methods
@@ -81,7 +102,7 @@ public class UnitController : DroneController
         Data = new UnitModel(UnitClassTemplates.GetClassByName(UnitClass));
         Data.Team = team;
         //disable the agent while manually placing the unit?
-        transform.position = position;
+        transform.position = new Vector3(position.x, 0, position.z);//TODO: figure out what's floating units on spawn
         SpawnSlot = slot;
         SpawnSlot.CurrentUnit = this;
         MinimapNumber.text = slot.SlotNumber.ToString();
@@ -442,18 +463,10 @@ public class UnitController : DroneController
     }
     protected override void UpdateTooltip()
     {
-        ToolTip.Header = Data.UnitClass.Name;
-        ToolTip.Body = Data.UnitClass.Description;
-        var primaryWeapon = Data.UnitClass.PrimaryWeapon;
-        var secondaryWeapon = Data.UnitClass.SecondaryWeapon;
-        ToolTip.Stats = new string[]
-        {
-            string.Format("Primary Weapon: {0} ({1} damage, {2}/s)", primaryWeapon.Name, primaryWeapon.HealthDamage, 1/primaryWeapon.Cooldown),
-            string.Format("Secondary Weapon: {0} ({1} damage, {2}/s)", secondaryWeapon.Name, secondaryWeapon.HealthDamage, 1/secondaryWeapon.Cooldown),
-            string.Format("Special Ability: {0}", Data.UnitClass.SpecialAbility.Name)
-        };
-        ToolTip.AmmoCost = Data.MP + "/" + Data.UnitClass.MaxMP;
-        ToolTip.HealthCost = Data.HP + "/" + Data.UnitClass.MaxHP;
+        base.UpdateTooltip();
+        var stats = new List<string>(ToolTip.Stats);
+        stats.Add(string.Format("Special Ability: {0}", Data.UnitClass.SpecialAbility.Name));
+        ToolTip.Stats = stats.ToArray();
     }
     #endregion
 

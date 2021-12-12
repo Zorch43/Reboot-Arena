@@ -22,6 +22,7 @@ namespace Assets.Scripts.Utility
         const string UNITS = "Units/";
         const string DRONES = "Drones/";
         const string HOLOGRAMS = DRONES + "Holograms/";
+        const string PICKUPS = "Pickups/";
         #endregion
         #region resources
         public const string CURSOR_ABILITY_ATTACK = CURSORS + "SpecialAttackCursor";
@@ -41,6 +42,8 @@ namespace Assets.Scripts.Utility
         public const string DRONE_TURRET = DRONES + "DroneTurret";
         public const string HOLOGRAM_TURRET = HOLOGRAMS + "TurretHologram";
 
+        public const string ICON_THROW_NANOPACK = ICONS + "ThrowNanoPackIcon";
+
         public const string UNIT_TROOPER = UNITS + "UnitTrooper";
         public const string PORTRAIT_TROOPER = PORTRAITS + "PortraitTrooper";
         public const string SYMBOL_TROOPER = SYMBOLS + "SymbolTrooper";
@@ -52,6 +55,9 @@ namespace Assets.Scripts.Utility
         public const string UNIT_RANGER = UNITS + "UnitRanger";
         public const string PORTRAIT_RANGER = PORTRAITS + "PortraitRanger";
         public const string SYMBOL_RANGER = SYMBOLS + "SymbolRanger";
+
+        public const string PICKUP_NANOPACK = PICKUPS + "HealthPack";
+        public const string PICKUP_AMMOPACK = PICKUPS + "AmmoPack";
         #endregion
         #endregion
         #region public methods
@@ -75,6 +81,24 @@ namespace Assets.Scripts.Utility
             }
             var unitTemplate = Resources.Load<UnitController>(path);
             return unitTemplate;
+        }
+        public static PickupController GetPickupTemplate(PickupController.PickupType pickupType)
+        {
+            string path = "";
+            switch (pickupType)
+            {
+                case PickupController.PickupType.NanoPack:
+                    path = PICKUP_NANOPACK;
+                    break;
+                case PickupController.PickupType.AmmoPack:
+                    path = PICKUP_AMMOPACK;
+                    break;
+                default:
+                    Debug.LogError("Unsupported pickup type: " + pickupType.ToString());
+                    return null;
+            }
+            var pickupTemplate = Resources.Load<PickupController>(path);
+            return pickupTemplate;
         }
         #endregion
         #region private methods

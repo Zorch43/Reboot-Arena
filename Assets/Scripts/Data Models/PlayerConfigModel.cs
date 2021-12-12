@@ -31,7 +31,8 @@ namespace Assets.Scripts.Data_Models
         public PlayerConfigModel()
         {
             UnitClasses = new List<UnitClassTemplates.UnitClasses>() 
-            { 
+            {
+                UnitClassTemplates.UnitClasses.Ranger,
                 UnitClassTemplates.UnitClasses.Trooper, 
                 UnitClassTemplates.UnitClasses.Fabricator 
             };

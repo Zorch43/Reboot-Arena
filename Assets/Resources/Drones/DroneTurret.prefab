@@ -5227,7 +5227,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1cd717eaf32ec44b6e5b28a67d69d9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnitClass: 2
+  UnitClass: 3
   UnitAppearance: {fileID: 4031018455800280272}
   Animations: {fileID: 1565402252791604635}
   MiniMapIcon: {fileID: 8716932601313247374}
@@ -5244,6 +5244,8 @@ MonoBehaviour:
   DeathExplosion: {fileID: 8270483927021890600, guid: f80942e1a1b484d4597e1a23ad21a971, type: 3}
   ToolTip: {fileID: 6931645414160299874}
   JetStream: {fileID: 1293396964403416488}
+  CanAttack: 0
+  TargetOffset: {x: 0, y: 0.5, z: 0}
   TeamColorParts:
   - Part: {fileID: 8047271963567640873}
     TeamColorIndex: 1
@@ -5251,11 +5253,6 @@ MonoBehaviour:
     TeamColorIndex: 0
   - Part: {fileID: 3373287134905193063}
     TeamColorIndex: 1
-  CanAttack: 0
-  TargetOffset: {x: 0, y: 0.5, z: 0}
-  Stage1BuildPoints: 0
-  Stage2BuildPoints: 300
-  Stage3BuildPoints: 700
   InitialHP: 100
   InitialMP: 100
 --- !u!114 &6931645414160299874
