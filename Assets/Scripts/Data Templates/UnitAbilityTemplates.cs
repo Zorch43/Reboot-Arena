@@ -62,6 +62,7 @@ namespace Assets.Scripts.Data_Templates
                 Icon = ResourceList.ICON_THROW_NANOPACK,
                 GroupActivationRule = UnitAbilityModel.GroupActivationType.Single,
                 LootDrop = new PickupController.PickupType[] {PickupController.PickupType.NanoPack},
+                IsNonInterrupting = true,
                 ConsiderMostAmmoInGroup = true,
                 ConsiderLeastHealthInGroup = true,
                 AmmoCostInstant = 50

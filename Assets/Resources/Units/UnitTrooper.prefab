@@ -80,6 +80,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 396866115670883241}
     - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: BoostEffect
+      value: 
+      objectReference: {fileID: 2155567326396429613}
+    - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: ReloadEffect
       value: 
       objectReference: {fileID: 3719553224919168056}
@@ -262,3 +266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8341f0cdd6c7374989ea1076708f720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!198 &2155567326396429613 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7584110586861115007, guid: f13541f982a3d0048a9ea5bfd7327dbd, type: 3}
+  m_PrefabInstance: {fileID: 8406586034907702098}
+  m_PrefabAsset: {fileID: 0}

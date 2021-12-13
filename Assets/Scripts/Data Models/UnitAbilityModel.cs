@@ -32,6 +32,7 @@ namespace Assets.Scripts.Data_Models
         public string DroneHologram { get; set; }//hologram to display when picking build spot for drone
         public bool IsContinuous { get; set; }//whether the effect repeats until it can't be activated anymore.  if false, only fires once
         public bool IsToggledAbility { get; set; }//whether the ability activates a passive ability until it is deactivated
+        public bool IsNonInterrupting { get; set; }//whether activating the ability cancels the unit's other orders
         //ability properties
         public float AmmoCostInstant { get; set; }//the ammo cost for activating the ability (toggles, single-fire abilities)
         public float AmmoCostContinuous { get; set; }//the ammo cost for each repeat activation (effects during toggle, multi-fire abilities)

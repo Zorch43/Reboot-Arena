@@ -164,6 +164,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8341f0cdd6c7374989ea1076708f720, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!198 &535440386775449923 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1126347426983420752, guid: ec1302161bc9c594590f4371ac489c2d, type: 3}
+  m_PrefabInstance: {fileID: 634958299269407251}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &8066746889742072731 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7439107360879253896, guid: ec1302161bc9c594590f4371ac489c2d, type: 3}
@@ -254,6 +259,10 @@ PrefabInstance:
       propertyPath: HealEffect
       value: 
       objectReference: {fileID: 2235380260157362119}
+    - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: BoostEffect
+      value: 
+      objectReference: {fileID: 535440386775449923}
     - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: ReloadEffect
       value: 

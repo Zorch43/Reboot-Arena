@@ -24,7 +24,7 @@ public class UnitController : DroneController
     public Sprite Portrait;
     public Sprite Symbol;
     public UnitVoiceController UnitVoice;
-    
+    public ParticleSystem BoostEffect;
     #endregion
     #region private fields
     private float hitBoxSize;
@@ -90,9 +90,20 @@ public class UnitController : DroneController
             Locomotion.Speed = Data.UnitClass.MoveSpeed;
         }
         //consume fuel
-        if (IsMoving)
+        bool isMoving = IsMoving;
+        if (isMoving)
         {
             DrainUnit(deltaTime * Data.UnitClass.FuelConsumption);
+            
+        }
+        //show/hide boost effect
+        if(isMoving && Data.UnitClass.SpeedBoostPower > 0.1f && Data.MP > 0)
+        {
+            BoostEffect.Play();
+        }
+        else
+        {
+            BoostEffect.Stop();
         }
     }
     #endregion
@@ -152,8 +163,12 @@ public class UnitController : DroneController
     }
     public void DoSpecialAbility(Vector3 location, IActionTracker actionTracker = null)
     {
-        CancelOrders();
         var specialAbility = Data.UnitClass.SpecialAbility;
+        if (!specialAbility.IsNonInterrupting)
+        {
+            CancelOrders();
+        }
+        
         //if ability is targeted, activate ability at location
         if (specialAbility.IsTargetedAbility)
         {
@@ -172,8 +187,25 @@ public class UnitController : DroneController
         }
         else
         {
-            //TODO: immediately activate ability
+            //pay cost now
+            if(Data.MP >= specialAbility.AmmoCostInstant)
+            {
+                DrainUnit(specialAbility.AmmoCostInstant);
+                //do non-targeted parts of the ability
+                //drop loot
+                if (specialAbility.LootDrop.Length > 0)
+                {
+                    foreach (var p in specialAbility.LootDrop)
+                    {
+                        var loot = Instantiate(ResourceList.GetPickupTemplate(p));
+                        loot.transform.position = transform.position + new Vector3(0, 1.1f, 0);
+                        loot.ThrowPack();
+                    }
+                }
+            }
+            
         }
+        
     }
     //cancel all orders given to this unit
     public void CancelOrders(bool cancelTracker = true)

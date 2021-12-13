@@ -539,7 +539,7 @@ public class DroneController : MonoBehaviour
     protected void DoLootDrop()
     {
         var loot = Instantiate(DeathLoot, transform.parent);
-        loot.transform.position = transform.position + new Vector3(0, .32f, 0);
+        loot.transform.position = transform.position + new Vector3(0, .5f, 0);
         loot.ThrowPack();
     }
     protected void DoDeathExplosion()

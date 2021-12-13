@@ -136,6 +136,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1740432597104143085}
     - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: BoostEffect
+      value: 
+      objectReference: {fileID: 21581802595984489}
+    - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: ReloadEffect
       value: 
       objectReference: {fileID: 3330465162714129788}
@@ -319,5 +323,10 @@ MonoBehaviour:
 --- !u!1 &6166088404169035907 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4270073486105065175, guid: 7f87520beb1301b4b9c2d4bed9746bfb, type: 3}
+  m_PrefabInstance: {fileID: 7984883847655171668}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &21581802595984489 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7970435678555406909, guid: 7f87520beb1301b4b9c2d4bed9746bfb, type: 3}
   m_PrefabInstance: {fileID: 7984883847655171668}
   m_PrefabAsset: {fileID: 0}

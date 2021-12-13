@@ -55,23 +55,30 @@ public class ActionMarker : MonoBehaviour
     #region public methods
     public ActionMarker Instantiate(Sprite sprite, Transform transform, Vector3 position, bool faceCamera)
     {
-        var marker = Instantiate(this, transform);
-        marker.Image.sprite = sprite;
-        marker.Image.color = marker.FadeColor(StartingFade);
-        
-        marker.ShouldFaceCamera = faceCamera;
-        if (!faceCamera)
+        if(sprite != null)
         {
-            marker.transform.position = position;
-            marker.transform.forward = Vector3.down;
-            marker.ImageContainer.transform.localPosition = new Vector3(0, 0, DEFAULT_GROUND_CLEARANCE);
+            var marker = Instantiate(this, transform);
+            marker.Image.sprite = sprite;
+            marker.Image.color = marker.FadeColor(StartingFade);
+
+            marker.ShouldFaceCamera = faceCamera;
+            if (!faceCamera)
+            {
+                marker.transform.position = position;
+                marker.transform.forward = Vector3.down;
+                marker.ImageContainer.transform.localPosition = new Vector3(0, 0, DEFAULT_GROUND_CLEARANCE);
+            }
+            else
+            {
+                marker.ImageContainer.transform.localPosition = new Vector3(0, 0, DEFAULT_UNIT_CLEARANCE);
+            }
+
+            return marker;
         }
         else
         {
-            marker.ImageContainer.transform.localPosition = new Vector3(0, 0, DEFAULT_UNIT_CLEARANCE);
+            return null;
         }
-
-        return marker;
     }
     #endregion
     #region private fields

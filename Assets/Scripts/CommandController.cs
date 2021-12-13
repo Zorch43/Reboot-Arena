@@ -61,6 +61,7 @@ public class CommandController : MonoBehaviour
         var keyBinds = KeyBindConfigSettings.KeyBinds;
         keyBinds.AbilityGrenadeKey.BoundAction = ActionAbilityGrenade;
         keyBinds.AbilityTurretKey.BoundAction = ActionAbilityTurret;
+        keyBinds.AbilityNanoPackKey.BoundAction = ActionAbilityNanoPack;
         keyBinds.AttackMoveKey.BoundAction = ActionAttackMove;
         keyBinds.AttackMoveModeKey.BoundAction = ActionAttackMoveMode;
         keyBinds.ClassMenuToggle.BoundAction = ActionToggleClassMenu;
@@ -120,7 +121,8 @@ public class CommandController : MonoBehaviour
             keyBinds.ClassSwitchQuickFabricator,
             keyBinds.ClassSwitchQuickTrooper,
             keyBinds.AbilityGrenadeKey,
-            keyBinds.AbilityTurretKey
+            keyBinds.AbilityTurretKey,
+            keyBinds.AbilityNanoPackKey
         };
         mainKeyBinds.Sort();
         //populate class menu list - available when class menu is open
@@ -772,6 +774,10 @@ public class CommandController : MonoBehaviour
     private void ActionAbilityTurret()
     {
         UnitActionUI.ActivateUnitAbility("Turret");
+    }
+    private void ActionAbilityNanoPack()
+    {
+        UnitActionUI.ActivateUnitAbility("NanoPack");
     }
     private void ActionToggleClassMenu()
     {

@@ -32,6 +32,7 @@ namespace Assets.Scripts.Data_Models
             SetRallyPoint,
             AbilityGrenade,
             AbilityTurret,
+            AbilityNanoPack,
             ClassMenuToggle,
             ClassSwitchTrooper,
             ClassSwitchFabricator,
@@ -74,6 +75,7 @@ namespace Assets.Scripts.Data_Models
         //ability hotkeys
         public KeyBindModel AbilityGrenadeKey { get; set; }
         public KeyBindModel AbilityTurretKey { get; set; }
+        public KeyBindModel AbilityNanoPackKey { get; set; }
         public KeyBindModel ClassMenuToggle { get; set; }
         public KeyBindModel ClassSwitchTrooper { get; set; }
         public KeyBindModel ClassSwitchFabricator { get; set; }
@@ -128,6 +130,7 @@ namespace Assets.Scripts.Data_Models
             //special abilities
             AbilityGrenadeKey = new KeyBindModel(KeyBindId.AbilityGrenade, "Grenade", "Throw a high-explosive grenade at the targeted location", KeyCode.G);
             AbilityTurretKey = new KeyBindModel(KeyBindId.AbilityTurret, "Turret", "Start building a turret drone armed with a plasma gun.", KeyCode.T);
+            AbilityNanoPackKey = new KeyBindModel(KeyBindId.AbilityNanoPack, "Throw NanoPack", "Throw a freshly-printed nanopack nearby.", KeyCode.N);
 
             //class menu
             ClassMenuToggle = new KeyBindModel(KeyBindId.ClassMenuToggle, "Class Menu", 
