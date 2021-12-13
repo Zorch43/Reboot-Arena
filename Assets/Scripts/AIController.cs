@@ -106,16 +106,22 @@ public class AIController : MonoBehaviour
             {
                 selectedUnit.DoSpecialAbility(grenadeTarget);
             }
-            //4.2: restore ammo to allies
+            //3.2: restore ammo to allies
             else if (restoreAmmoScore > 0 && roll < Config.Difficulty + Config.SupportMod)
             {
                 selectedUnit.DoAttack(reloadTarget);
             }
+            //3.3: build turret
             else if (buildScore > 0 && selectedUnit.Data.MP > 300 && roll < Config.Difficulty + Config.SpecialMod)
             {
                 selectedUnit.DoSpecialAbility(buildTarget);
             }
-            //4.3: shoot the closest enemy with the lowest health in range, in true line-of-sight
+            //3.4: Throw nanopack
+            else if (ScoreThrowNanoPack(selectedUnit, allDrones) > 0 && roll < Config.Difficulty + Config.SpecialMod)
+            {
+                selectedUnit.DoSpecialAbility(new Vector3());
+            }
+            //4: shoot the closest enemy with the lowest health in range, in true line-of-sight
             else if (attackScore > 0 && roll < Config.Difficulty + Config.AttackMod)
             {
                 selectedUnit.DoAttack(attackTarget);
@@ -463,6 +469,66 @@ public class AIController : MonoBehaviour
         {
             score = -1000;
         }
+        return score;
+    }
+    private float ScoreThrowNanoPack(UnitController unit, DroneController[] allDrones)
+    {
+        float score = 0;
+        var specialAbility = unit.Data.UnitClass.SpecialAbility;
+        if (specialAbility.Name == "NanoPack" && unit.Data.MP > specialAbility.AmmoCostInstant)
+        {
+            foreach (var d in allDrones)
+            {
+                var u = d as UnitController;
+                if (u != null)
+                {
+                    var totalHealth = u.Data.HP;
+                    var missingHealth = u.Data.UnitClass.MaxHP - totalHealth;
+                    if (missingHealth > 100)
+                    {
+                        var distance = Vector3.Distance(unit.transform.position, u.transform.position);
+                        if (distance < 5)
+                        {
+
+                            if (u.Data.Team == unit.Data.Team)
+                            {
+                                //prioritize throwing while there are allied units that need healing nearby
+                                score += 1;
+                                //Prioritize when nearby allied units are at critical health
+                                if (totalHealth < 100)
+                                {
+                                    score += 1;
+                                }
+                                //prioritize when this unit needs health
+                                if (u == unit)
+                                {
+                                    score += 1;
+                                }
+                            }
+                            else
+                            {
+                                //de-prioritize when there are enemy units with missing health nearby
+                                score -= 1;
+                            }
+
+
+                        }
+                    }
+
+                }
+            }
+
+            ////set score target
+            //float scoreTarget = 2;
+            ////score target increases as avaialble ammo decreases
+            //scoreTarget += (unit.Data.UnitClass.MaxMP - unit.Data.MP) / specialAbility.AmmoCostInstant;
+            //score -= scoreTarget;
+        }
+        else
+        {
+            score = -1000;
+        }
+        //return score
         return score;
     }
     private float ScoreGetHealth(UnitController unit, PickupSpawnerController[] dispensers, HealthPackController[] packs, out Vector3 pickupLocation)

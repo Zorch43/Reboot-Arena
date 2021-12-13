@@ -249,7 +249,8 @@ public class UnitController : DroneController
         if(CommandTarget != null && Data.Team == CommandTarget.Data.Team)
         {
             //perform support action (if it exists)
-            if(Data.UnitClass.PrimaryWeapon.TargetsAllies() || Data.UnitClass.SecondaryWeapon.TargetsAllies())
+            if (Data.UnitClass.PrimaryWeapon.TargetsAllies() 
+                || (Data.UnitClass.SecondaryWeapon != null &&  Data.UnitClass.SecondaryWeapon.TargetsAllies()))
             {
                 hasCommandTarget = DoCommandAttack();
             }
