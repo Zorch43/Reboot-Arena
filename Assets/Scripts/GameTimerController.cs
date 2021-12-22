@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class KotHTimerController : MonoBehaviour
+public class GameTimerController : MonoBehaviour
 {
     #region constants
 
@@ -33,8 +33,6 @@ public class KotHTimerController : MonoBehaviour
             TimerTextList[i].color = TeamTools.GetTeamColor(teams[i].Team);
             TimerTextList[i].text = timer.ToString();
             TimerTextList[i].gameObject.SetActive(true);
-            
-            
         }
 
     }
@@ -49,6 +47,18 @@ public class KotHTimerController : MonoBehaviour
         }
         Debug.LogError("Invalid team does not have a timer");
         return -1;
+    }
+    public float GetRawTime(int team)
+    {
+        for (int i = 0; i < teams.Count; i++)
+        {
+            if (teams[i] == team)
+            {
+                return timers[i].RawTime;
+            }
+        }
+        Debug.LogError("Invalid team does not have a timer");
+        return -999;
     }
     #endregion
     #region private methods

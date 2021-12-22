@@ -88,7 +88,8 @@ namespace Assets.Scripts.Data_Templates
                 MaxMP = 800,
                 PrimaryWeapon = WeaponTemplates.CreatePlasmaTurret(),
                 SecondaryWeapon = WeaponTemplates.CreateWeakPlasmaTurret(),
-                AutoRepairStrength = 40
+                AutoRepairStrength = 40,
+                DefenderWeight = 1
             };
             return template;
         }

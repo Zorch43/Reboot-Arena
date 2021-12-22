@@ -66,7 +66,7 @@ public class CameraController : MonoBehaviour
         defaultRotation = RotationJoint.localEulerAngles.y;
         defaultTilt = TiltJoint.localEulerAngles.x;
 
-        bool isSpectating = GameObjectiveController.BattleConfig.IsPlayerSpectator;
+        bool isSpectating = GameController.BattleConfig.IsPlayerSpectator;
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
 
         //set non-scrollable screen area

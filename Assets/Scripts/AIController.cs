@@ -16,13 +16,14 @@ public class AIController : MonoBehaviour
     #endregion
     #region public fields
     public TeamController Team;
-    public GameObjectiveController GameObjective;
+    public GameController GameObjective;
     public CommandController CommandInterface;
     public MapController Map;
     #endregion
     #region private fields
     private float tacticTime;
     private string strategicStance = "";
+    private AIObjectiveModel currentObjective;
     #endregion
     #region properties
     public AIConfigModel Config { get; set; }
@@ -43,6 +44,7 @@ public class AIController : MonoBehaviour
             //get all units
             var mapUnits = Map.Units;//new List<UnitController>();
 
+            currentObjective = GetSingleObjective(mapUnits);
             SetStrategicStance(mapUnits);//pick stance
             //var teamUnits = new List<UnitController>();
             for (int i = 0; i < mapUnits.Count; i++)
@@ -63,6 +65,8 @@ public class AIController : MonoBehaviour
 
         //set unit classes
         ReassignClasses();
+
+
 
         var pickupDispensers = Map.GetComponentsInChildren<PickupSpawnerController>();
         var healthPacks = Map.GetComponentsInChildren<HealthPackController>();
@@ -127,7 +131,7 @@ public class AIController : MonoBehaviour
                 selectedUnit.DoAttack(attackTarget);
             }
             //5: if rushing, rush
-            else if (stance == "Rush" && GameObjective.Objective.CurrOwner != Team.Team)//if the point is not owned 
+            else if (stance == "Rush" && currentObjective.Objective.CurrOwner != Team.Team)//if the point is not owned 
             {
                 //Debug.Log("Unit " + selectedUnit.SpawnSlot.SlotNumber + " Rushing point");
                 DoRush(selectedUnit);
@@ -414,7 +418,7 @@ public class AIController : MonoBehaviour
                     {
                         //hard preferences
                         //must be within engagement range and within line-of-sight of an objective
-                        var distanceToObjective = Vector3.Distance(GameObjective.GetAIObjective(), unit.transform.position);
+                        var distanceToObjective = Vector3.Distance(currentObjective.Objective.transform.position, unit.transform.position);
                         if(distanceToObjective > 10)
                         {
                             continue;
@@ -792,7 +796,6 @@ public class AIController : MonoBehaviour
     }
     private void SetStrategicStance(List<DroneController> allUnits)
     {
-        var objectivePoint = GameObjective.GetAIObjective();
         var teamSpawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
 
         float teamPointUnits = 0;
@@ -807,7 +810,7 @@ public class AIController : MonoBehaviour
             {
                 unitWeight = 1;
             }
-            var distanceToPoint = Vector3.Distance(objectivePoint, u.transform.position);
+            var distanceToPoint = Vector3.Distance(currentObjective.Objective.transform.position, u.transform.position);
             var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
             var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
             if (u.Data.Team == Team.Team)
@@ -834,10 +837,10 @@ public class AIController : MonoBehaviour
             }
         }
         float objectiveScore = 1;
-        if (GameObjective.Objective.CurrOwner != Team.Team)
+        if (currentObjective.Objective.CurrOwner != Team.Team)
         {
             objectiveScore += 1f;
-            if (GameObjective.Objective.CurrOwner == -1)
+            if (currentObjective.Objective.CurrOwner == -1)
             {
                 objectiveScore += 1f;
             }
@@ -885,7 +888,7 @@ public class AIController : MonoBehaviour
     
     private void DoRush(UnitController unit)
     {
-        var objectivePoint = GameObjective.GetAIObjective();
+        var objectivePoint = currentObjective.Objective.transform.position;
         var distanceFromPoint = Vector3.Distance(objectivePoint, unit.transform.position);
         var timeToPoint = (distanceFromPoint - 2) / unit.Data.UnitClass.MoveSpeed;
         
@@ -911,6 +914,22 @@ public class AIController : MonoBehaviour
     {
         var spawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
         unit.DoMove(spawnPoint, true);
+    }
+
+    private AIObjectiveModel GetSingleObjective(List<DroneController> allUnits)
+    {
+        //get highest-priority control point
+        var objectives = GameObjective.GameRules.GetAIObjectives(Team.Team, allUnits);
+        AIObjectiveModel bestObjective = null;
+        foreach(var o in objectives)
+        {
+            if(bestObjective == null || o.Priority > bestObjective.Priority)
+            {
+                bestObjective = o;
+            }
+        }
+
+        return bestObjective;
     }
     #endregion
     #endregion

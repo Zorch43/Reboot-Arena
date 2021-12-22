@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class GameObjectiveController : MonoBehaviour
+public class GameController : MonoBehaviour
 {
     #region constants
     private const float COUNTDOWN_TIME = 180;//point must be held for 3 minutes to win
@@ -16,9 +16,9 @@ public class GameObjectiveController : MonoBehaviour
     #endregion
     #region public fields
     public GameMenuController GameMenu;
-    public CapturePointController Objective;//capture point that teams are fighting over
+    
     public GameObject GameStateUI;//where to display timer count-downs;
-    public KotHTimerController GameStatusUI;//the prefab to add to the ui;
+    
     public GameObject VictoryStateUI;//ui that displays victory or defeat message
 
     public SpawnPointController[] SpawnPoints;//list of all starting spawn points
@@ -31,11 +31,13 @@ public class GameObjectiveController : MonoBehaviour
     public CommandController CommandInterface;
     public CameraController Cameras;
     public MusicPlayerController MusicPlayer;
-    
+
+    public GameRulesBase GameRules;
+
     #endregion
     #region private fields
 
-    private KotHTimerController timers;
+    //private GameTimerController timers;
     private TeamController playerTeam;
     #endregion
     #region properties
@@ -145,38 +147,31 @@ public class GameObjectiveController : MonoBehaviour
         {
             PlayerUnitActions.Setup(null);
         }
-        //add timers to UI
-        timers = Instantiate(GameStatusUI, GameStateUI.transform);
-        //timers.gameObject.transform.position = GameStateUI.transform.position;
 
-        //setup timers
-        timers.Setup(COUNTDOWN_TIME, Teams);
+        GameRules.Setup();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //check if a team is in control of the objective
-        if(Objective.CaptureProgress > 0 && Objective.CurrOwner >= 0 && Objective.CurrOwner == Objective.NextOwner)
+        float deltaTime = Time.deltaTime;
+        foreach(var t in Teams)
         {
-            var holdingTeam = Objective.CurrOwner;
-            //count down the holding team's timer
-            var remainingTime = timers.UpdateTimer(-Time.deltaTime, holdingTeam);
-            //check for holding team's victory - countdown completed, AND in complete control of the point
-            if(!GameMenu.gameObject.activeSelf && remainingTime <= 0 && Objective.CaptureProgress >= 1)
+            bool victoryState = GameRules.IsTeamVictorious(t.Team, deltaTime);
+            if (victoryState)
             {
                 var playerTeam = BattleConfig.PlayerTeam;
                 var victoryMessage = VictoryStateUI.GetComponentInChildren<TextMeshProUGUI>();
-                victoryMessage.color = TeamTools.GetTeamColor(holdingTeam);
+                victoryMessage.color = TeamTools.GetTeamColor(t.Team);
                 var victorySound = VictoryStateUI.GetComponent<AudioSource>();
-                
+
                 if (playerTeam == null)
                 {
                     //AI has won against AI, display victory message
                     victoryMessage.text = string.Format("AI WINS!");
                     MusicPlayer.FadeVolume(.2f, 3);
                 }
-                else if (holdingTeam == playerTeam?.TeamId)
+                else if (t.Team == playerTeam?.TeamId)
                 {
                     //player has won, display victory message
                     victoryMessage.text = string.Format("VICTORY!");
@@ -187,22 +182,17 @@ public class GameObjectiveController : MonoBehaviour
                     //AI has won againts player, display defeat message
                     victoryMessage.text = string.Format("DEFEAT...");
                     MusicPlayer.FadeVolume(0, 3);
-                    
+
                 }
-                
+
                 VictoryStateUI.SetActive(true);
                 victorySound.Play();
                 GameMenu.ShowMenu(true);
             }
         }
-
     }
     #endregion
     #region public methods
-    public Vector3 GetAIObjective()
-    {
-        return Objective.transform.position;
-    }
     public Vector3 GetAISpawnPoint(int team)
     {
         for(int i = 0; i < Teams.Count; i++)

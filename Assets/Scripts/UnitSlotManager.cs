@@ -23,7 +23,7 @@ public class UnitSlotManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (GameObjectiveController.BattleConfig.IsPlayerSpectator)
+        if (GameController.BattleConfig.IsPlayerSpectator)
         {
             gameObject.SetActive(false);
         }

@@ -55,7 +55,7 @@ public class CommandController : MonoBehaviour
     {
         KeyBindConfigSettings.LoadFromFile();
         MarkerTemplate.MainCamera = Cameras.MainCamera;
-        isSpectating = GameObjectiveController.BattleConfig.IsPlayerSpectator;
+        isSpectating = GameController.BattleConfig.IsPlayerSpectator;
 
         //match keybinds with actions
         var keyBinds = KeyBindConfigSettings.KeyBinds;
@@ -316,7 +316,7 @@ public class CommandController : MonoBehaviour
         bool responseGiven = false;
         foreach (var u in units)
         {
-            u.SpawnSlot.IsSelected = !GameObjectiveController.BattleConfig.IsAITeam(u.Data.Team) && (!addToSelection || !u.SpawnSlot.IsSelected);
+            u.SpawnSlot.IsSelected = !GameController.BattleConfig.IsAITeam(u.Data.Team) && (!addToSelection || !u.SpawnSlot.IsSelected);
             if(u.SpawnSlot.IsSelected)
             {
                 selectedUnits.Add(u);

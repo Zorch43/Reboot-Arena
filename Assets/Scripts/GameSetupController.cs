@@ -96,7 +96,7 @@ public class GameSetupController : MonoBehaviour
                 config.Players.Add(s.Data);
             }
         }
-        GameObjectiveController.BattleConfig = config;
+        GameController.BattleConfig = config;
         //load scene
         LoadingTransition.LoadScene(SceneName, null);
     }
