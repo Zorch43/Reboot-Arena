@@ -342,117 +342,129 @@ public class CommandController : MonoBehaviour
                 var mapPoint = hit.point;
                 //action
                 var selectedUnits = GetSelectedUnits();
-                var unit = hit.collider.GetComponent<DroneController>();
-                bool responseGiven = false;//only one response given per order.
-                foreach (var u in selectedUnits)
+                if(selectedUnits.Count > 0)
                 {
+                    var unit = hit.collider.GetComponent<DroneController>();
                     if (unit != null)
                     {
-                        GiveUnitAttackOrder(u, unit);
-                        if (!responseGiven)
+                        if (unit.Data.Team != selectedUnits[0].Data.Team)
                         {
-                            responseGiven = true;
-                            //TODO: move this logic to the unitcontroller
-                            if (u.Data.Team != unit.Data.Team)
-                            {
-                                u.UnitVoice.PlayAttackResponse();
-                                //place attack marker on enemy unit
-                                MarkerTemplate.Instantiate(AttackMarker, unit.transform, unit.transform.position, true);
-                            }
-                            else
-                            {
-                                //play support response, if it makes sense
-                                u.UnitVoice.PlaySupportResponse();
-                                //place support marker, if it makes sense
-                                MarkerTemplate.Instantiate(SupportMarker, unit.transform, unit.transform.position, true);
-                            }
+                            GiveAttackOrder(unit, selectedUnits);
+                        }
+                        else
+                        {
+                            GiveSupportOrder(unit, selectedUnits);
                         }
                     }
                     else
                     {
-                        GiveUnitMoveOrder(u, mapPoint);
-                        if (!responseGiven)
-                        {
-                            responseGiven = true;
-                            u.UnitVoice.PlayMoveResponse();
-                            //place move marker on position
-                            MarkerTemplate.Instantiate(MoveMarker, Map.transform, mapPoint, false);
-                        }
+                        GiveUnitMoveOrder(mapPoint, selectedUnits);
                     }
                 }
             }
         }
     }
-    public void GiveUnitAttackOrder(UnitController selectedUnit, DroneController targetUnit)
+    public void GiveAttackOrder(DroneController targetUnit, List<UnitController> selectedUnits = null)
     {
-        selectedUnit.CancelOrders();
-        selectedUnit.CommandTarget = targetUnit;
-    }
-    public void GiveUnitMoveOrder(UnitController selectedUnit, Vector3 targetLocation)
-    {
-        selectedUnit.DoMove(targetLocation, true);
-        selectedUnit.CommandTarget = null;
-    }
-    public void GiveAttackMoveOrder(Vector3 location)
-    {
-        var selectedUnits = GetSelectedUnits();
-        bool firstResponse = false;
-        //give each unit an attack-move command to the given location
-        foreach(var u in selectedUnits)
+        selectedUnits = GetSelectedUnits(selectedUnits);
+        DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
         {
-            u.DoAttackMove(location);
-            if (!firstResponse)
-            {
-                firstResponse = true;
-                //place attack-move marker
-                MarkerTemplate.Instantiate(AttackMoveMarker, Map.transform, location, false);
-                //TODO: give attack-move response
-            }
-        }
+            selectedUnit.CancelOrders();
+            selectedUnit.CommandTarget = targetUnit;
+        }, (UnitController respondingUnit) =>
+        {
+            respondingUnit.UnitVoice.PlayAttackResponse();
+            //place attack marker on enemy unit
+            MarkerTemplate.Instantiate(AttackMarker, targetUnit.transform, targetUnit.transform.position, true);
+        });
+        
+    }
+    public void GiveSupportOrder(DroneController targetUnit, List<UnitController> selectedUnits = null)
+    {
+        selectedUnits = GetSelectedUnits(selectedUnits);
+
+        DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
+        {
+            selectedUnit.CancelOrders();
+            selectedUnit.CommandTarget = targetUnit;
+        }, (UnitController respondingUnit) =>
+        {
+            //play support response, if it makes sense
+            respondingUnit.UnitVoice.PlaySupportResponse();
+            //place support marker, if it makes sense
+            MarkerTemplate.Instantiate(SupportMarker, targetUnit.transform, targetUnit.transform.position, true);
+        });
+    }
+    public void GiveUnitMoveOrder(Vector3 targetLocation, List<UnitController> selectedUnits = null)
+    {
+        selectedUnits = GetSelectedUnits(selectedUnits);
+
+        DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
+        {
+            selectedUnit.DoMove(targetLocation, true);
+            selectedUnit.CommandTarget = null;
+        }, (UnitController respondingUnit) =>
+        {
+            respondingUnit.UnitVoice.PlayMoveResponse();
+            //place move marker on position
+            MarkerTemplate.Instantiate(MoveMarker, Map.transform, targetLocation, false);
+        });
+        
+    }
+    public void GiveAttackMoveOrder(Vector3 location, List<UnitController> selectedUnits = null)
+    {
+        selectedUnits = GetSelectedUnits(selectedUnits);
+
+        DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
+        {
+            selectedUnit.DoAttackMove(location);
+        }, (UnitController respondingUnit) =>
+        {
+            //place attack-move marker
+            MarkerTemplate.Instantiate(AttackMoveMarker, Map.transform, location, false);
+            //TODO: give attack-move response
+            respondingUnit.UnitVoice.PlayMoveResponse();
+        });
+
         EndSpecialOrder();
     }
-    public void GiveForceAttackOrder(Vector3 location)
+    public void GiveForceAttackOrder(Vector3 location, List<UnitController> selectedUnits = null)
+    {
+        selectedUnits = GetSelectedUnits(selectedUnits);
+
+        DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
+        {
+            selectedUnit.DoForceAttack(location);
+        }, (UnitController respondingUnit) =>
+        {
+            //place attack-move marker
+            MarkerTemplate.Instantiate(ForceAttackMarker, Map.transform, location, false);
+            //TODO: give attack-move response
+            respondingUnit.UnitVoice.PlayAttackResponse();
+        });
+
+        EndSpecialOrder();
+    }
+    public void GiveRallyOrder(Vector3 location, List<UnitController> selectedUnits = null)
+    {
+        selectedUnits = GetSelectedUnits(selectedUnits);
+        DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
+        {
+            selectedUnit.SpawnSlot.RallyPoint = location;
+        }, (UnitController respondingUnit) =>
+        {
+            //place attack-move marker
+            MarkerTemplate.Instantiate(RallyPointMarker, Map.transform, location, false);
+            //TODO: give attack-move response
+            respondingUnit.UnitVoice.PlaySelectionResponse();
+        });
+        
+        EndSpecialOrder();
+    }
+    public void GiveStopOrder(List<UnitController> selectedUnits = null)
     {
         //get all selected units
-        var selectedUnits = GetSelectedUnits();
-        bool firstResponse = false;
-        //give each unit a force-attack order to fire on the given location
-        foreach (var u in selectedUnits)
-        {
-            u.DoForceAttack(location);
-            if (!firstResponse)
-            {
-                firstResponse = true;
-                //place force-attack marker
-                MarkerTemplate.Instantiate(ForceAttackMarker, Map.transform, location, false);
-                //TODO: give force-attack response
-            }
-        }
-        EndSpecialOrder();
-    }
-    public void GiveRallyOrder(Vector3 location)
-    {
-        //get all selected slots
-        var selectedUnits = GetSelectedSlots();
-        bool firstResponse = false;
-        //set each selected unit's rally point to the given location
-        foreach (var u in selectedUnits)
-        {
-            u.Data.RallyPoint = location;
-            if (!firstResponse)
-            {
-                firstResponse = true;
-                //place rally point marker
-                MarkerTemplate.Instantiate(RallyPointMarker, Map.transform, location, false);
-                //TODO: give rally point response
-            }
-        }
-        EndSpecialOrder();
-    }
-    public void GiveStopOrder()
-    {
-        //get all selected units
-        var selectedUnits = GetSelectedUnits();
+        selectedUnits = GetSelectedUnits();
         //stop all movement, clear attack-move, force-attack, and command-attack targets
         foreach (var u in selectedUnits)
         {
@@ -460,7 +472,7 @@ public class CommandController : MonoBehaviour
         }
         EndSpecialOrder();
     }
-    public void GiveSpecialAbilityOrder(Vector3 location)
+    public void GiveSpecialAbilityOrder(Vector3 location, List<UnitController> selectedUnits = null)
     {
         var abilityUnits = GetAbilityUnits(SpecialAbility, location);
         bool firstResponse = false;
@@ -660,17 +672,21 @@ public class CommandController : MonoBehaviour
         }
         return selectedSlots;
     }
-    public List<UnitController> GetSelectedUnits()
+    public List<UnitController> GetSelectedUnits(List<UnitController> selectedUnits = null)
     {
-        var selectedSlots = GetSelectedSlots();
-        var selectedUnits = new List<UnitController>();
-        foreach (var s in selectedSlots)
+        if(selectedUnits == null)
         {
-            if (s.Data.CurrentUnit != null)
+            var selectedSlots = GetSelectedSlots();
+            selectedUnits = new List<UnitController>();
+            foreach (var s in selectedSlots)
             {
-                selectedUnits.Add(s.Data.CurrentUnit);
+                if (s.Data.CurrentUnit != null)
+                {
+                    selectedUnits.Add(s.Data.CurrentUnit);
+                }
             }
         }
+        
         return selectedUnits;
     }
     public List<DroneController> GetAllUnits()
@@ -975,6 +991,19 @@ public class CommandController : MonoBehaviour
             }
         }
         return found;
+    }
+    private void DoGroupAction(List<UnitController> group, Action<UnitController> each, Action<UnitController> all)
+    {
+
+        int leaderIndex = UnityEngine.Random.Range(0, group.Count);
+        for(int i = 0; i < group.Count; i++)
+        {
+            each.Invoke(group[i]);
+            if(i == leaderIndex)
+            {
+                all.Invoke(group[i]);
+            }
+        }
     }
     #endregion
 }

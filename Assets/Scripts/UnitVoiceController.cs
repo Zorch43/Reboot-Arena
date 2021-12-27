@@ -57,7 +57,7 @@ public class UnitVoiceController : MonoBehaviour
     }
     public void PlaySupportResponse()
     {
-        PlayClip(SupportResponses, PrivateChannel);
+        PlayClip(SupportResponses, MoveResponses, PrivateChannel);
     }
     public void PlayAbilityResponse()
     {
@@ -92,6 +92,18 @@ public class UnitVoiceController : MonoBehaviour
         else
         {
             Debug.LogError("Could not play clip, list is empty.");
+            
+        }
+    }
+    private void PlayClip(AudioClip[] clips, AudioClip[] altClips, AudioSource channel)
+    {
+        if(clips.Length > 0)
+        {
+            PlayClip(clips, channel);
+        }
+        else
+        {
+            PlayClip(altClips, channel);
         }
     }
     #endregion
