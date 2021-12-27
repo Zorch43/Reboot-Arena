@@ -171,7 +171,10 @@ public class ActionPanelController : MonoBehaviour
         {
             if(b.Text.text == abilityName)
             {
-                b.Button.onClick.Invoke();
+                if(b.gameObject.activeSelf && b.Button.interactable)
+                {
+                    b.Button.onClick.Invoke();
+                }
                 break;
             }
         }

@@ -420,7 +420,7 @@ public class DroneController : MonoBehaviour
             && (!isAutoAttack || weapon.CanAutoAttack)
             && (weapon.AmmoCost <= Data.MP)
             && (Data.Team == target.Data.Team == weapon.TargetsAllies())
-            && (weapon.AmmoDamage >= 0 || target.Data.MP < target.Data.UnitClass.MaxMP)
+            && (weapon.AmmoDamage >= 0 || target.Data.UnitClass.MaxMP - target.Data.MP > -weapon.AmmoDamage)
             && (weapon.HealthDamage >= 0 || target.Data.HP < target.Data.UnitClass.MaxHP)
             && (weapon.MaxRange >= Vector3.Distance(target.transform.position, transform.position))
             && (!weapon.NeedsLineOfSight() || HasLineOfSight(target.TargetingPosition));

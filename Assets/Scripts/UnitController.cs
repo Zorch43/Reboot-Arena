@@ -11,8 +11,6 @@ using UnityEngine.AI;
 public class UnitController : DroneController
 {
     #region constants
-    private const float PERSONAL_SPACE = 0.02f;
-    private const float ORDER_RADIUS = 1f;
     private const float MIN_ATTACK_RANGE = 1f;
     #endregion
     #region public fields
@@ -96,7 +94,7 @@ public class UnitController : DroneController
             DrainUnit(deltaTime * Data.UnitClass.FuelConsumption);
             
         }
-        //show/hide boost effect
+        //start/stop boost effect
         if(isMoving && Data.UnitClass.SpeedBoostPower > 0.1f && Data.MP > 0)
         {
             BoostEffect.Play();

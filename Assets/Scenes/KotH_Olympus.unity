@@ -18926,6 +18926,14 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4577776625849641760, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: ControlPoints.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4577776625849641760, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: ControlPoints.Array.data[0]
+      value: 
+      objectReference: {fileID: 7701619942487049582}
     - target: {fileID: 7509322924440982002, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
       propertyPath: data.dataString
       value: UEsDBBQAAAgIAACAn+sYsY2i3wEAAMUDAAALACQAZ3JhcGgwLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQGVU01z2jAQ/SuMz21H2PkgPZYw6aFAB+eQSaaHRVrbmsgSlSUgMPz3amUbnGkuOcl6u++t9u36mPAKLHCHdgVC+ib5PmLfrr+MEm60M97OYT+z1tiAp4SiUrk8YEwbp5S4A/UKa4U/UZaV6/J6cKpkvY7JMbeGfa7MhugZa+8zUeIv1KWriBpBqVdYSqO7QuOAoZDO2EepsAfTSYBdBzz9hzyfEd8g8agzZz0GxKLCLWj3YGFT5d4WwHFuBMkm92Zh3Ar/emkxoVxogjdBcGqUkgIt6RSgGhwG59hU7yr0gUe0FqT+KGJxyOCd/KqP36MDqaiL1qjmNXwfR8kWlI8GZLejEzUM5bwNvvyha1swh3pz9iqjusaBC562InsaSUDfuvNAZ5QrjOUofhivRTNFHeQ+w+gKdvlj1jPSjhGQyGkqsyPPlt4pqfFiAwUWYRRTozVyevDQ757WzexC0wgWG5eHg1dLrd6engc01LSKC9jWgTv1zkldXrill+K9tUl6JdYwzsY3a3Y3Yeurr+zmmmVYsAnjt6wQd0nsQmrpJKjfQV+53piw3YNxa6ij4gp5GOwobhytlbCwe5CH2gxWQOrC5DyshV62Gue2w0KACtaKWfwNcowtEDU5npLTP1BLAwQUAAAICAAAgJ/rqZDpfm8AAAB6AAAACQAkAG1ldGEuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAatWKkstKs7Mz1OyUjDRM9IzNNdRUEovSizIKAaKGII4pZkpIHa0kpFJSlKiobGhWZKBpYVBkomugZmpgXFqmoGFQbK5QVqKpVIsUH1JZUGqX2JuKkRPQGJJRlpmXkpmXrpeUGpyYnGJO8hwpdhaAFBLAQItABQAAAgIAACAn+sYsY2i3wEAAMUDAAALACQAAAAAAAAAAAAAAAAAAABncmFwaDAuanNvbgoAIAAAAAAAAQAYAACAPtXesZ0BAIA+1d6xnQEAgD7V3rGdAVBLAQItABQAAAgIAACAn+upkOl+bwAAAHoAAAAJACQAAAAAAAAAAAAAACwCAABtZXRhLmpzb24KACAAAAAAAAEAGAAAgD7V3rGdAQCAPtXesZ0BAIA+1d6xnQFQSwUGAAAAAAIAAgC4AAAA5gIAAAAA

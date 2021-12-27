@@ -12,6 +12,7 @@ public abstract class PickupController : MonoBehaviour
     const float MAX_SCATTER_RADIUS = 2f;
     const float DECAY_TIME = 20;
     const float RE_COLLIDE_TIMER = 0.25f;
+    const float STOP_TIME = 0.25f;
     public enum PickupType
     {
         NanoPack,
@@ -24,9 +25,12 @@ public abstract class PickupController : MonoBehaviour
     #endregion
     #region private fields
     private float decayTimer;
+    private float stopTimer;
     private float lastCollision = 0;
     private BoxCollider boxCollider;
+    private Rigidbody body;
     private List<Collider> ignoredColliders = new List<Collider>();
+    private float maxVelocity;
     #endregion
     #region properties
 
@@ -37,6 +41,7 @@ public abstract class PickupController : MonoBehaviour
     {
         decayTimer = DECAY_TIME;
         boxCollider = GetComponent<BoxCollider>();
+        body = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -48,45 +53,46 @@ public abstract class PickupController : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        //re-enable collisions
-        lastCollision += deltaTime;
-        if (lastCollision >= RE_COLLIDE_TIMER)
+        if (!body.isKinematic)
         {
-            foreach (var c in ignoredColliders)//reset ignored colliders
+            var currentVelocity = body.velocity.magnitude;
+            if(currentVelocity > maxVelocity)
             {
-                if (c != null)
+                body.velocity = body.velocity.normalized * maxVelocity;
+            }
+            if (currentVelocity < 0.001f)
+            {
+                stopTimer += deltaTime;
+                if (stopTimer > STOP_TIME)
                 {
-                    Physics.IgnoreCollision(c, boxCollider, false);
+                    body.isKinematic = true;
+                    boxCollider.isTrigger = true;
                 }
             }
-            ignoredColliders.Clear();
         }
+        
+        ////re-enable collisions
+        //lastCollision += deltaTime;
+        //if (lastCollision >= RE_COLLIDE_TIMER)
+        //{
+        //    foreach (var c in ignoredColliders)//reset ignored colliders
+        //    {
+        //        if (c != null)
+        //        {
+        //            Physics.IgnoreCollision(c, boxCollider, false);
+        //        }
+        //    }
+        //    ignoredColliders.Clear();
+        //}
     }
     private void OnCollisionEnter(Collision collision)
     {
-        var unit = collision.collider.GetComponent<UnitController>();
-        if (unit != null)
-        {
-            
-            //check whether the pickup effect can be applied to that unit
-            if (CanApplyEffectToUnit(unit))
-            {
-                //if it can, apply the effect and consume the pickup
-                ApplyEffectToUnit(unit);
-                //deploy consumption sound to map
-                SoundPointTemplate.Instantiate(PickupSound, transform.parent, transform.position);
-                //remove pickup
-                Destroy(gameObject);
-            }
-            else
-            {
-                lastCollision = 0;
-                Physics.IgnoreCollision(collision.collider, boxCollider);
-                ignoredColliders.Add(collision.collider);
-            }
-        }
+        OnTriggerOrCollisionEnter(collision.collider);
     }
-
+    private void OnTriggerEnter(Collider other)
+    {
+        OnTriggerOrCollisionEnter(other);
+    }
     #endregion
     #region public methods
     public abstract bool CanApplyEffectToUnit(UnitController unit);
@@ -94,6 +100,7 @@ public abstract class PickupController : MonoBehaviour
     public void ThrowPack()
     {
         var velocity = RandomTrajectory();
+        maxVelocity = velocity.magnitude;
         var rb = GetComponent<Rigidbody>();
         rb.AddForce(velocity, ForceMode.VelocityChange);
 
@@ -108,6 +115,30 @@ public abstract class PickupController : MonoBehaviour
         var velocity = TrajectoryTools.GetInitialVelocity(transform.position, targetPositon,
                         Random.Range(MIN_ARC_HEIGHT, MAX_ARC_HEIGHT), -Physics.gravity.y);
         return velocity;
+    }
+    private void OnTriggerOrCollisionEnter(Collider collider)
+    {
+        var unit = collider.GetComponent<UnitController>();
+        if (unit != null)
+        {
+
+            //check whether the pickup effect can be applied to that unit
+            if (CanApplyEffectToUnit(unit))
+            {
+                //if it can, apply the effect and consume the pickup
+                ApplyEffectToUnit(unit);
+                //deploy consumption sound to map
+                SoundPointTemplate.Instantiate(PickupSound, transform.parent, transform.position);
+                //remove pickup
+                Destroy(gameObject);
+            }
+            //else
+            //{
+            //    lastCollision = 0;
+            //    Physics.IgnoreCollision(collider, boxCollider);
+            //    ignoredColliders.Add(collider);
+            //}
+        }
     }
     #endregion
 }

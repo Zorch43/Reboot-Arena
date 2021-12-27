@@ -7,12 +7,13 @@ using UnityEngine;
 public class MovementController : MonoBehaviour, IMove
 {
     #region constants
-    const float ORDER_RADIUS = 0.6f;
-    const float ANCHOR_DRIFT = 3;
+    const float ORDER_RADIUS = 1f;
+    const float ANCHOR_DRIFT = 2.5f;
     const float LIGHT_MASS = 0.2f;
     const float LIGHT_DRAG = 0.05f;
     const float HEAVY_MASS = 10;
     const float HEAVY_DRAG = 10;
+    const float STOP_TIME = 0.5f;
     #endregion
     #region public fields
     public UnitController Controller;
@@ -27,6 +28,7 @@ public class MovementController : MonoBehaviour, IMove
     private bool isStopped = true;
     private Vector3 anchorPosition;
     private Vector3 destination;
+    private float stopTimer;
     #endregion
     #region properties
     public float Speed
@@ -100,7 +102,7 @@ public class MovementController : MonoBehaviour, IMove
         {
             if (HasArrived())
             {
-                Stop();
+                GradualStop(Time.deltaTime);
             }
         }
         else 
@@ -129,10 +131,6 @@ public class MovementController : MonoBehaviour, IMove
                 NormalizeBody();
             }
         }
-        //else
-        //{
-        //    NormalizeBody();
-        //}
     }
     void OnCollisionEnter(Collision collision)
     {
@@ -152,6 +150,15 @@ public class MovementController : MonoBehaviour, IMove
     }
     #endregion
     #region public methods
+    public void GradualStop(float deltaTime)
+    {
+        stopTimer += deltaTime;
+        if(stopTimer > STOP_TIME)
+        {
+            Stop();
+            stopTimer = 0;
+        }
+    }
     #region IMove implementation 
     public void Block()
     {
@@ -187,21 +194,25 @@ public class MovementController : MonoBehaviour, IMove
 
     public void StartPath(Vector3 destination)
     {
-        //Pathfinder.enabled = true;
-        //PathfinderSeeker.enabled = true;
+        Pathfinder.enabled = true;
+        PathfinderSeeker.enabled = true;
         //isStopped = false;
         NormalizeBody();
         PathfinderSeeker.StartPath(transform.position, destination, OnPathComplete);
+        if (Controller.Data.UnitClass.HasJumpBoost)
+        {
+            Body.constraints = ~RigidbodyConstraints.FreezePositionY & Body.constraints;
+        }
     }
 
     public void Stop()
     {
-        //Pathfinder.enabled = false;
-        //PathfinderSeeker.enabled = false;
+        Pathfinder.enabled = false;
+        PathfinderSeeker.enabled = false;
         isStopped = true;
         anchorPosition = transform.position;
         destination = anchorPosition;
-        PathfinderSeeker.StartPath(transform.position, anchorPosition);
+        Body.constraints = RigidbodyConstraints.FreezePositionY | Body.constraints;
     }
 
     public void UnBlock()
@@ -233,7 +244,7 @@ public class MovementController : MonoBehaviour, IMove
     private void OnPathComplete(Path path)
     {
         var wayPoints = path.vectorPath;
-        if(wayPoints.Count > 0)
+        if(wayPoints.Count > 1)
         {
             destination = wayPoints[wayPoints.Count - 1];
             isStopped = false;
