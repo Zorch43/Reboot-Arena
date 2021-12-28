@@ -113,16 +113,13 @@ namespace Assets.Scripts.Data_Models
             var other = obj as KeyBindModel;
             if(obj != null)
             {
-                if(PressedKey == other.PressedKey)
+                if (HeldKey != KeyCode.None && other.HeldKey == KeyCode.None)
                 {
-                    if(HeldKey != KeyCode.None && other.HeldKey == KeyCode.None)
-                    {
-                        return 1;
-                    }
-                    else if(HeldKey == KeyCode.None && other.HeldKey != KeyCode.None)
-                    {
-                        return -1;
-                    }
+                    return -1;
+                }
+                else if (HeldKey == KeyCode.None && other.HeldKey != KeyCode.None)
+                {
+                    return 1;
                 }
             }
             return 0;

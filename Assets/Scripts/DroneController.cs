@@ -171,7 +171,7 @@ public class DroneController : MonoBehaviour
         Data.HP = Mathf.Min(Data.UnitClass.MaxHP, Data.HP);
         //scale and play the heal effect
         var amountHealed = Data.HP - oldHealth;
-        float effectStrength = amountHealed / 25;
+        float effectStrength = amountHealed;
         HealEffect.PlayEffect(effectStrength);
         //return amount healed
         return amountHealed;
@@ -204,7 +204,7 @@ public class DroneController : MonoBehaviour
         Data.MP = Mathf.Min(Data.UnitClass.MaxMP, Data.MP);
         //scale and play the reload effect
         var amountLoaded = Data.MP - oldAmmo;
-        float effectStrength = amountLoaded / 25;
+        float effectStrength = amountLoaded;
         ReloadEffect.PlayEffect(effectStrength);
         //return amount loaded
         return amountLoaded;
@@ -228,7 +228,7 @@ public class DroneController : MonoBehaviour
     }
     public bool HasLineOfSight(Vector3 target)
     {
-        var pos = transform.position;
+        var pos = TargetingPosition;
 
         var hits = Physics.RaycastAll(pos, target - pos, Vector3.Distance(pos, target));
         foreach (var h in hits)
@@ -249,7 +249,7 @@ public class DroneController : MonoBehaviour
     }
     public bool HasTrueLineOfSight(DroneController target)
     {
-        var pos = transform.position;
+        var pos = TargetingPosition;
         var targetPos = target.TargetingPosition;
 
         var hits = Physics.RaycastAll(pos, targetPos - pos, Vector3.Distance(pos, targetPos));

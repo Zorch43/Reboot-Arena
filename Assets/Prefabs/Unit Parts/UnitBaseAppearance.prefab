@@ -109,6 +109,18 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2222652293945108119, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2222652293945108119, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2222652293945108119, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2222652293945108119, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -151,6 +163,14 @@ PrefabInstance:
     - target: {fileID: 2280623527004001337, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
       propertyPath: m_Name
       value: SupplyEffect
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608310675681703312, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6608310675681703312, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06a678c30d3630c45932410bd77814e2, type: 3}
@@ -228,6 +248,26 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 2550137223494378372}
     m_Modifications:
+    - target: {fileID: 327554219701763544, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: looping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 327554219701763544, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 327554219701763544, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: emitterVelocityMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 327554219701763544, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: InitialModule.startSize.scalar
+      value: 0.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 327554219701763544, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 25
+      objectReference: {fileID: 0}
     - target: {fileID: 3373616831922463308, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
       propertyPath: m_Name
       value: HealEffect
@@ -235,6 +275,18 @@ PrefabInstance:
     - target: {fileID: 7898356144644511690, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898356144644511690, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898356144644511690, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7898356144644511690, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7898356144644511690, guid: 67d381bf826739749af76db5fbe7d23c, type: 3}
       propertyPath: m_LocalPosition.x

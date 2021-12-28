@@ -124,6 +124,14 @@ PrefabInstance:
       value: UnitRanger
       objectReference: {fileID: 0}
     - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: Symbol
+      value: 
+      objectReference: {fileID: 21300000, guid: 59a0f6a99d6a711439e33197ae46071c, type: 3}
+    - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: Portrait
+      value: 
+      objectReference: {fileID: 21300000, guid: 2b3f164a0758f5343bed40e5c3caa4f9, type: 3}
+    - target: {fileID: 4488207374296891128, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: JetStream
       value: 
       objectReference: {fileID: 6815195243670200153}
@@ -205,6 +213,10 @@ PrefabInstance:
       propertyPath: m_audioClip
       value: 
       objectReference: {fileID: 8300000, guid: 5c5ae828a03e3a94ea3e24f13b595382, type: 3}
+    - target: {fileID: 3524161680211373836, guid: 7f87520beb1301b4b9c2d4bed9746bfb, type: 3}
+      propertyPath: emitterVelocityMode
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3565210819428909797, guid: 7f87520beb1301b4b9c2d4bed9746bfb, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0.55

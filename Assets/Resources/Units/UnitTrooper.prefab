@@ -24,6 +24,14 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: MoveResponses.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 0e2ca797e26e3d745a040918480d7c5b, type: 3}
+    - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: MoveResponses.Array.data[1]
+      value: 
+      objectReference: {fileID: 8300000, guid: 41e56ea5e5560044281424288c3f6be5, type: 3}
+    - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: MoveResponses.Array.data[2]
       value: 
       objectReference: {fileID: 8300000, guid: abee6a2b1ce5db843a43db394994c665, type: 3}
@@ -39,6 +47,10 @@ PrefabInstance:
       propertyPath: MoveResponses.Array.data[5]
       value: 
       objectReference: {fileID: 8300000, guid: cfc4bdc3967c62045986c91d9ec00d50, type: 3}
+    - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: AttackResponses.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: f1f56a35ca6c9cb41a7c035151f4d3e6, type: 3}
     - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: AttackResponses.Array.data[1]
       value: 
@@ -56,6 +68,10 @@ PrefabInstance:
       value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: AbilityResponses.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: a901fc818183a84449fd569db5cbd62a, type: 3}
+    - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: AbilityResponses.Array.data[1]
       value: 
       objectReference: {fileID: 8300000, guid: 330daeebe24b60d42b89a9aeb6305e4f, type: 3}
@@ -67,6 +83,10 @@ PrefabInstance:
       propertyPath: AbilityResponses.Array.data[3]
       value: 
       objectReference: {fileID: 8300000, guid: bb9ce883595d35445904c24e9e7926aa, type: 3}
+    - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
+      propertyPath: SelectionResponses.Array.data[0]
+      value: 
+      objectReference: {fileID: 8300000, guid: 9a609309ed57c7846a1ac516c77e993e, type: 3}
     - target: {fileID: 950151689026762220, guid: 954bc4e26963d364f859282d30b3799d, type: 3}
       propertyPath: SelectionResponses.Array.data[1]
       value: 

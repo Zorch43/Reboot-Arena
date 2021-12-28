@@ -36,8 +36,10 @@ namespace Assets.Scripts.Data_Models
             ClassMenuToggle,
             ClassSwitchTrooper,
             ClassSwitchFabricator,
+            ClassSwitchRanger,
             ClassSwitchQuickTrooper,
             ClassSwitchQuickFabricator,
+            ClassSwitchQuickRanger,
             CameraPanLeft,
             CameraPanRight,
             CameraPanUp,
@@ -48,7 +50,8 @@ namespace Assets.Scripts.Data_Models
             CameraTiltDown,
             CameraZoomIn,
             CameraZoomOut,
-            CameraReset
+            CameraReset,
+            SelectAll
         }
         
         #endregion
@@ -79,8 +82,10 @@ namespace Assets.Scripts.Data_Models
         public KeyBindModel ClassMenuToggle { get; set; }
         public KeyBindModel ClassSwitchTrooper { get; set; }
         public KeyBindModel ClassSwitchFabricator { get; set; }
+        public KeyBindModel ClassSwitchRanger { get; set; }
         public KeyBindModel ClassSwitchQuickTrooper { get; set; }
         public KeyBindModel ClassSwitchQuickFabricator { get; set; }
+        public KeyBindModel ClassSwitchQuickRanger { get; set; }
         public KeyBindModel CameraPanLeft { get; set; }
         public KeyBindModel CameraPanRight { get; set; }
         public KeyBindModel CameraPanUp { get; set; }
@@ -92,6 +97,7 @@ namespace Assets.Scripts.Data_Models
         public KeyBindModel CameraZoomIn { get; set; }
         public KeyBindModel CameraZoomOut { get; set; }
         public KeyBindModel CameraReset { get; set; }
+        public KeyBindModel SelectAll { get; set; }
         #endregion
         public List<KeyBindModel> AllKeyBinds { get; set; }
 
@@ -138,11 +144,15 @@ namespace Assets.Scripts.Data_Models
             ClassSwitchTrooper = new KeyBindModel(KeyBindId.ClassSwitchTrooper, "Trooper", 
                 "Change class to Trooper", KeyCode.G);
             ClassSwitchQuickTrooper = new KeyBindModel(KeyBindId.ClassSwitchQuickTrooper, "Quick-Switch to Trooper", 
-                "Instantly change all selected unit's next class to Trooper", KeyCode.LeftControl, KeyCode.G);
+                "Instantly change all selected units' next class to Trooper", KeyCode.LeftControl, KeyCode.G);
             ClassSwitchFabricator = new KeyBindModel(KeyBindId.ClassSwitchFabricator, "Fabricator",
                 "Change class to Fabricator", KeyCode.T);
             ClassSwitchQuickFabricator = new KeyBindModel(KeyBindId.ClassSwitchQuickFabricator, "Quick-Switch to Fabricator",
-                "Instantly change all selected unit's next class to Fabricator", KeyCode.LeftControl, KeyCode.T);
+                "Instantly change all selected units' next class to Fabricator", KeyCode.LeftControl, KeyCode.T);
+            ClassSwitchRanger = new KeyBindModel(KeyBindId.ClassSwitchRanger, "Ranger",
+                "Change class to Ranger", KeyCode.N);
+            ClassSwitchQuickRanger = new KeyBindModel(KeyBindId.ClassSwitchQuickFabricator, "Quick-Switch to Fabricator",
+                "Instantly change all selected units' next class to Ranger", KeyCode.LeftControl, KeyCode.N);
 
             //camera controls
             CameraPanDown = new KeyBindModel(KeyBindId.CameraPanDown, "Pan Down", "Pan the main camera down", KeyCode.S, true);
@@ -158,6 +168,9 @@ namespace Assets.Scripts.Data_Models
             CameraZoomIn = new KeyBindModel(KeyBindId.CameraZoomIn, "Zoom In", "Zoom the main camera in", KeyBindModel.KeyCodeExtra.MouseWheelUp, true);
             CameraZoomOut = new KeyBindModel(KeyBindId.CameraZoomOut, "Zoom Out", "Zoom the main camera out", KeyBindModel.KeyCodeExtra.MouseWheelDown, true);
             CameraReset = new KeyBindModel(KeyBindId.CameraReset, "Reset", "Reset main camera orientation", KeyCode.Backspace);
+
+            //selection
+            SelectAll = new KeyBindModel(KeyBindId.SelectAll, "Select All", "Selectall of your units in view", KeyCode.LeftControl, KeyCode.A);
 
             //integration
             AllKeyBinds = new List<KeyBindModel>()
@@ -185,7 +198,19 @@ namespace Assets.Scripts.Data_Models
                 ClassSwitchFabricator,
                 ClassSwitchQuickFabricator,
                 ClassSwitchTrooper,
-                ClassSwitchQuickTrooper
+                ClassSwitchQuickTrooper,
+                ClassSwitchRanger,
+                ClassSwitchQuickRanger,
+                CameraPanDown,
+                CameraPanUp,
+                CameraPanLeft,
+                CameraPanRight,
+                CameraRotateCW,
+                CameraRotateCCW,
+                CameraTiltUp,
+                CameraTiltDown,
+                CameraReset,
+                SelectAll
             };
             AllKeyBinds.Sort();
 

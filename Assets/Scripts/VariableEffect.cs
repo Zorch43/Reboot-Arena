@@ -10,12 +10,13 @@ public class VariableEffect : MonoBehaviour
     #region public methods
     public void PlayEffect(float intensity)
     {
-        intensity = Mathf.Max(intensity, 1);
-
-        //modify the emission rate, then play the effect
-        var emission = Effect.emission;
-        emission.rateOverTime = intensity;
-        Effect.Play();
+        if(intensity > 1)
+        {
+            //modify the emission rate, then play the effect
+            var emission = Effect.emission;
+            emission.rateOverTime = intensity/25;
+            Effect.Play();
+        }
     }
     #endregion
 }

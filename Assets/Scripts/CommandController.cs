@@ -18,6 +18,7 @@ public class CommandController : MonoBehaviour
         ClassMenu,
         SpecialAbility
     }
+    const float DOUBLE_TAP_TIME = 0.25f;
     #endregion
     #region public fields
     public MapController Map;
@@ -43,6 +44,9 @@ public class CommandController : MonoBehaviour
     private List<KeyBindModel> mainKeyBinds;
     private List<KeyBindModel> cameraKeyBinds;
     private List<KeyBindModel> classMenuKeyBinds;
+    //double-tap detection
+    private float clickTimer;
+    private bool clicked;
     #endregion
     #region properties
     public SpecialCommands SelectedCommand { get; set; }
@@ -66,9 +70,11 @@ public class CommandController : MonoBehaviour
         keyBinds.AttackMoveModeKey.BoundAction = ActionAttackMoveMode;
         keyBinds.ClassMenuToggle.BoundAction = ActionToggleClassMenu;
         keyBinds.ClassSwitchFabricator.BoundAction = ActionSwitchClassFabricator;
-        keyBinds.ClassSwitchQuickFabricator.BoundAction = ActionQuickSwitchFabricator;
-        keyBinds.ClassSwitchQuickTrooper.BoundAction = ActionQuickSwitchTrooper;
+        keyBinds.ClassSwitchQuickFabricator.BoundAction = ActionSwitchClassFabricator;
+        keyBinds.ClassSwitchQuickTrooper.BoundAction = ActionSwitchClassTrooper;
         keyBinds.ClassSwitchTrooper.BoundAction = ActionSwitchClassTrooper;
+        keyBinds.ClassSwitchQuickRanger.BoundAction = ActionSwitchClassRanger;
+        keyBinds.ClassSwitchRanger.BoundAction = ActionSwitchClassRanger;
         keyBinds.ForceAttackKey.BoundAction = ActionForceAttack;
         keyBinds.ForceAttackModeKey.BoundAction = ActionForceAtttackMode;
         keyBinds.GameMenuKey.BoundAction = ActionGameMenu;
@@ -84,7 +90,7 @@ public class CommandController : MonoBehaviour
         keyBinds.UnitSlot7Key.BoundAction = ActionSlot7;
         keyBinds.UnitSlot8Key.BoundAction = ActionSlot8;
         keyBinds.UnitSlot9Key.BoundAction = ActionSlot9;
-        //TODO: camera binds
+        //camera binds
         keyBinds.CameraPanDown.BoundAction = ActionPanCameraDown;
         keyBinds.CameraPanLeft.BoundAction = ActionPanCameraLeft;
         keyBinds.CameraPanRight.BoundAction = ActionPanCameraRight;
@@ -96,6 +102,8 @@ public class CommandController : MonoBehaviour
         keyBinds.CameraZoomIn.BoundAction = ActionCameraZoomIn;
         keyBinds.CameraZoomOut.BoundAction = ActionCameraZoomOut;
         keyBinds.CameraReset.BoundAction = ActionCameraReset;
+
+        keyBinds.SelectAll.BoundAction = ActionSelectAll;
         //organize binds into lists and sort them
         //populate the main list - available when not spectating
         mainKeyBinds = new List<KeyBindModel>()
@@ -120,9 +128,11 @@ public class CommandController : MonoBehaviour
             keyBinds.UnitSlot9Key,
             keyBinds.ClassSwitchQuickFabricator,
             keyBinds.ClassSwitchQuickTrooper,
+            keyBinds.ClassSwitchQuickRanger,
             keyBinds.AbilityGrenadeKey,
             keyBinds.AbilityTurretKey,
-            keyBinds.AbilityNanoPackKey
+            keyBinds.AbilityNanoPackKey,
+            keyBinds.SelectAll
         };
         mainKeyBinds.Sort();
         //populate class menu list - available when class menu is open
@@ -130,7 +140,8 @@ public class CommandController : MonoBehaviour
         {
             keyBinds.ClassMenuToggle,
             keyBinds.ClassSwitchFabricator,
-            keyBinds.ClassSwitchTrooper
+            keyBinds.ClassSwitchTrooper,
+            keyBinds.ClassSwitchRanger
         };
         classMenuKeyBinds.Sort();
         //populate camera controls - always available, can be activated simultaneously
@@ -162,6 +173,7 @@ public class CommandController : MonoBehaviour
         //var hotKeyCommand = GetKeyCommand();
         var heldKey = GetHeldKey();
         bool command = false;
+        //TODO: refactor to event-based structure.  This is getting dumb
         if (!isSpectating)
         {
             //if attack-move command is active, lmb gives the order, rmb cancels the order
@@ -252,9 +264,21 @@ public class CommandController : MonoBehaviour
                         selectedUnit = hit.transform.GetComponent<UnitController>();
                         if (selectedUnit != null)
                         {
+                            
                             bool shift = Input.GetKey(KeyCode.LeftShift);
-
-                            SelectUnits(new List<UnitController>() { selectedUnit }, shift);
+                            if(clicked && clickTimer < DOUBLE_TAP_TIME)
+                            {
+                                //select all units of the selected unit's type
+                                SelectUnitsOfClassInView(selectedUnit.Data.UnitClass.ClassId);
+                                //reset double-tap detection
+                                clicked = false;
+                                clickTimer = 0;
+                            }
+                            else
+                            {
+                                clicked = true;
+                                SelectUnits(new List<UnitController>() { selectedUnit }, shift);
+                            }
                         }
                     }
                     if (selectedUnit == null)
@@ -288,6 +312,19 @@ public class CommandController : MonoBehaviour
                 Cameras.PanToMapLocation(mapPos);
             }
         }
+        //update double-tap timer
+        if (clicked)
+        {
+            if(clickTimer < DOUBLE_TAP_TIME)
+            {
+                clickTimer += deltaTime;
+            }
+            else
+            {
+                clickTimer = 0;
+                clicked = false;
+            }
+        }
         //general updates
         //update hologram if it is valid
         if (isRunning && UpdateHologramVisibility(mousePosition))
@@ -301,7 +338,7 @@ public class CommandController : MonoBehaviour
     }
     #endregion
     #region public methods
-    public void SelectUnits(List<UnitController> units, bool addToSelection = false)
+    public void SelectUnits(List<UnitController> units, bool addToSelection = false, bool playResponse = true)
     {
         var selectedSlots = GetSelectedSlots();
         var selectedUnits = GetSelectedUnits();
@@ -320,7 +357,7 @@ public class CommandController : MonoBehaviour
             if(u.SpawnSlot.IsSelected)
             {
                 selectedUnits.Add(u);
-                if (!responseGiven)
+                if (playResponse && !responseGiven)
                 {
                     responseGiven = true;
                     u.UnitVoice.PlaySelectionResponse();
@@ -806,14 +843,7 @@ public class CommandController : MonoBehaviour
             UnitActionUI.ClassMenu.ShowClassMenu();
         }
     }
-    private void ActionQuickSwitchFabricator()
-    {
-        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetFabricatorClass());
-    }
-    private void ActionQuickSwitchTrooper()
-    {
-        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetTrooperClass());
-    }
+    
     private void ActionSwitchClassFabricator()
     {
         UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetFabricatorClass());
@@ -821,6 +851,10 @@ public class CommandController : MonoBehaviour
     private void ActionSwitchClassTrooper()
     {
         UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetTrooperClass());
+    }
+    private void ActionSwitchClassRanger()
+    {
+        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetRangerClass());
     }
     private void ActionPanCameraDown()
     {
@@ -866,29 +900,52 @@ public class CommandController : MonoBehaviour
     {
         Cameras.ResetOrientation();
     }
+    private void ActionSelectAll()
+    {
+        SelectUnits(GetUnitsInRect(Cameras.MainViewRect), false);
+    }
     #endregion
     #region private methods
     private void SelectUnitsInRect(Rect rect)
     {
-        var allUnits = GetAllUnits();
-        var selectedUnits = new List<UnitController>();
         if(rect.width >= 32 || rect.height >= 32)
         {
-            foreach (var u in allUnits)
-            {
-                var unitPoint = Cameras.MainCamera.WorldToScreenPoint(u.transform.position);
-                if (rect.Contains(unitPoint))
-                {
-                    var selectedUnit = u as UnitController;
-                    if(selectedUnit != null)
-                    {
-                        selectedUnits.Add(selectedUnit);
-                    }
-                }
-            }
+            var selectedUnits = GetUnitsInRect(rect);
             SelectUnits(selectedUnits, false);
         }
     }
+    private List<UnitController> GetUnitsInRect(Rect rect)
+    {
+        var selectedUnits = new List<UnitController>();
+        var allUnits = GetAllUnits();
+        foreach (var u in allUnits)
+        {
+            var unitPoint = Cameras.MainCamera.WorldToScreenPoint(u.transform.position);
+            if (rect.Contains(unitPoint))
+            {
+                var selectedUnit = u as UnitController;
+                if (selectedUnit != null)
+                {
+                    selectedUnits.Add(selectedUnit);
+                }
+            }
+        }
+        return selectedUnits;
+    }
+    private void SelectUnitsOfClassInView(UnitClassTemplates.UnitClasses unitClass)
+    {
+        var allUnits = GetUnitsInRect(Cameras.MainViewRect);
+        var classUnits = new List<UnitController>();
+        foreach(var u in allUnits)
+        {
+            if(u.Data.UnitClass.ClassId == unitClass)
+            {
+                classUnits.Add(u);
+            }
+        }
+        SelectUnits(classUnits, false, false);
+    }
+    
     private bool GetRayHit(Ray ray, out RaycastHit hit, bool hitDrones)
     {
         var hits = Physics.RaycastAll(ray);
