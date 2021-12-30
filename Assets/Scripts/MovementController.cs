@@ -1,5 +1,6 @@
 using Assets.Scripts.Interfaces;
 using Pathfinding;
+using Pathfinding.RVO;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class MovementController : MonoBehaviour, IMove
     public Rigidbody Body;
     public Seeker PathfinderSeeker;
     public RichAI Pathfinder;
+    public RVOController Avoider;
     #endregion
     #region private fields
     private float normalMass = 1;
@@ -100,6 +102,7 @@ public class MovementController : MonoBehaviour, IMove
         
         if (IsMoving())
         {
+            Avoider.enabled = true;
             if (HasArrived())
             {
                 GradualStop(Time.deltaTime);
@@ -107,6 +110,7 @@ public class MovementController : MonoBehaviour, IMove
         }
         else 
         {
+            Avoider.enabled = false;
             if (Vector3.Distance(transform.position, anchorPosition) > ANCHOR_DRIFT)
             {
                 StartPath(anchorPosition);

@@ -52,6 +52,7 @@ GameObject:
   - component: {fileID: 250725057499233595}
   - component: {fileID: 7717280960522017410}
   - component: {fileID: 6256869848024091513}
+  - component: {fileID: 727236468993073521}
   m_Layer: 9
   m_Name: UnitBase
   m_TagString: Unit
@@ -372,6 +373,34 @@ MonoBehaviour:
   Body: {fileID: 250725057499233595}
   PathfinderSeeker: {fileID: 2971894686093816518}
   Pathfinder: {fileID: 7717280960522017410}
+  Avoider: {fileID: 727236468993073521}
+--- !u!114 &727236468993073521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2971894686093816515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 560112f876f5746c780eca0d404e7139, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 2
+  radiusBackingField: 0.5
+  heightBackingField: 2
+  centerBackingField: 1
+  locked: 0
+  lockWhenNotMoving: 0
+  agentTimeHorizon: 2
+  obstacleTimeHorizon: 2
+  maxNeighbours: 10
+  layer: 1
+  collidesWith: 3
+  wallAvoidForce: 1
+  wallAvoidFalloff: 1
+  priority: 0.5
+  debug: 0
 --- !u!1001 &1667251020655730996
 PrefabInstance:
   m_ObjectHideFlags: 0
