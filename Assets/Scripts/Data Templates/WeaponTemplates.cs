@@ -134,6 +134,9 @@ namespace Assets.Scripts.Data_Templates
 
             return weapon;
         }
+
+        #endregion
+        #region ranger
         public static WeaponModel CreateLaserPistols()
         {
             var weapon = new WeaponModel()
@@ -141,7 +144,7 @@ namespace Assets.Scripts.Data_Templates
                 Name = "Laser Pistols",
                 Cooldown = 0.2f,
                 HealthDamage = 6f,
-                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM,
+                MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_LONG,
                 ProjectileStartSize = 0.05f,
                 CanAutoAttack = true,
                 FireWhileMoving = true,
