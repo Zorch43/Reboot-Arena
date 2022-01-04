@@ -130,9 +130,16 @@ public class UnitController : DroneController
         DeathActions.Add(DoLootDrop);
         DeathActions.Add(DoDeathExplosion);
         DeathActions.Add(UnRegister);
-
         //if unit has a rally point, issue a move order to the rally point
-        DoMove(slot.RallyPoint ?? transform.position, false);
+        if (slot.RallyPoint != null)
+        {
+            DoMove(slot.RallyPoint ?? transform.position, false);
+        }
+        else
+        {
+            Locomotion.Stop();
+        }
+        
     }
     public void DoAttack(DroneController target)
     {
@@ -209,7 +216,6 @@ public class UnitController : DroneController
     public void CancelOrders(bool cancelTracker = true)
     {
         //stop unit
-        //Agent.ResetPath();
         StopMoving();
         //remove attack-move destination
         AttackMoveDestination = null;
@@ -232,7 +238,6 @@ public class UnitController : DroneController
         {
             CancelOrders();
         }
-
         Locomotion.StartPath(location);
     }
     public override void StopMoving()

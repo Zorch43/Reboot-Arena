@@ -1479,10 +1479,6 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4577776625849641760, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
-      propertyPath: ControlPoints.Array.size
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4577776625849641760, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
       propertyPath: ControlPoints.Array.data[0]
       value: 
       objectReference: {fileID: 836839895}

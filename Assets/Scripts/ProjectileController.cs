@@ -192,20 +192,21 @@ public class ProjectileController : MonoBehaviour
     {
         //pulse a (sphere)raycast, getting all colliders in path of beam
         var beamHits = Physics.SphereCastAll(transform.position, Weapon.ProjectileStartSize/2, direction, Weapon.MaxRange);
-        Vector3 endPoint = firingVector * Weapon.MaxRange; //if the beam does not collide with anything that can stop it, draw it out to its full length
+        //TODO: sort hits by distance
+        var sortedBeamHits = SortHitsByDistance(beamHits);
         //for each object in the path of the beam, determine whether the beam can continue
         //if it can, draw the line out to that collision point
         var beamLength = Weapon.MaxRange;
-        foreach (var h in beamHits)
+        DroneController target = null;
+        foreach (var h in sortedBeamHits)
         {
             if (!h.collider.isTrigger)
             {
                 var unit = h.collider.GetComponent<DroneController>();
-                if (h.collider.gameObject.tag != "NonBlocking" && unit == null)
+                if (unit == null && !h.collider.gameObject.CompareTag("NonBlocking"))
                 {
                     if (!DoImpact(h.point))
                     {
-                        //endPoint = h.point;
                         beamLength = h.distance;
                         break;
                     }
@@ -214,15 +215,13 @@ public class ProjectileController : MonoBehaviour
                 {
                     if (!DoImpact(h.point, unit))
                     {
-                        //endPoint = h.point;
                         beamLength = h.distance;
+                        target = unit;
                         break;
                     }
                 }
             }
-            
         }
-        //var beamLength = (endPoint - transform.position).magnitude;
         Line.SetPositions(new Vector3[] { new Vector3(), new Vector3(0, 0, beamLength) });
         var size = Weapon.ProjectileStartSize;
         Line.startWidth = size;
@@ -248,6 +247,28 @@ public class ProjectileController : MonoBehaviour
         particleShape.radius = 2 * size;
         var particleMain = BulletEffect.main;
         particleMain.startSize = 2 * size;
+    }
+    private List<RaycastHit> SortHitsByDistance(RaycastHit[] allHits)
+    {
+        var list = new List<RaycastHit>(allHits);
+        list.Sort(CompareHitsByDistance);
+
+        return list;
+    }
+    private int CompareHitsByDistance(RaycastHit a, RaycastHit b)
+    {
+        if(a.distance < b.distance)
+        {
+            return -1;
+        }
+        else if(a.distance > b.distance)
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
     }
     #endregion
 }

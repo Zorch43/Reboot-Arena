@@ -93,7 +93,6 @@ public class MovementController : MonoBehaviour, IMove
         normalMass = Body.mass;
         normalDrag = Body.drag;
         unitCollisions = new List<UnitController>();
-        Stop();//start out stationary
     }
 
     // Update is called once per frame

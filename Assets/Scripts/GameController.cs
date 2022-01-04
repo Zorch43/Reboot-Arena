@@ -184,9 +184,11 @@ public class GameController : MonoBehaviour
                     MusicPlayer.FadeVolume(0, 3);
 
                 }
-
-                VictoryStateUI.SetActive(true);
-                victorySound.Play();
+                if (!VictoryStateUI.activeSelf)
+                {
+                    VictoryStateUI.SetActive(true);
+                    victorySound.Play();
+                }
                 GameMenu.ShowMenu(true);
             }
         }
