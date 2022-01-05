@@ -27,6 +27,7 @@ namespace Assets.Scripts.Data_Models
         public bool IsTargetedAbility { get; set; }//whether the ability needs a target.
         public bool IsWeaponAbility { get; set; }//whether the ability fires the ability weapon
         public PickupController.PickupType[] LootDrop { get; set; }
+        public float SelfHeal { get; set; }//amount to heal self by when activated
         public bool IsBuildAbility { get; set; }//whether the ability deploys a drone
         public string DroneTemplate { get; set; }//name of drone prefab to deploy
         public string DroneHologram { get; set; }//hologram to display when picking build spot for drone

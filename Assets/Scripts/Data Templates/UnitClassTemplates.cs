@@ -72,6 +72,8 @@ namespace Assets.Scripts.Data_Templates
                 SecondaryWeapon = WeaponTemplates.CreatePlasmaGun(),
                 SpecialAbility = UnitAbilityTemplates.CreateTurretDrone(),
                 IsAmbidextrous = true,
+                IncompatibleAmmo = true,
+                AmmoRegenRate = 10,
                 DefenderWeight = 1,
                 SupportWeight = 2
             };
@@ -104,11 +106,11 @@ namespace Assets.Scripts.Data_Templates
                 Symbol = ResourceList.SYMBOL_RANGER,
                 MaxHP = 200,
                 MaxMP = 200,
-                MoveSpeed = 2,//non-boosted speed
-                TurnSpeed = 6,
+                MoveSpeed = 3,//non-boosted speed
+                TurnSpeed = 9,
                 HasJumpBoost = true,
-                SpeedBoostPower = 4,//boosted speed bonus
-                FuelConsumption = 12,//fuel cost per second while moving
+                SpeedBoostPower = 5,//boosted speed bonus
+                FuelConsumption = 10,//fuel cost per second while moving
                 HealthPickupEfficiency = 2,
                 AmmoPickupEfficiency = 2,
                 PrimaryWeapon = WeaponTemplates.CreateLaserPistols(),

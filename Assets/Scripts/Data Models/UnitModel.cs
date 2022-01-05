@@ -15,7 +15,7 @@ namespace Assets.Scripts.Data_Models
         public float HP { get; set; }//current health points
         public float MP { get; set; }//current munition points
         public bool IsTargetable { get; set; } = true;//whether this unit can be a valid target
-        public bool IsDamageable { get; set; } = true;//whetehr this unit can be damaged
+        public bool IsDamageable { get; set; } = true;//whether this unit can be damaged
         #endregion
         public UnitModel (UnitClassModel unitClass)
         {

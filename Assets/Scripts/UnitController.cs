@@ -197,6 +197,8 @@ public class UnitController : DroneController
             {
                 DrainUnit(specialAbility.AmmoCostInstant);
                 //do non-targeted parts of the ability
+                //self heal
+                HealUnit(specialAbility.SelfHeal);
                 //drop loot
                 if (specialAbility.LootDrop.Length > 0)
                 {

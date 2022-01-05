@@ -142,8 +142,8 @@ namespace Assets.Scripts.Data_Templates
             var weapon = new WeaponModel()
             {
                 Name = "Laser Pistols",
-                Cooldown = 0.2f,
-                HealthDamage = 6f,
+                Cooldown = 0.25f,
+                HealthDamage = 8f,
                 MaxRange = WeaponModel.WEAPON_RANGE_MEDIUM_LONG,
                 ProjectileStartSize = 0.05f,
                 CanAutoAttack = true,

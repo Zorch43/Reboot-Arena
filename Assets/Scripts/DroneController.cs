@@ -115,6 +115,8 @@ public class DroneController : MonoBehaviour
         }
 
         //update continuous passive abiities
+        //do ammo regen
+        DoAmmoRegen(deltaTime);
         //do autoRepair
         DoAutoRepair(deltaTime);
     }
@@ -420,7 +422,7 @@ public class DroneController : MonoBehaviour
             && (!isAutoAttack || weapon.CanAutoAttack)
             && (weapon.AmmoCost <= Data.MP)
             && (Data.Team == target.Data.Team == weapon.TargetsAllies())
-            && (weapon.AmmoDamage >= 0 || target.Data.UnitClass.MaxMP - target.Data.MP > -weapon.AmmoDamage)
+            && (weapon.AmmoDamage >= 0 || (!target.Data.UnitClass.IncompatibleAmmo && target.Data.UnitClass.MaxMP - target.Data.MP > -weapon.AmmoDamage))
             && (weapon.HealthDamage >= 0 || target.Data.HP < target.Data.UnitClass.MaxHP)
             && (weapon.MaxRange >= Vector3.Distance(target.transform.position, transform.position))
             && (!weapon.NeedsLineOfSight() || HasLineOfSight(target.TargetingPosition));
@@ -592,6 +594,10 @@ public class DroneController : MonoBehaviour
         var maxDrain = Mathf.Min(Data.MP, maxHeal);
         var drain = DrainUnit(maxDrain);
         HealUnit(drain);
+    }
+    private void DoAmmoRegen(float deltaTime)
+    {
+        ReloadUnit(Data.UnitClass.AmmoRegenRate * deltaTime);
     }
     #endregion
 
