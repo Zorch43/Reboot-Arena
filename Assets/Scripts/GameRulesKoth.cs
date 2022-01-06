@@ -152,7 +152,7 @@ public class GameRulesKoth : GameRulesBase
                 objective.Priority += 1;
             }
             //attacking sparsely defended points
-            if(unitCount <= 3)
+            if(unitCount <= 4)
             {
                 objective.Priority += 1;
             }
@@ -169,13 +169,29 @@ public class GameRulesKoth : GameRulesBase
             {
                 objective.Priority += 1;
             }
+            bool fullControl;
+            int bestRival;
+            bool inControl = IsInControl(cp.CurrOwner, out fullControl, out bestRival);
+            //defending owned points whose loss would result in loss of control
             //defending owned points when close to winning
-            if(cp.CurrOwner == team && timers.GetRawTime(team) < 30)
+            if (cp.CurrOwner == team && inControl)
             {
                 objective.Priority += 1;
+                if(timers.GetRawTime(team) < 30)
+                {
+                    objective.Priority += 1;
+                }
             }
-            //defending owned points whose loss would result in loss of control
+            //attacking points controlled by controlling team
             //attacking points owned by enemies close to winning
+            if (cp.CurrOwner != team && inControl)
+            {
+                objective.Priority += 1;
+                if (timers.GetRawTime(team) < 30)
+                {
+                    objective.Priority += 1;
+                }
+            }
         }                                                               
 
 
