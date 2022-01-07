@@ -140,60 +140,71 @@ public class GameRulesKoth : GameRulesBase
             //Defend taken points
             //Retreat from points with strong enemy presence
             var spawnPoint = Game.GetAISpawnPoint(team);
-            //prioritize:
-            //points near the spawn point
-            if(Vector3.Distance(spawnPoint, objectivePoint) < 16)
-            {
-                objective.Priority += 1;
-            }
-            //rushing unoccupied points
-            if(unitCount <= 1)
-            {
-                objective.Priority += 1;
-            }
-            //attacking sparsely defended points
-            if(unitCount <= 4)
-            {
-                objective.Priority += 1;
-            }
-            if(objective.EnemyDefenderWeight + 0.5f * objective.EnemyDefenderWeight < 7)
-            {
-                objective.Priority += 1;
-            }
-            if(objective.EnemyAttackerWeight + 0.5f * objective.EnemyDefenderWeight < 7)
-            {
-                objective.Priority += 1;
-            }
-            //attacking/rushing neutral points
-            if(cp.CurrOwner == -1)
-            {
-                objective.Priority += 1;
-            }
             bool fullControl;
             int bestRival;
             bool inControl = IsInControl(cp.CurrOwner, out fullControl, out bestRival);
-            //defending owned points whose loss would result in loss of control
-            //defending owned points when close to winning
-            if (cp.CurrOwner == team && inControl)
+            var timeToWin = timers.GetRawTime(team);
+            //prioritize:
+            //points near the spawn point
+            if (Vector3.Distance(spawnPoint, objectivePoint) < 16)
             {
                 objective.Priority += 1;
-                if(timers.GetRawTime(team) < 30)
+            }
+            if(cp.CurrOwner != team)
+            {
+                //rushing unoccupied points
+                if (unitCount <= 1)
                 {
                     objective.Priority += 1;
                 }
-            }
-            //attacking points controlled by controlling team
-            //attacking points owned by enemies close to winning
-            if (cp.CurrOwner != team && inControl)
-            {
-                objective.Priority += 1;
-                if (timers.GetRawTime(team) < 30)
+                //attacking sparsely defended points
+                if (unitCount <= 4)
                 {
                     objective.Priority += 1;
+                }
+                if (objective.EnemyDefenderWeight + 0.5f * objective.EnemyDefenderWeight < 7)
+                {
+                    objective.Priority += 1;
+                }
+                //attacking/rushing neutral points
+                if (cp.CurrOwner == -1)
+                {
+                    objective.Priority += 1;
+                }
+                //attacking points controlled by controlling team
+                //attacking points owned by enemies close to winning
+                else if (!inControl)
+                {
+                    objective.Priority += 1;
+                    var timeLeft = timers.GetRawTime(cp.CurrOwner);
+                    if (timeLeft < 30)
+                    {
+                        objective.Priority += 1;
+                    }
+                    if (timeLeft < timeToWin)
+                    {
+                        objective.Priority += 1;
+                    }
+                }
+            }
+            else
+            {
+                if (objective.EnemyAttackerWeight + 0.5f * objective.EnemyDefenderWeight < 7)
+                {
+                    objective.Priority += 1;
+                }
+                //defending owned points whose loss would result in loss of control
+                //defending owned points when close to winning
+                if (inControl)
+                {
+                    objective.Priority += 1;
+                    if (timeToWin < 30)
+                    {
+                        objective.Priority += 1;
+                    }
                 }
             }
         }                                                               
-
 
         return objectives;
 
