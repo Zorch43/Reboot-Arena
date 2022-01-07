@@ -36,6 +36,7 @@ namespace Assets.Scripts.Data_Models
                 UnitClassTemplates.UnitClasses.Trooper, 
                 UnitClassTemplates.UnitClasses.Fabricator 
             };
+            AIIndex = 2;
         }
     }
 }

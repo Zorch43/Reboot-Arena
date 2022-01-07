@@ -19,28 +19,7 @@ public class TeamSettingController : MonoBehaviour
     
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
-        //wire up controls
-        ControllerSelector.onValueChanged.AddListener(ActionSelectController);
-        ColorSelector.onValueChanged.AddListener(ActionSelectColor);
 
-        //populate controller drop-down with defined ai configs
-        ControllerSelector.options = new List<TMP_Dropdown.OptionData>() 
-        {
-            new TMP_Dropdown.OptionData("None"),
-            new TMP_Dropdown.OptionData("Player")
-            //add any additional non-ai control types here
-        };
-        
-        var aiList = AIConfigTemplates.GetAIConfigList();
-        foreach(var a in aiList)
-        {
-            ControllerSelector.options.Add(new TMP_Dropdown.OptionData(a.Name));
-        }
-        
-    }
     #endregion
     #region actions
     public void ActionSelectController(int state)
@@ -110,6 +89,24 @@ public class TeamSettingController : MonoBehaviour
         result.Setup = setup;
         result.Data = new PlayerConfigModel();
         result.TeamLabel.text = label;
+
+        //wire up controls
+        ControllerSelector.onValueChanged.AddListener(ActionSelectController);
+        ColorSelector.onValueChanged.AddListener(ActionSelectColor);
+
+        //populate controller drop-down with defined ai configs
+        ControllerSelector.options = new List<TMP_Dropdown.OptionData>()
+        {
+            new TMP_Dropdown.OptionData("None"),
+            new TMP_Dropdown.OptionData("Player")
+            //add any additional non-ai control types here
+        };
+
+        var aiList = AIConfigTemplates.GetAIConfigList();
+        foreach (var a in aiList)
+        {
+            ControllerSelector.options.Add(new TMP_Dropdown.OptionData(a.Name));
+        }
 
         ////mark each option with team color
         //for(int i = 0; i < result.ColorSelector.options.Count; i++)

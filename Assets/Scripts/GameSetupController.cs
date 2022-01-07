@@ -48,7 +48,6 @@ public class GameSetupController : MonoBehaviour
             {
                 var setting = SettingsTemplate.Instantiate(this, string.Format("Team {0}:", i + 1));
                 setting.Data.TeamId = i;
-                setting.Refresh();
                 Settings.Add(setting);
             }
         }
@@ -71,13 +70,13 @@ public class GameSetupController : MonoBehaviour
                     //var list = AIConfigTemplates.GetAIConfigList();
                     //setting.Data.AIIndex = Random.Range(0, list.Count);
                 }
-                setting.Refresh();
             }
             else
             {
                 //setting.SetInteractive(false);
                 setting.gameObject.SetActive(false);
             }
+            setting.Refresh();
         }
 
         gameObject.SetActive(true);

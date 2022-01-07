@@ -131,7 +131,7 @@ public class UnitController : DroneController
         DeathActions.Add(DoDeathExplosion);
         DeathActions.Add(UnRegister);
         //if unit has a rally point, issue a move order to the rally point
-        if (slot.RallyPoint != null)
+        if (slot.FolowRallyPoint && slot.RallyPoint != null)
         {
             DoMove(slot.RallyPoint ?? transform.position, false);
         }
@@ -139,7 +139,14 @@ public class UnitController : DroneController
         {
             Locomotion.Stop();
         }
-        
+        SpawnSlot.FolowRallyPoint = true;
+    }
+    public void DeSpawn()
+    {
+        UnRegister();
+        //Don't follow rally point next time slot respawns
+        SpawnSlot.FolowRallyPoint = false;
+        Destroy(gameObject);
     }
     public void DoAttack(DroneController target)
     {

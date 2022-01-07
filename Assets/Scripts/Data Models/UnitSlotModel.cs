@@ -64,6 +64,7 @@ namespace Assets.Scripts.Data_Models
             }
         }
         public Vector3? RallyPoint { get; set; }
+        public bool FolowRallyPoint { get; set; } = true;
         public bool IsSelected { get; set; }
         #endregion
         #region public methods

@@ -7,14 +7,15 @@ public class CameraController : MonoBehaviour
 {
     #region constants
     public const float SCROLL_ZONE_WIDTH = 20;
-    public const float PAN_SPEED = 10f;
+    public const float PAN_SPEED = 25f;
+    public const float SUPER_PAN_SPEED = 75f;
     const float EDGE_LINE_HEIGHT = 35;
     const float MAX_TILT = 90f;
     const float MIN_TILT = 30.1f;//minimum must be above fov/2, otherwise the minimap view doesn't display correctly
     const float MAX_ZOOM = -8;//minimum distance from the focus target
     const float MIN_ZOOM = -32;//maximum distance from the focus target
-    const float TILT_SPEED = 30;
-    const float TURN_SPEED = 60;
+    const float TILT_SPEED = 60;
+    const float TURN_SPEED = 120;
     const float ZOOM_SPEED = (MIN_ZOOM - MAX_ZOOM)  * -2;
     #endregion
     #region public fields
@@ -109,7 +110,15 @@ public class CameraController : MonoBehaviour
         //pan the camera
         if (panVector.magnitude > 0)
         {
-            panVector = PAN_SPEED * deltaTime * panVector;
+            if (Input.GetKey(KeyCode.Space))
+            {
+                panVector = SUPER_PAN_SPEED * deltaTime * panVector;
+            }
+            else
+            {
+                panVector = PAN_SPEED * deltaTime * panVector;
+            }
+            
             var panVector3d = new Vector3(panVector.x, 0, panVector.y);
             //pan the joint in its local space
             PanJoint.localPosition += panVector3d;
