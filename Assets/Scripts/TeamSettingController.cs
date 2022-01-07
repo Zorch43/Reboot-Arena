@@ -16,10 +16,13 @@ public class TeamSettingController : MonoBehaviour
     #endregion
     #region properties
     public PlayerConfigModel Data { get; set; }
-    
+
     #endregion
     #region unity methods
-
+    private void Start()
+    {
+        
+    }
     #endregion
     #region actions
     public void ActionSelectController(int state)
@@ -71,7 +74,7 @@ public class TeamSettingController : MonoBehaviour
         //check the list of settings:
         foreach(var s in Setup.Settings)
         {
-            if(s != this && s.Data.TeamId == state)
+            if (s != this && s.Data.TeamId == state)
             {
                 //if another setting exists that shares this color, assign the old color to it
                 s.Data.TeamId = oldState;
@@ -91,11 +94,11 @@ public class TeamSettingController : MonoBehaviour
         result.TeamLabel.text = label;
 
         //wire up controls
-        ControllerSelector.onValueChanged.AddListener(ActionSelectController);
-        ColorSelector.onValueChanged.AddListener(ActionSelectColor);
+        result.ControllerSelector.onValueChanged.AddListener(result.ActionSelectController);
+        result.ColorSelector.onValueChanged.AddListener(result.ActionSelectColor);
 
         //populate controller drop-down with defined ai configs
-        ControllerSelector.options = new List<TMP_Dropdown.OptionData>()
+        result.ControllerSelector.options = new List<TMP_Dropdown.OptionData>()
         {
             new TMP_Dropdown.OptionData("None"),
             new TMP_Dropdown.OptionData("Player")
@@ -105,15 +108,8 @@ public class TeamSettingController : MonoBehaviour
         var aiList = AIConfigTemplates.GetAIConfigList();
         foreach (var a in aiList)
         {
-            ControllerSelector.options.Add(new TMP_Dropdown.OptionData(a.Name));
+            result.ControllerSelector.options.Add(new TMP_Dropdown.OptionData(a.Name));
         }
-
-        ////mark each option with team color
-        //for(int i = 0; i < result.ColorSelector.options.Count; i++)
-        //{
-        //    var o = result.ColorSelector.options[i];
-
-        //}
 
         return result;
     }

@@ -116,22 +116,40 @@ public class GameRulesKoth : GameRulesBase
                 Objective = cp
             };
             objectives.Add(objective);
-            int unitCount = 0;
+            int enemyUnitCount = 0;
+            int alliedUnitCount = 0;
             foreach (var u in allDrones)
             {
-                if (u.Data.Team != team && Vector3.Distance(objectivePoint, u.transform.position) < OCCUPATION_DISTANCE)
+                if(Vector3.Distance(objectivePoint, u.transform.position) < OCCUPATION_DISTANCE)
                 {
-                    objective.EnemyAttackerWeight += u.Data.UnitClass.AttackerWeight;
-                    objective.EnemyDefenderWeight += u.Data.UnitClass.DefenderWeight;
-                    objective.EnemySupportWeight += u.Data.UnitClass.SupportWeight;
-                    unitCount++;
+                    if (u.Data.Team != team)
+                    {
+                        objective.EnemyAttackerWeight += u.Data.UnitClass.AttackerWeight;
+                        objective.EnemyDefenderWeight += u.Data.UnitClass.DefenderWeight;
+                        objective.EnemySupportWeight += u.Data.UnitClass.SupportWeight;
+                        enemyUnitCount++;
+                    }
+                    else
+                    {
+                        objective.AttackerWeight += u.Data.UnitClass.AttackerWeight;
+                        objective.DefenderWeight += u.Data.UnitClass.DefenderWeight;
+                        objective.SupportWeight += u.Data.UnitClass.SupportWeight;
+                        alliedUnitCount++;
+                    }
                 }
+                
             }
-            if(unitCount > 0)
+            if(enemyUnitCount > 0)
             {
-                float forceMultiplier = 1 + 0.1f * objective.EnemySupportWeight / unitCount;//support force-multiplier
+                float forceMultiplier = 1 + 0.1f * objective.EnemySupportWeight / enemyUnitCount;//support force-multiplier
                 objective.EnemyAttackerWeight *= forceMultiplier;
                 objective.EnemyDefenderWeight *= forceMultiplier;
+            }
+            if(alliedUnitCount > 0)
+            {
+                float forceMultiplier = 1 + 0.1f * objective.SupportWeight / alliedUnitCount;//support force-multiplier
+                objective.AttackerWeight *= forceMultiplier;
+                objective.DefenderWeight *= forceMultiplier;
             }
             
             //AI will:
@@ -146,23 +164,31 @@ public class GameRulesKoth : GameRulesBase
             var timeToWin = timers.GetRawTime(team);
             //prioritize:
             //points near the spawn point
-            if (Vector3.Distance(spawnPoint, objectivePoint) < 16)
+            objective.Priority += 1 - Vector3.Distance(spawnPoint, objectivePoint)/100;
+            
+            if (cp.CurrOwner != team)
             {
-                objective.Priority += 1;
-            }
-            if(cp.CurrOwner != team)
-            {
+                //points that already have allied units near them
+                if (alliedUnitCount > 0)
+                {
+                    objective.Priority += 1;
+                }
+                //points with a strong presence
+                if (objective.AttackerWeight + 0.5f * objective.DefenderWeight >= 7)
+                {
+                    objective.Priority += 1;
+                }
                 //rushing unoccupied points
-                if (unitCount <= 1)
+                if (enemyUnitCount <= 1)
                 {
                     objective.Priority += 1;
                 }
                 //attacking sparsely defended points
-                if (unitCount <= 4)
+                if (enemyUnitCount <= 4)
                 {
                     objective.Priority += 1;
                 }
-                if (objective.EnemyDefenderWeight + 0.5f * objective.EnemyDefenderWeight < 7)
+                if (objective.EnemyDefenderWeight + 0.5f * objective.EnemyAttackerWeight < 7)
                 {
                     objective.Priority += 1;
                 }

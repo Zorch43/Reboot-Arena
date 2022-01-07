@@ -152,7 +152,7 @@ public class UnitController : DroneController
     {
         if(CommandTarget != target)
         {
-            CancelOrders();//cancel all other orders
+            CancelOrders(true, false);//cancel all other orders
             CommandTarget = target;
         }
     }
@@ -161,7 +161,7 @@ public class UnitController : DroneController
     {
         if (!IsMoving)
         {
-            CancelOrders();//cancel all other orders
+            CancelOrders(true, false);//cancel all other orders
             //set the move-attack destination
             AttackMoveDestination = location;
         }
@@ -169,7 +169,7 @@ public class UnitController : DroneController
     //attack the ground at the specified location. keep attacking until unit is given another order
     public void DoForceAttack(Vector3 location)
     {
-        CancelOrders();//cancel all other orders
+        CancelOrders(true, false);//cancel all other orders
         //set force-attack target
         ForceTarget = location;
     }
@@ -222,10 +222,14 @@ public class UnitController : DroneController
         
     }
     //cancel all orders given to this unit
-    public void CancelOrders(bool cancelTracker = true)
+    public void CancelOrders(bool cancelTracker = true, bool stopMovement = true)
     {
-        //stop unit
-        StopMoving();
+        if (stopMovement)
+        {
+            //stop unit
+            StopMoving();
+        }
+        
         //remove attack-move destination
         AttackMoveDestination = null;
         //stop command attack
@@ -245,7 +249,7 @@ public class UnitController : DroneController
     {
         if (cancelOrders)
         {
-            CancelOrders();
+            CancelOrders(true, false);
         }
         Locomotion.StartPath(location);
     }

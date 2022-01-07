@@ -21,6 +21,9 @@ namespace Assets.Scripts.Data_Models
         public float EnemyAttackerWeight { get; set; }//how much enemy attack power is near the point
         public float EnemyDefenderWeight { get; set; }//how much enemy defense power is near the point
         public float EnemySupportWeight { get; set; }//how much enemy support power is near the point
+        public float AttackerWeight { get; set; }//allied attack power near point
+        public float DefenderWeight { get; set; }//allied defense power near point
+        public float SupportWeight { get; set; }//allied support power near point
         public float Priority { get; set; }//how much this objective matters
         
     }

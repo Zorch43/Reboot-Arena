@@ -406,7 +406,7 @@ public class CommandController : MonoBehaviour
         selectedUnits = GetSelectedUnits(selectedUnits);
         DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
         {
-            selectedUnit.CancelOrders();
+            selectedUnit.CancelOrders(true, false);
             selectedUnit.CommandTarget = targetUnit;
         }, (UnitController respondingUnit) =>
         {
@@ -422,7 +422,7 @@ public class CommandController : MonoBehaviour
 
         DoGroupAction(selectedUnits, (UnitController selectedUnit) =>
         {
-            selectedUnit.CancelOrders();
+            selectedUnit.CancelOrders(true, false);
             selectedUnit.CommandTarget = targetUnit;
         }, (UnitController respondingUnit) =>
         {

@@ -18,8 +18,14 @@ EditorBuildSettings:
     path: Assets/Scenes/KotH_KnifeFight.unity
     guid: ba79353b8558f9a47945a14f7275f6fa
   - enabled: 1
+    path: Assets/Scenes/KotH_Lanes.unity
+    guid: 7e73f6d7bf62bff4f89ea4fee0bfb4d0
+  - enabled: 1
     path: Assets/Scenes/KotH_Olympus.unity
     guid: 0e173c22e9808054ab8dad8d34c8a7d6
+  - enabled: 1
+    path: Assets/Scenes/KotH_Brawl.unity
+    guid: 7211e41a95900824ea7f7ead45152a42
   - enabled: 1
     path: Assets/Scenes/KotH_Bracket.unity
     guid: 489b54b317f34f84e9947a843cd547f7
