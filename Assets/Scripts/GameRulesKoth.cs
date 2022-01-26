@@ -51,7 +51,8 @@ public class GameRulesKoth : GameRulesBase
         //timers.gameObject.transform.position = GameStateUI.transform.position;
 
         //setup timers
-        timers.Setup(TimerLength * (1 + (Game.Teams.Count - 2) * (1 - TimerPlayerMod)), Game.Teams);
+        //timers.Setup(TimerLength * (1 + (Game.Teams.Count - 2) * (1 - TimerPlayerMod)), Game.Teams);
+        timers.Setup(TimerLength, Game.Teams);
 
         //TODO: lock unused control points
         activeCapturePoints = new List<CapturePointController>(ControlPoints);

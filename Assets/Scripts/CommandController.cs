@@ -108,7 +108,6 @@ public class CommandController : MonoBehaviour
         //populate the main list - available when not spectating
         mainKeyBinds = new List<KeyBindModel>()
         {
-            keyBinds.GameMenuKey,
             keyBinds.AttackMoveKey,
             keyBinds.AttackMoveModeKey,
             keyBinds.ClassMenuToggle,
@@ -147,6 +146,7 @@ public class CommandController : MonoBehaviour
         //populate camera controls - always available, can be activated simultaneously
         cameraKeyBinds = new List<KeyBindModel>()
         {
+            keyBinds.GameMenuKey,
             keyBinds.CameraPanDown,
             keyBinds.CameraPanLeft,
             keyBinds.CameraPanUp,

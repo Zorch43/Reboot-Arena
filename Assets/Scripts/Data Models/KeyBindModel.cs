@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Assets.Scripts.Data_Models
 {
@@ -23,6 +24,7 @@ namespace Assets.Scripts.Data_Models
         public KeyCode PressedKey { get; set; }
         public KeyCodeExtra PressedKeyExtra { get; set; }
         public Action BoundAction { get; set; }
+        public UnityEvent OnInput { get; set; }
         public bool IsContinuous { get; set; }//whether the keybind can be held to activate continuously
 
         public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description)
@@ -30,58 +32,40 @@ namespace Assets.Scripts.Data_Models
             Id = id;
             Name = name;
             Description = description;
+            OnInput = new UnityEvent();
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode pressedKey, bool isContinuous = false)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode pressedKey, bool isContinuous = false) : this(id,name,description)
         {
-            Id = id;
-            Name = name;
-            Description = description;
             PressedKey = pressedKey;
             HeldKey = KeyCode.None;
             IsContinuous = isContinuous;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCodeExtra pressedKey, bool isContinuous = false)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCodeExtra pressedKey, bool isContinuous = false) : this(id,name,description)
         {
-            Id = id;
-            Name = name;
-            Description = description;
             PressedKeyExtra = pressedKey;
             HeldKey = KeyCode.None;
             IsContinuous = isContinuous;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCode pressedKey, bool isContinuous = false)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCode pressedKey, bool isContinuous = false) : this(id,name,description,pressedKey,isContinuous)
         {
-            Id = id;
-            Name = name;
-            Description = description;
-            PressedKey = pressedKey;
             HeldKey = heldKey;
-            IsContinuous = isContinuous;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCodeExtra pressedKey, bool isContinuous = false)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCodeExtra pressedKey, bool isContinuous = false) : this(id, name, description, pressedKey, isContinuous)
         {
-            Id = id;
-            Name = name;
-            Description = description;
-            PressedKeyExtra = pressedKey;
             HeldKey = heldKey;
-            IsContinuous = isContinuous;
         }
         public bool TryInvoke()
         {
             if (IsPressed())
             {
-                BoundAction.Invoke();
+                BoundAction.Invoke();//activate the main action
+                OnInput.Invoke();//activate extra actions
                 return true;
             }
             return false;
         }
         public bool IsPressed()
         {
-            //return (HeldKey == KeyCode.None || Input.GetKey(HeldKey)) 
-            //    && ((PressedKeyExtra != KeyCodeExtra.None 
-            //    && ((IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey)) 
-            //    || (IsContinuous && Input.GetKey(PressedKey)) || Input.GetKeyDown(PressedKey)));
             if(HeldKey == KeyCode.None || Input.GetKey(HeldKey))
             {
                 if(PressedKeyExtra != KeyCodeExtra.None)
