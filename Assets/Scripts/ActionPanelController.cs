@@ -34,12 +34,26 @@ public class ActionPanelController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //connect actions to buttons
-        MoveAttackButton.onClick.AddListener(ActionMoveAttack);
-        ForceAttackButton.onClick.AddListener(ActionForceAttack);
-        SetRallyButton.onClick.AddListener(ActionSetRallyPoint);
-        StopActionButton.onClick.AddListener(ActionStop);
-        ChangeClassButton.onClick.AddListener(ActionToggleClassMenu);
+        //events
+        var eventAttackMove = EventList.GetEvent(EventList.EventNames.OnInputUIAttackMoveMode);
+        var eventForceAttack = EventList.GetEvent(EventList.EventNames.OnInputUIForceAttackMode);
+        var eventRally = EventList.GetEvent(EventList.EventNames.OnInputUIRallyMode);
+        var eventCancel = EventList.GetEvent(EventList.EventNames.OnInputUICancel);
+        var eventClassMenu = EventList.GetEvent(EventList.EventNames.OnInputUIOpenClassMenu);
+
+        //connect events to buttons
+        MoveAttackButton.onClick.AddListener(eventAttackMove.Invoke);
+        ForceAttackButton.onClick.AddListener(eventForceAttack.Invoke);
+        SetRallyButton.onClick.AddListener(eventRally.Invoke);
+        StopActionButton.onClick.AddListener(eventCancel.Invoke);
+        ChangeClassButton.onClick.AddListener(eventClassMenu.Invoke);
+
+        //connect actions to events
+        eventAttackMove.AddListener(ActionMoveAttack);
+        eventForceAttack.AddListener(ActionForceAttack);
+        eventRally.AddListener(ActionSetRallyPoint);
+        eventCancel.AddListener(ActionStop);
+        eventClassMenu.AddListener(ActionToggleClassMenu);
     }
 
     // Update is called once per frame
@@ -94,10 +108,15 @@ public class ActionPanelController : MonoBehaviour
                 var abilityButton = Instantiate(ButtonTemplate, transform);
                 var specialAbility = u.SpecialAbility;
                 abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
-                abilityButton.Button.onClick.AddListener(() =>
+                //connect button event
+                //connect action to event
+                var buttonEvent = EventList.GetEvent(specialAbility.EventNameUI);
+                buttonEvent.AddListener(() =>
                 {
                     ActionUnitAbility(specialAbility);
                 });
+                abilityButton.Button.onClick.AddListener(buttonEvent.Invoke);
+
                 abilityButton.Text.text = specialAbility.Name;
                 abilityButton.gameObject.SetActive(false);
                 abilityButtons.Add(abilityButton);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Assets.Scripts.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +50,10 @@ namespace Assets.Scripts.Data_Models
         public bool ConsiderLeastAmmoInGroup { get; set; }
         public bool ConsiderMostHealthInGroup { get; set; }
         public bool ConsiderLeastHealthInGroup { get; set; }
-        
+
+        //event names
+        public EventList.EventNames EventNameUI { get; set; }//name of the event triggered by clicking on icon
+        public EventList.EventNames EventNameKey { get; set; }//name of the event triggered by tapping hotkey
+        public EventList.EventNames EventNameSet { get; set; }//name of event triggered by setting ability target
     }
 }

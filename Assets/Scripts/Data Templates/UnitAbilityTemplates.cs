@@ -26,7 +26,10 @@ namespace Assets.Scripts.Data_Templates
                 ConsiderLeastHealthInGroup = true,
                 ConsiderLeastMoveDistanceToTarget = true,
                 AbilityWeapon = WeaponTemplates.CreateFragGrenade(),
-                AmmoCostInstant = 100
+                AmmoCostInstant = 100,
+                EventNameKey = EventList.EventNames.OnInputKeyAbilityGrenade,
+                EventNameUI = EventList.EventNames.OnInputUIAbilityGrenade,
+                EventNameSet = EventList.EventNames.OnInputAbilityGrenadeSet
             };
             return ability;
         }
@@ -49,7 +52,10 @@ namespace Assets.Scripts.Data_Templates
                 ConsiderLeastTotalDistanceToTarget = true,
                 ConsiderMostHealthInGroup = true,
                 AbilityWeapon = WeaponTemplates.CreateBuildTools(),
-                AmmoCostInstant = 100
+                AmmoCostInstant = 100,
+                EventNameKey = EventList.EventNames.OnInputKeyAbilityTurret,
+                EventNameUI = EventList.EventNames.OnInputUIAbilityTurret,
+                EventNameSet = EventList.EventNames.OnInputAbilityTurretSet
             };
             return ability;
         }
@@ -66,7 +72,10 @@ namespace Assets.Scripts.Data_Templates
                 IsNonInterrupting = true,
                 ConsiderMostAmmoInGroup = true,
                 ConsiderLeastHealthInGroup = true,
-                AmmoCostInstant = 50
+                AmmoCostInstant = 50,
+                EventNameKey = EventList.EventNames.OnInputKeyAbilityNanoPack,
+                EventNameUI = EventList.EventNames.OnInputUIAbilityNanoPack,
+                EventNameSet = EventList.EventNames.OnInputAbilityNanoPackSet
             };
             return ability;
         }

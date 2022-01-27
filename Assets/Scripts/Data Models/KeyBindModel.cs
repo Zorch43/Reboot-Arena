@@ -11,55 +11,76 @@ namespace Assets.Scripts.Data_Models
 {
     public class KeyBindModel : IComparable
     {
+        #region constants
         public enum KeyCodeExtra
         {
             None,
             MouseWheelUp,
             MouseWheelDown
         }
+        #endregion
+        #region properties
         public KeyBindConfigModel.KeyBindId Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public KeyCode HeldKey { get; set; }
         public KeyCode PressedKey { get; set; }
         public KeyCodeExtra PressedKeyExtra { get; set; }
-        public Action BoundAction { get; set; }
-        public UnityEvent OnInput { get; set; }
+        public EventList.EventNames EventName { get; set; }
+        public UnityEvent BoundEvent
+        {
+            get
+            {
+                return EventList.GetEvent(EventName);
+            }
+        }
+        public UnityAction BoundAction
+        {
+            set
+            {
+                BoundEvent.AddListener(value);
+            }
+        }
         public bool IsContinuous { get; set; }//whether the keybind can be held to activate continuously
-
+        #endregion
+        #region constructors
         public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description)
         {
             Id = id;
             Name = name;
             Description = description;
-            OnInput = new UnityEvent();
+            
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode pressedKey, bool isContinuous = false) : this(id,name,description)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, EventList.EventNames eventName, string name, string description, KeyCode pressedKey, bool isContinuous = false) : this(id,name,description)
         {
+            EventName = eventName;
             PressedKey = pressedKey;
             HeldKey = KeyCode.None;
             IsContinuous = isContinuous;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCodeExtra pressedKey, bool isContinuous = false) : this(id,name,description)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, EventList.EventNames eventName, string name, string description, KeyCodeExtra pressedKey, bool isContinuous = false) : this(id,name,description)
         {
+            EventName = eventName;
             PressedKeyExtra = pressedKey;
             HeldKey = KeyCode.None;
             IsContinuous = isContinuous;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCode pressedKey, bool isContinuous = false) : this(id,name,description,pressedKey,isContinuous)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, EventList.EventNames eventName, string name, string description, KeyCode heldKey, KeyCode pressedKey, bool isContinuous = false) : this(id, eventName, name,description,pressedKey,isContinuous)
         {
             HeldKey = heldKey;
         }
-        public KeyBindModel(KeyBindConfigModel.KeyBindId id, string name, string description, KeyCode heldKey, KeyCodeExtra pressedKey, bool isContinuous = false) : this(id, name, description, pressedKey, isContinuous)
+        public KeyBindModel(KeyBindConfigModel.KeyBindId id, EventList.EventNames eventName, string name, string description, KeyCode heldKey, KeyCodeExtra pressedKey, bool isContinuous = false) : this(id, eventName, name, description, pressedKey, isContinuous)
         {
             HeldKey = heldKey;
         }
+        #endregion
+        #region public methods
         public bool TryInvoke()
         {
             if (IsPressed())
             {
                 BoundAction.Invoke();//activate the main action
-                OnInput.Invoke();//activate extra actions
+                EventList.GetEvent(EventName).Invoke();
                 return true;
             }
             return false;
@@ -119,5 +140,6 @@ namespace Assets.Scripts.Data_Models
 
             return output;
         }
+        #endregion
     }
 }
