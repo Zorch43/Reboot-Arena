@@ -79,7 +79,6 @@ namespace Assets.Scripts.Data_Models
         {
             if (IsPressed())
             {
-                BoundAction.Invoke();//activate the main action
                 EventList.GetEvent(EventName).Invoke();
                 return true;
             }

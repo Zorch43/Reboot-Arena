@@ -26,6 +26,7 @@ public class ActionPanelController : MonoBehaviour
     private List<TextButtonController> abilityButtons = new List<TextButtonController>();
     private List<Action> disableAbilityActions = new List<Action>();
     private List<UnitController> lastSelectedUnits;
+    private Dictionary<string, UnitAbilityModel> abilities = new Dictionary<string, UnitAbilityModel>();
     #endregion
     #region properties
 
@@ -116,6 +117,8 @@ public class ActionPanelController : MonoBehaviour
                     ActionUnitAbility(specialAbility);
                 });
                 abilityButton.Button.onClick.AddListener(buttonEvent.Invoke);
+                //add to dictionary
+                abilities.Add(specialAbility.Name, specialAbility);
 
                 abilityButton.Text.text = specialAbility.Name;
                 abilityButton.gameObject.SetActive(false);
@@ -184,6 +187,7 @@ public class ActionPanelController : MonoBehaviour
         }
         
     }
+    //TODO: replace functionality.  shouldn't route activation logic through the UI
     public void ActivateUnitAbility(string abilityName)
     {
         foreach(var b in abilityButtons)
@@ -192,7 +196,11 @@ public class ActionPanelController : MonoBehaviour
             {
                 if(b.gameObject.activeSelf && b.Button.interactable)
                 {
-                    b.Button.onClick.Invoke();
+                    UnitAbilityModel result;
+                    if(abilities.TryGetValue(abilityName, out result))
+                    {
+                        ActionUnitAbility(result);
+                    }
                 }
                 break;
             }

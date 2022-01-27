@@ -169,8 +169,7 @@ public class CommandController : MonoBehaviour
         bool isRunning = deltaTime > 0;
         Vector3 mapPos = new Vector3();
         Vector2 mousePosition = Input.mousePosition;
-        //hotKey commands
-        //var hotKeyCommand = GetKeyCommand();
+
         var heldKey = GetHeldKey();
         bool command = false;
         //TODO: refactor to event-based structure.  This is getting dumb
@@ -299,7 +298,7 @@ public class CommandController : MonoBehaviour
                 DoBoundCommands(mainKeyBinds);
             }
         }
-        //TODO: camera controls
+        //camera controls
         if (!command)
         {
             DoBoundCommands(cameraKeyBinds, false);

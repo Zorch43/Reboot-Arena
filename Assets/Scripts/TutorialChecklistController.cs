@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class TutorialChecklistController : MonoBehaviour
@@ -13,10 +14,11 @@ public class TutorialChecklistController : MonoBehaviour
     public TutorialChecklistItemController ChecklistItem;
     #endregion
     #region private fields
-
+    private List<TutorialChecklistItemController> checklistItems = new List<TutorialChecklistItemController>();
+    private int completedTasks;
+    private UnityAction callback;
     #endregion
     #region properties
-
     #endregion
     #region unity methods
     // Start is called before the first frame update
@@ -35,13 +37,37 @@ public class TutorialChecklistController : MonoBehaviour
 
     #endregion
     #region public methods
-    public void Setup()
+    public void Setup(string title, string description, TutorialChecklistItemTask[] items, UnityAction finishCallback)
     {
-        //take tutorial checklist model
-
         //set title
+        Title.text = title;
         //set description
+        Description.text = description;
+        //set callback
+        callback = finishCallback;
+        //clear checklist
+        foreach(var c in checklistItems)
+        {
+            Destroy(c.gameObject);
+        }
+        checklistItems.Clear();
         //add checklist items
+        foreach(var i in items)
+        {
+            var item = Instantiate(ChecklistItem, Checklist.transform);
+            item.Setup(i, this);
+            checklistItems.Add(item);
+        }
+        gameObject.SetActive(true);
+    }
+    public void CompleteTask()
+    {
+        completedTasks++;
+        if(completedTasks >= checklistItems.Count)
+        {
+            gameObject.SetActive(false);
+            callback.Invoke();
+        }
     }
     #endregion
     #region private methods
