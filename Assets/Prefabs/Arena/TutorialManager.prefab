@@ -268,6 +268,7 @@ MonoBehaviour:
   Checklist: {fileID: 5736942285739297160}
   Game: {fileID: 0}
   FinishMissionAtEnd: 0
+  AnimationController: {fileID: 4659921292236416806}
 --- !u!95 &4659921292236416806
 Animator:
   serializedVersion: 3

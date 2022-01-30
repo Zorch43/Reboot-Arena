@@ -27,10 +27,14 @@ public class TutorialMessageTask : TutorialTaskController
             SetupTask();
         }
         manager.MessageBox.Setup(Title, Messages, AnchorTransform, FinishTask);
+        manager.AnimationController.SetBool("Message", true);
     }
     #endregion
     #region protected methods
-
+    protected override void FinishTask()
+    {
+        manager.AnimationController.SetBool("Message", false);
+    }
     #endregion
 
 }

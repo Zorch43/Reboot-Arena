@@ -22,6 +22,7 @@ public class TutorialChecklistTask : TutorialTaskController
             SetupTask();
         }
         manager.Checklist.Setup(Title, Description, checklistItems, FinishTask);
+        manager.AnimationController.SetBool("Checklist", true);
     }
     #endregion
     #region protected methods
@@ -29,6 +30,10 @@ public class TutorialChecklistTask : TutorialTaskController
     {
         base.SetupTask();
         checklistItems = GetComponentsInChildren<TutorialChecklistItemTask>();
+    }
+    protected override void FinishTask()
+    {
+        manager.AnimationController.SetBool("Checklist", false);
     }
     #endregion
 

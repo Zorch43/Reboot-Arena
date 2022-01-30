@@ -12,6 +12,7 @@ public class TutorialTaskManager : MonoBehaviour
     public TutorialChecklistController Checklist;//tutorial checklist controller UI
     public GameController Game;
     public bool FinishMissionAtEnd;
+    public Animator AnimationController;
     #endregion
     #region private fields
     private TutorialTaskController[] taskList;
