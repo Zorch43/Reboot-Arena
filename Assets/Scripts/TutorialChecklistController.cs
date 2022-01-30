@@ -51,6 +51,7 @@ public class TutorialChecklistController : MonoBehaviour
             Destroy(c.gameObject);
         }
         checklistItems.Clear();
+        completedTasks = 0;
         //add checklist items
         foreach(var i in items)
         {

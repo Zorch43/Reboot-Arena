@@ -10,6 +10,8 @@ public class TutorialTaskManager : MonoBehaviour
     #region public fields
     public TutorialMessageController MessageBox;//tutotial message controller UI
     public TutorialChecklistController Checklist;//tutorial checklist controller UI
+    public GameController Game;
+    public bool FinishMissionAtEnd;
     #endregion
     #region private fields
     private TutorialTaskController[] taskList;
@@ -48,7 +50,8 @@ public class TutorialTaskManager : MonoBehaviour
         }
         else
         {
-            //TODO: tutorial end
+            //tutorial end
+            Game.FinishTutorial();
         }
     }
     #endregion

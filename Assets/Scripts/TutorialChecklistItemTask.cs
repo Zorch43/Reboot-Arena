@@ -1,4 +1,5 @@
-﻿using Assets.Scripts.Utility;
+﻿using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ public class TutorialChecklistItemTask : MonoBehaviour
     public int TaskCount = 1;
     public string EventNameManual;
     public EventList.EventNames EventName;
+    public KeyBindConfigModel.KeyBindId KeyBind;
     #endregion
     #region private fields
 
@@ -37,6 +39,17 @@ public class TutorialChecklistItemTask : MonoBehaviour
         else
         {
             return EventList.GetEvent(EventNameManual);
+        }
+    }
+    public string GetDescription()
+    {
+        if(KeyBind == KeyBindConfigModel.KeyBindId.None)
+        {
+            return Description;
+        }
+        else
+        {
+            return string.Format("<color=lightblue>[{0}]</color> {1}", KeyBindConfigSettings.KeyBinds.GetKeyBindById(KeyBind).ToString(), Description);
         }
     }
     #endregion

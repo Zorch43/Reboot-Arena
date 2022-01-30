@@ -66,7 +66,7 @@ public class TutorialChecklistItemController : MonoBehaviour
     }
     public void Setup(TutorialChecklistItemTask template, TutorialChecklistController controller)
     {
-        Setup(template.Description, template.TaskCount, template.GetEvent(), controller);
+        Setup(template.GetDescription(), template.TaskCount, template.GetEvent(), controller);
     }
     #endregion
     #region actions

@@ -21,6 +21,7 @@ public class GameRulesKoth : GameRulesBase
     public int TimerLength;//length of the timer in seconds
     public float MaxTeamToPointRatio;//maximum number of teams per active point.  Excess points are de-activated from the bottom of the list up.  Must always be at least one active point.
     public float TimerPlayerMod;//multiply timer length by this amount for each player beyond the second.  Used to adjust the timer for team count
+    public bool Endless;//if set to true, game cannot be won by anyone
     //TODO: Macro AI controller for these rules
     #endregion
     #region private fields
@@ -54,6 +55,9 @@ public class GameRulesKoth : GameRulesBase
         //timers.Setup(TimerLength * (1 + (Game.Teams.Count - 2) * (1 - TimerPlayerMod)), Game.Teams);
         timers.Setup(TimerLength, Game.Teams);
 
+        //hide timers if in endless mode
+        timers.gameObject.SetActive(!Endless);
+
         //TODO: lock unused control points
         activeCapturePoints = new List<CapturePointController>(ControlPoints);
     }
@@ -84,19 +88,22 @@ public class GameRulesKoth : GameRulesBase
         int rivalControl = 0;
         if(IsInControl(team, out inFullControl, out rivalControl))
         {
-            var remainingTime = timers.UpdateTimer(-deltaTime, team);
-            //if timer is done
-            if(remainingTime <= 0)
+            if (!Endless)
             {
-                //and required number of points are fully-controlled
-                if (inFullControl)
+                var remainingTime = timers.UpdateTimer(-deltaTime, team);
+                //if timer is done
+                if (remainingTime <= 0)
                 {
-                    //team is victorious; return true
-                    return true;
-                }
-                else
-                {
-                    //TODO: display sudden death notification
+                    //and required number of points are fully-controlled
+                    if (inFullControl)
+                    {
+                        //team is victorious; return true
+                        return true;
+                    }
+                    else
+                    {
+                        //TODO: display sudden death notification
+                    }
                 }
             }
         }

@@ -44,10 +44,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GameMenu: {fileID: 0}
-  Objective: {fileID: 0}
   GameStateUI: {fileID: 0}
-  GameStatusUI: {fileID: 1457735871604416551, guid: 3eab806798dc8e845bc8d3f8a8fc7c5a, type: 3}
   VictoryStateUI: {fileID: 0}
-  DefeatStateUI: {fileID: 0}
-  PlayerTeam: {fileID: 0}
-  AITeam: {fileID: 0}
+  SpawnPoints: []
+  PlayerSlotManager: {fileID: 0}
+  PlayerUnitActions: {fileID: 0}
+  PlayerTeamTemplate: {fileID: 0}
+  AITeamTemplate: {fileID: 0}
+  Map: {fileID: 0}
+  CommandInterface: {fileID: 0}
+  Cameras: {fileID: 0}
+  MusicPlayer: {fileID: 0}
+  GameRules: {fileID: 0}
+  DefaultBattleConfig:
+  - TeamId: 0
+    Controller: 1
+    AIIndex: 0
+    UnitClasses: 000000000200000001000000
+  - TeamId: 1
+    Controller: 2
+    AIIndex: 2
+    UnitClasses: 000000000200000001000000

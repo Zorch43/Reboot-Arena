@@ -309,6 +309,15 @@ public class CommandController : MonoBehaviour
             if (GetMouseMapPosition(mousePosition, out mapPos))
             {
                 Cameras.PanToMapLocation(mapPos);
+                //invoke events
+                if (Input.GetMouseButtonDown(0))
+                {
+                    EventList.GetEvent(EventList.EventNames.OnInputMouseMinimapJump).Invoke();
+                }
+                else
+                {
+                    EventList.GetEvent(EventList.EventNames.OnInputMouseMinimapDrag).Invoke();
+                }
             }
         }
         //update double-tap timer

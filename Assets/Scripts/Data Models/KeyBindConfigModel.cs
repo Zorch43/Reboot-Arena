@@ -234,6 +234,8 @@ namespace Assets.Scripts.Data_Models
                 CameraRotateCCW,
                 CameraTiltUp,
                 CameraTiltDown,
+                CameraZoomIn,
+                CameraZoomOut,
                 CameraReset,
                 SelectAll
             };

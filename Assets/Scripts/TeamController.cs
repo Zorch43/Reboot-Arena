@@ -91,7 +91,7 @@ public class TeamController : MonoBehaviour
     }
     #endregion
     #region public methods
-    public void SetUnitClasses(List<UnitClassTemplates.UnitClasses> classList)
+    public void SetUnitClasses(UnitClassTemplates.UnitClasses[] classList)
     {
         UnitClasses = new List<UnitClassModel>();
         foreach(var c in classList)

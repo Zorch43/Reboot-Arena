@@ -34,6 +34,8 @@ public class GameController : MonoBehaviour
 
     public GameRulesBase GameRules;
 
+    public PlayerConfigModel[] DefaultBattleConfig;
+
     #endregion
     #region private fields
 
@@ -87,11 +89,7 @@ public class GameController : MonoBehaviour
         {
             BattleConfig = new BattleConfigModel()
             {
-                Players = new List<PlayerConfigModel>()
-                {
-                    new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.Player, TeamId = 0},
-                    new PlayerConfigModel() { Controller = PlayerConfigModel.ControlType.AI, TeamId = 1}
-                }
+                Players = new List<PlayerConfigModel>(DefaultBattleConfig)
             };
         }
     }
@@ -207,6 +205,20 @@ public class GameController : MonoBehaviour
         Debug.LogError("Spawn point for team " + team + " not found!");
         return new Vector3();
         
+    }
+    public void FinishTutorial()
+    {
+        //player has won, display victory message
+        var victoryMessage = VictoryStateUI.GetComponentInChildren<TextMeshProUGUI>();
+        victoryMessage.text = string.Format("TUTORIAL COMPLETE");
+        MusicPlayer.FadeVolume(.2f, 3);
+        if (!VictoryStateUI.activeSelf)
+        {
+            var victorySound = VictoryStateUI.GetComponent<AudioSource>();
+            VictoryStateUI.SetActive(true);
+            victorySound.Play();
+        }
+        GameMenu.ShowMenu(true);
     }
     #endregion
     #region private methods

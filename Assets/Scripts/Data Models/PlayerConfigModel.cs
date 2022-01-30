@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.Data_Models
 {
+    [System.Serializable]
     public class PlayerConfigModel
     {
         public enum ControlType
@@ -17,25 +18,26 @@ namespace Assets.Scripts.Data_Models
             AI
         }
 
-        public int TeamId { get; set; }
-        
-        public ControlType Controller { get; set; }
+        public int TeamId;
+
+        public ControlType Controller;
         //AI settings
-        public int AIIndex { get; set; }//if control type is AI, pick the AI from list using index
+        public int AIIndex;//if control type is AI, pick the AI from list using index
         //TODO: network player
 
         //unit selection
-        public List<UnitClassTemplates.UnitClasses> UnitClasses { get; set; }
+        public UnitClassTemplates.UnitClasses[] UnitClasses;
 
         //constructor
         public PlayerConfigModel()
         {
-            UnitClasses = new List<UnitClassTemplates.UnitClasses>() 
-            {
+            UnitClasses = new UnitClassTemplates.UnitClasses[] 
+            { 
                 UnitClassTemplates.UnitClasses.Ranger,
-                UnitClassTemplates.UnitClasses.Trooper, 
+                UnitClassTemplates.UnitClasses.Trooper,
                 UnitClassTemplates.UnitClasses.Fabricator 
             };
+
             AIIndex = 2;
         }
     }

@@ -1,3 +1,4 @@
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -103,20 +104,85 @@ public class CameraController : MonoBehaviour
     {
         float deltaTime = Time.deltaTime;
         //if in border zone, scroll the camera
-        var panVector = GetPanVector(Input.mousePosition) + PanVector;
+        var mousePanVector = GetPanVector(Input.mousePosition);
+        var panVector =  mousePanVector + PanVector;
 
         bool redrawEdge = false;
-
+        
         //pan the camera
         if (panVector.magnitude > 0)
         {
+            bool movingUp = panVector.y > 0.4f;
+            bool movingDown = panVector.y < -0.4f;
+            bool movingLeft = panVector.x < -0.4f;
+            bool movingRight = panVector.x > 0.4f;
             if (Input.GetKey(KeyCode.Space))
             {
                 panVector = SUPER_PAN_SPEED * deltaTime * panVector;
+                //invoke events
+                if(mousePanVector.magnitude > 0)
+                {
+                    if (movingUp)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraUpFast).Invoke();
+                    }
+                    else if (movingDown)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraDownFast).Invoke();
+                    }
+                    if (movingLeft)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraLeftFast).Invoke();
+                    }
+                    else if (movingRight)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraRightFast).Invoke();
+                    }
+                }
+                else//TODO: add as regular keybind?
+                {
+                    if (movingUp)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraUpFast).Invoke();
+                    }
+                    else if (movingDown)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraDownFast).Invoke();
+                    }
+                    if (movingLeft)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraLeftFast).Invoke();
+                    }
+                    else if (movingRight)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraRightFast).Invoke();
+                    }
+                }
             }
             else
             {
                 panVector = PAN_SPEED * deltaTime * panVector;
+
+                //invoke events
+                if(mousePanVector.magnitude > 0)
+                {
+                    if (movingUp)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraUp).Invoke();
+                    }
+                    else if (movingDown)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraDown).Invoke();
+                    }
+                    if (movingLeft)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraLeft).Invoke();
+                    }
+                    else if (movingRight)
+                    {
+                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraRight).Invoke();
+                    }
+                }
             }
             
             var panVector3d = new Vector3(panVector.x, 0, panVector.y);

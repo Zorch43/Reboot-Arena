@@ -803,6 +803,7 @@ GameObject:
   - component: {fileID: 1229547387891885131}
   - component: {fileID: 8050921584127752374}
   - component: {fileID: 8672005433334111281}
+  - component: {fileID: 6426733221680916217}
   m_Layer: 5
   m_Name: TutorialMessage
   m_TagString: Untagged
@@ -892,6 +893,25 @@ MonoBehaviour:
   NextButton: {fileID: 2518123725243896657}
   DoneButton: {fileID: 2128177629052535578}
   Cameras: {fileID: 0}
+--- !u!95 &6426733221680916217
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5225132801705331431}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &5900097529288971802
 GameObject:
   m_ObjectHideFlags: 0
