@@ -275,8 +275,28 @@ public class CommandController : MonoBehaviour
                             }
                             else
                             {
+                                //invoke events
+                                if (!GameController.BattleConfig.IsAITeam(selectedUnit.Data.Team))
+                                {
+                                    if (shift)
+                                    {
+                                        if (selectedUnit.SpawnSlot.IsSelected)
+                                        {
+                                            EventList.GetEvent(EventList.EventNames.OnInputSelectRemove).Invoke();
+                                        }
+                                        else
+                                        {
+                                            EventList.GetEvent(EventList.EventNames.OnInputSelectAdd).Invoke();
+                                        }
+                                    }
+                                    else
+                                    {
+                                        EventList.GetEvent(EventList.EventNames.OnInputSelect).Invoke();
+                                    }
+                                }
                                 clicked = true;
                                 SelectUnits(new List<UnitController>() { selectedUnit }, shift);
+                                
                             }
                         }
                     }
@@ -421,6 +441,8 @@ public class CommandController : MonoBehaviour
             respondingUnit.UnitVoice.PlayAttackResponse();
             //place attack marker on enemy unit
             MarkerTemplate.Instantiate(AttackMarker, targetUnit.transform, targetUnit.transform.position, true);
+            //invoke event
+            EventList.GetEvent(EventList.EventNames.OnInputAttack).Invoke();
         });
         
     }
@@ -438,6 +460,8 @@ public class CommandController : MonoBehaviour
             respondingUnit.UnitVoice.PlaySupportResponse();
             //place support marker, if it makes sense
             MarkerTemplate.Instantiate(SupportMarker, targetUnit.transform, targetUnit.transform.position, true);
+            //invoke event
+            EventList.GetEvent(EventList.EventNames.OnInputSupport).Invoke();
         });
     }
     public void GiveUnitMoveOrder(Vector3 targetLocation, List<UnitController> selectedUnits = null)
@@ -453,6 +477,8 @@ public class CommandController : MonoBehaviour
             respondingUnit.UnitVoice.PlayMoveResponse();
             //place move marker on position
             MarkerTemplate.Instantiate(MoveMarker, Map.transform, targetLocation, false);
+            //invoke event
+            EventList.GetEvent(EventList.EventNames.OnInputMove).Invoke();
         });
         
     }
@@ -920,6 +946,13 @@ public class CommandController : MonoBehaviour
         {
             var selectedUnits = GetUnitsInRect(rect);
             SelectUnits(selectedUnits, false);
+            foreach(var u in selectedUnits)
+            {
+                if (!GameController.BattleConfig.IsAITeam(u.Data.Team))
+                {
+                    EventList.GetEvent(EventList.EventNames.OnInputSelectAreaFinish).Invoke();
+                }
+            }
         }
     }
     private List<UnitController> GetUnitsInRect(Rect rect)
