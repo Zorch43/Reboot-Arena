@@ -21,28 +21,29 @@ public class GameRulesKoth : GameRulesBase
     public int TimerLength;//length of the timer in seconds
     public float MaxTeamToPointRatio;//maximum number of teams per active point.  Excess points are de-activated from the bottom of the list up.  Must always be at least one active point.
     public float TimerPlayerMod;//multiply timer length by this amount for each player beyond the second.  Used to adjust the timer for team count
-    public bool Endless;//if set to true, game cannot be won by anyone
+    
     //TODO: Macro AI controller for these rules
     #endregion
     #region private fields
     private GameTimerController timers;
     private List<CapturePointController> activeCapturePoints;
+    private bool objectiveActive;//if set to true, game cannot be won by anyone
     #endregion
     #region properties
 
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
-    {
+    //// Start is called before the first frame update
+    //void Start()
+    //{
         
-    }
+    //}
 
-    // Update is called once per frame
-    void Update()
-    {
+    //// Update is called once per frame
+    //void Update()
+    //{
 
-    }
+    //}
     #endregion
     #region public methods
     public override void Setup()
@@ -51,12 +52,11 @@ public class GameRulesKoth : GameRulesBase
         timers = Instantiate(GameStatusUI, Game.GameStateUI.transform);
         //timers.gameObject.transform.position = GameStateUI.transform.position;
 
-        //setup timers
-        //timers.Setup(TimerLength * (1 + (Game.Teams.Count - 2) * (1 - TimerPlayerMod)), Game.Teams);
-        timers.Setup(TimerLength, Game.Teams);
-
         //hide timers if in endless mode
-        timers.gameObject.SetActive(!Endless);
+        timers.gameObject.SetActive(objectiveActive);
+
+        //setup timers
+        timers.Setup(TimerLength, Game.Teams);
 
         //TODO: lock unused control points
         activeCapturePoints = new List<CapturePointController>(ControlPoints);
@@ -88,7 +88,7 @@ public class GameRulesKoth : GameRulesBase
         int rivalControl = 0;
         if(IsInControl(team, out inFullControl, out rivalControl))
         {
-            if (!Endless)
+            if (objectiveActive)
             {
                 var remainingTime = timers.UpdateTimer(-deltaTime, team);
                 //if timer is done
@@ -243,6 +243,16 @@ public class GameRulesKoth : GameRulesBase
         return objectives;
 
     }
+
+    public override void SetObjectiveActive(bool active)
+    {
+        objectiveActive = active;
+        //hide timers if in endless mode
+        if(timers != null)
+        {
+            timers.gameObject.SetActive(objectiveActive);
+        }
+    }
     #endregion
     #region private methods
     private bool IsInControl(int team, out bool fullControl, out int bestRivalCount)
@@ -280,8 +290,6 @@ public class GameRulesKoth : GameRulesBase
         bestRivalCount = rivalControlCount;
         return controlCount > 0 && controlCount >= rivalControlCount;
     }
-
-    
     #endregion
 
 }

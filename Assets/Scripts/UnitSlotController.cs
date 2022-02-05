@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -32,6 +33,7 @@ public class UnitSlotController : MonoBehaviour
     private Button button;
     private float maxWidth;
     private bool shouldUpdate;
+    private int slotNumber;
     #endregion
     #region properties
     public UnitSlotModel Data { get; set; } = new UnitSlotModel();
@@ -42,7 +44,7 @@ public class UnitSlotController : MonoBehaviour
     void Start()
     {
         button = gameObject.GetComponent<Button>();
-        button.onClick.AddListener(SelectUnitSlot);
+        button.onClick.AddListener(ActionClickSlot);
 
         maxWidth = ((RectTransform)(RespawnFilter.transform)).rect.width;
     }
@@ -115,6 +117,48 @@ public class UnitSlotController : MonoBehaviour
 
         //update selection state
         SelectionIndicator.SetActive(Data.IsSelected);
+    }
+    #endregion
+    #region actions
+    public void ActionClickSlot()
+    {
+        if(Data != null)
+        {
+            switch (Data.SlotNumber)
+            {
+                case 1:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot1).Invoke();
+                    break;
+                case 2:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot2).Invoke();
+                    break;
+                case 3:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot3).Invoke();
+                    break;
+                case 4:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot4).Invoke();
+                    break;
+                case 5:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot5).Invoke();
+                    break;
+                case 6:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot6).Invoke();
+                    break;
+                case 7:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot7).Invoke();
+                    break;
+                case 8:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot8).Invoke();
+                    break;
+                case 9:
+                    EventList.GetEvent(EventList.EventNames.OnInputUISelectSlot9).Invoke();
+                    break;
+                default:
+                    Debug.LogError("Error: invalid slot event #" + Data.SlotNumber + " called.");
+                    break;
+            }
+        }
+        SelectUnitSlot();
     }
     #endregion
     #region public methods

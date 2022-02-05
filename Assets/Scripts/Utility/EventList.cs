@@ -189,7 +189,7 @@ namespace Assets.Scripts.Utility
             }
             else
             {
-                Debug.LogError(string.Format("Event name '{0}' not recognized."));
+                Debug.LogError(string.Format("Event name '{0}' not recognized.", eventName));
                 return null;
             }
         }

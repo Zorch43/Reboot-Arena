@@ -13,6 +13,8 @@ public class AIController : MonoBehaviour
     const float MISSING_HP = 50;//seek healing after battle if at least this much health is missing
     const float CRITICAL_MP = 25;//seek reload if ammo falls below threshold
     const float MISSING_MP = 50;//seek reload after battle if at least this much ammo is missing
+    const string STANCE_RETREAT = "Retreat";
+    const string STANCE_RUSH = "Rush";
     #endregion
     #region public fields
     public TeamController Team;
@@ -73,7 +75,7 @@ public class AIController : MonoBehaviour
         var ammoPacks = Map.GetComponentsInChildren<AmmoPackController>();
         var roll = Random.Range(0, 1f);
         //0: if retreating, retreat to base
-        if(stance == "Retreat" && roll < Config.Difficulty + Config.RetreatMod)
+        if(stance == STANCE_RETREAT && roll < Config.Difficulty + Config.RetreatMod)
         {
             DoRetreat(selectedUnit);
         }
@@ -131,7 +133,7 @@ public class AIController : MonoBehaviour
                 selectedUnit.DoAttack(attackTarget);
             }
             //5: if rushing, rush
-            else if (stance == "Rush" && currentObjective.Objective.CurrOwner != Team.Team)//if the point is not owned 
+            else if (stance == STANCE_RUSH && currentObjective.Objective.CurrOwner != Team.Team)//if the point is not owned 
             {
                 //Debug.Log("Unit " + selectedUnit.SpawnSlot.SlotNumber + " Rushing point");
                 DoRush(selectedUnit);
@@ -171,6 +173,15 @@ public class AIController : MonoBehaviour
 
             }
         }
+    }
+    public void SetAIActive(bool active)
+    {
+        if (!active)
+        {
+            strategicStance = STANCE_RETREAT;
+            GiveTeamOrders(strategicStance);
+        }
+        enabled = active;
     }
     #endregion
     #region private methods
@@ -930,6 +941,35 @@ public class AIController : MonoBehaviour
         }
 
         return bestObjective;
+    }
+    private void GiveTeamOrders()
+    {
+        //get all units
+        var mapUnits = Map.Units;//new List<UnitController>();
+
+        currentObjective = GetSingleObjective(mapUnits);
+        SetStrategicStance(mapUnits);//pick stance
+                                     //var teamUnits = new List<UnitController>();
+        for (int i = 0; i < mapUnits.Count; i++)
+        {
+            var u = mapUnits[i] as UnitController;
+            if (u != null && u.Data.Team == Team.Team)
+            {
+                DoTacticalActionExplicit(u, mapUnits.ToArray(), strategicStance);
+            }
+        }
+    }
+    private void GiveTeamOrders(string stance)
+    {
+        var mapUnits = Map.Units;//new List<UnitController>();
+        for (int i = 0; i < mapUnits.Count; i++)
+        {
+            var u = mapUnits[i] as UnitController;
+            if (u != null && u.Data.Team == Team.Team)
+            {
+                DoTacticalActionExplicit(u, mapUnits.ToArray(), strategicStance);
+            }
+        }
     }
     #endregion
     #endregion

@@ -184,6 +184,7 @@ public class CommandController : MonoBehaviour
                     {
                         GiveAttackMoveOrder(mapPos);
                         command = true;
+                        EventList.GetEvent(EventList.EventNames.OnInputAttackMoveSet).Invoke();
                     }
 
                 }
@@ -202,6 +203,7 @@ public class CommandController : MonoBehaviour
                     {
                         GiveForceAttackOrder(mapPos);
                         command = true;
+                        EventList.GetEvent(EventList.EventNames.OnInputForceAttackSet).Invoke();
                     }
                 }
                 else if (Input.GetMouseButtonDown(1))
@@ -218,6 +220,7 @@ public class CommandController : MonoBehaviour
                     {
                         GiveRallyOrder(mapPos);
                         command = true;
+                        EventList.GetEvent(EventList.EventNames.OnInputRallySet).Invoke();
                     }
                 }
                 else if (Input.GetMouseButtonDown(1))
@@ -553,6 +556,10 @@ public class CommandController : MonoBehaviour
             u.DoSpecialAbility(location, currentHologram);
             if (!firstResponse)
             {
+                if (SpecialAbility.IsTargetedAbility)
+                {
+                    EventList.GetEvent(SpecialAbility.EventNameSet).Invoke();
+                }
                 firstResponse = true;
                 MarkerTemplate.Instantiate(Resources.Load<Sprite>(SpecialAbility.Marker), Map.transform, location, false);
                 //give special ability response

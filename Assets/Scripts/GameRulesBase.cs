@@ -17,5 +17,6 @@ public abstract class GameRulesBase : MonoBehaviour
     public abstract void Setup();
     public abstract bool IsTeamVictorious(int team, float deltaTime);
     public abstract List<AIObjectiveModel> GetAIObjectives(int team, List<DroneController> allDrones);
+    public abstract void SetObjectiveActive(bool objectiveActive);
     #endregion
 }

@@ -22,22 +22,16 @@ public class TutorialTaskManager : MonoBehaviour
 
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
+
+    #endregion
+    #region public methods
+    public void StartTutorial()
     {
         //populate task list
         ScanTasks();
         //do the first task
         DoNextTask();
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    #endregion
-    #region public methods
     public void ScanTasks()
     {
         taskList = GetComponentsInChildren<TutorialTaskController>();
@@ -49,7 +43,7 @@ public class TutorialTaskManager : MonoBehaviour
         {
             taskList[taskIndex].StartTask();
         }
-        else
+        else if(FinishMissionAtEnd)
         {
             //tutorial end
             Game.FinishTutorial();

@@ -33,6 +33,7 @@ public class GameController : MonoBehaviour
     public MusicPlayerController MusicPlayer;
 
     public GameRulesBase GameRules;
+    public TutorialTaskManager Tutorial;
 
     public PlayerConfigModel[] DefaultBattleConfig;
 
@@ -80,7 +81,6 @@ public class GameController : MonoBehaviour
             return units;
         }
     }
-
     #endregion
     #region unity methods
     private void Awake()
@@ -147,6 +147,7 @@ public class GameController : MonoBehaviour
         }
 
         GameRules.Setup();
+        Tutorial.StartTutorial();
     }
 
     // Update is called once per frame

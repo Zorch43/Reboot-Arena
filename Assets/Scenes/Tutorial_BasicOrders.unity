@@ -1487,7 +1487,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AnchorTransform: {fileID: 0}
-  Title: Comm
+  Title: Basic Commands
   Messages:
   - In this tutorial, you'll learn how to command your team on the battlefield.
 --- !u!1001 &1496589313356052208
