@@ -444,7 +444,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d56ec25965cae14dbb42c04c620168a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Title: Mouse Camera Movement
+  Title: Key Camera Movement
   Description: The camera can also be moved using the keyboard.  Use the specified
     keys to move the camera in the desired direction.
 --- !u!1 &118738036
@@ -476,7 +476,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 35
+  m_RootOrder: 34
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &118738038
 MonoBehaviour:
@@ -495,7 +495,7 @@ MonoBehaviour:
   Messages:
   - This is the end of the tutorial.  Close this message to apply what you've learned. 
     Take and hold the central Control Point for a total of three minutes, before
-    your opponent does the same.
+    your opponent does the same.  Good luck.
 --- !u!1 &139346064
 GameObject:
   m_ObjectHideFlags: 0
@@ -525,7 +525,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 32
+  m_RootOrder: 31
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &139346066
 MonoBehaviour:
@@ -542,9 +542,8 @@ MonoBehaviour:
   AnchorTransform: {fileID: 1621629669}
   Title: Health Pickups
   Messages:
-  - Move over health pickups with your units to heal them.
-  - Excess healing will be scattered as health packs.
-  - Health pack respawns after 10 seconds.
+  - Move over health pickups with your units to heal them. Excess healing will be
+    scattered as health packs. Health packs respawn after 10 seconds.
 --- !u!1 &140402256
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,7 +666,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 36
+  m_RootOrder: 35
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -999,7 +998,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee46326ba19ac94aab623c9d306ecb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Description: Rotate Counter-Clockwise
+  Description: Counter-Clockwise
   TaskCount: 1
   EventNameManual: OnInputKeyCameraRotateCCW
   EventName: 104
@@ -1201,7 +1200,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 33
+  m_RootOrder: 32
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &344956672
 MonoBehaviour:
@@ -1218,10 +1217,9 @@ MonoBehaviour:
   AnchorTransform: {fileID: 1621629670}
   Title: Ammo Pickups
   Messages:
-  - Move over aamo pickups with your units to resupply them.
-  - Excess ammunition will be scattered as ammo packs.
-  - Ammo pack respawns after 10 seconds.
-  - All units drop an ammo pack upon destruction.
+  - Move over ammo pickups with your units to resupply them. Excess ammunition will
+    be scattered as ammo packs. Ammo pack respawns after 10 seconds. All units drop
+    an ammo pack upon destruction.
 --- !u!1 &350466713
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,7 +1251,7 @@ RectTransform:
   - {fileID: 2082353763}
   - {fileID: 1494973986}
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 31
+  m_RootOrder: 30
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1329,7 +1327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Title: Fast Camera Movement
   Description: Holding down <color=lightblue>Space</color> to speed up camera movement
-    speed also works while moving using the keyboard.  Try it now.
+    speed also works while moving using the keyboard.
 --- !u!1 &409584700
 GameObject:
   m_ObjectHideFlags: 0
@@ -1359,7 +1357,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 34
+  m_RootOrder: 33
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &409584702
 MonoBehaviour:
@@ -1379,59 +1377,11 @@ MonoBehaviour:
   - On each map you will need to capture and/or prevent your opponent from capturing
     Control Points.
   - To start capturing a Control Point, move your units on top of the point, and
-    ensure that your units are the only units on the point.
-  - The more units on the point, the faster you will capture the point.
-  - Halt enemy capture progress on the COntrol Point by moving your units onto the
-    point.
-  - Partial capture or uncapture progress starts decaying after a short period of
-    time if left unattended.
---- !u!1 &440157548
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 440157549}
-  - component: {fileID: 440157550}
-  m_Layer: 0
-  m_Name: RespawnStatusMessage
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &440157549
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 440157548}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 26
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &440157550
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 440157548}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 94ab00030664b2b4ba4a35be984511f3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  AnchorTransform: {fileID: 4508017135001180748}
-  Title: Respawning Progress
-  Messages:
-  - You can see the respawn progress of each unit in the status panel.
+    ensure that your units are the only units on the point. The more units on the
+    point, the faster you will capture the point.
+  - Halt enemy capture progress on the Control Point by moving your units onto the
+    point. Partial capture or uncapture progress starts decaying after a short period
+    of time if left unattended.
 --- !u!1 &443914017
 GameObject:
   m_ObjectHideFlags: 0
@@ -1535,9 +1485,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d56ec25965cae14dbb42c04c620168a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Title: Add and Remove Units from Selection
-  Description: Modify an existing selection by holding down Shift while clicking
-    on a unit.
+  Title: Modify Selection
+  Description: To select a unit without deselecting the rest or your selected units,
+    or to deselect a single unit, hold down <color=lightblue>Shift</color> while
+    clicking on the unit.
 --- !u!1 &515029839
 GameObject:
   m_ObjectHideFlags: 0
@@ -1587,7 +1538,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Description: Attack Order
-  TaskCount: 5
+  TaskCount: 3
   EventNameManual: OnInputAttack
   EventName: 55
   KeyBind: 0
@@ -1623,7 +1574,7 @@ RectTransform:
   - {fileID: 1884542634}
   - {fileID: 225366569}
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 29
+  m_RootOrder: 28
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -1643,8 +1594,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: The Force-Attack Order
-  Description: A Force-Attack order directs the selected units to attack the indicated
-    position, even if ther are no (visible) units there.  To Give a Force-Attack
+  Description: A force-attack order directs the selected units to attack the indicated
+    position, even if ther are no (visible) units there.  To give a force-attack
     order, click on its button or tap its hotkey, then click to target the attack.
 --- !u!1 &607556166
 GameObject:
@@ -2182,7 +2133,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ee46326ba19ac94aab623c9d306ecb7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Description: Rotate Clockwise
+  Description: Clockwise
   TaskCount: 1
   EventNameManual: OnInputKeyCameraRotateCW
   EventName: 104
@@ -2369,7 +2320,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Description: Reset Camera
-  TaskCount: 3
+  TaskCount: 1
   EventNameManual: OnInputKeyCameraReset
   EventName: 104
   KeyBind: 38
@@ -2681,7 +2632,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Description: Move Order
-  TaskCount: 5
+  TaskCount: 3
   EventNameManual: OnInputMove
   EventName: 55
   KeyBind: 0
@@ -2895,7 +2846,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: Rotate the Camera
-  Description: Try rotating your camera view now.
+  Description: You can rotate the camera around your current focus point using the
+    keyboard.
 --- !u!1001 &1155369463
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3011,7 +2963,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: Fast Camera Movement
-  Description: To moe the camera extra-fast, hold down <color=lightblue>Space</color>
+  Description: To move the camera extra-fast, hold down <color=lightblue>Space</color>
     while moving your cursor to the edges of the screen.
 --- !u!1 &1188077988
 GameObject:
@@ -3339,8 +3291,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: Slot Selection
-  Description: Units can also be selected by clicking on their portrait in the unit
-    status panel.
+  Description: Units can be selected though the status panel by clicking on their
+    portrait in the unit status panel.  Each unit has a identifying number that is
+    displayed on their portrait, the minimap, and their unit status bar.
 --- !u!1 &1282299536
 GameObject:
   m_ObjectHideFlags: 0
@@ -3464,7 +3417,7 @@ RectTransform:
   - {fileID: 1420638484}
   - {fileID: 1437890244}
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 27
+  m_RootOrder: 26
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -3613,12 +3566,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   AnchorTransform: {fileID: 0}
-  Title: 'Tutorial: Camera Control'
+  Title: Reboot Arena Tutorial
   Messages:
-  - Welcome to the Reboot ArenWelcome to Reboot Arena!  Before you learn to command
-    your team in battle, you'll need to learn to control the camera to get the best
-    view of the action.
-  - When you are ready to start the tutorial proper, click the "Done" button.
+  - Welcome to the Reboot Arena Tutorial.  Before you learn to command your team
+    in battle, you'll need to learn to control the camera to get the best view of
+    the action.<br><br>When you are ready to start the tutorial proper, click the
+    "Done" button.
 --- !u!1 &1390744346
 GameObject:
   m_ObjectHideFlags: 0
@@ -3670,7 +3623,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: Tilting the Camera
-  Description: Try tilting your camera.
+  Description: Tilt your camera up and down using the keyboard.
 --- !u!1 &1401759709
 GameObject:
   m_ObjectHideFlags: 0
@@ -4038,13 +3991,13 @@ MonoBehaviour:
   AnchorTransform: {fileID: 4508017135001180748}
   Title: Unit Status
   Messages:
-  - The status of each of your units is listed here.
   - '<color=green>Health</color>: How much damage the unit can take before it is
-    destroyed and forced to respawn.'
-  - '<color=yellow>Ammo</color>: Resource used to fuel special abilities and more
-    powerful weapons.  The <color=lightblue>Trooper</color> class uses <color=yellow>Ammo</color>
-    to launch grenades and fire its assault rile on full-auto.'
-  - 'Selection Status: A selection bracket will appear around selected unit slots.'
+    destroyed and forced to respawn. <br><color=yellow>Ammo</color>: Resource used
+    to fuel special abilities and more powerful weapons.  The <color=lightblue>Trooper</color>
+    class uses <color=yellow>Ammo</color> to launch grenades and fire its assault
+    rile on full-auto. '
+  - 'Selection Status: A selection bracket will appear around selected unit slots.
+    <br>Respawn progress: Respawning units will display their progress towards respawning.'
 --- !u!1 &1494973985
 GameObject:
   m_ObjectHideFlags: 0
@@ -4416,7 +4369,7 @@ RectTransform:
   - {fileID: 748896658}
   - {fileID: 1786378846}
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 30
+  m_RootOrder: 29
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4437,8 +4390,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Title: 'Special Ability: Grenade'
   Description: The Trooper's special ability allows it to fire a grenade at a targeted
-    location.  This ability costs 100 ammo.  The Grenade special ability is activated
-    and targeted like other special orders.
+    location.  This ability costs <color=yellow>100</color><sprite index=0>.  The
+    Grenade special ability is activated and targeted like other special orders.
 --- !u!1 &1589145189
 GameObject:
   m_ObjectHideFlags: 0
@@ -4471,7 +4424,7 @@ RectTransform:
   - {fileID: 1436693463}
   - {fileID: 2013820603}
   m_Father: {fileID: 4508017135001180746}
-  m_RootOrder: 28
+  m_RootOrder: 27
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -4491,8 +4444,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Title: The Attack-Move Order
-  Description: An Attack-Move order directs the selected units to move to the indicated
-    location, stopping to engage any enemy units they encounter on the way.  To give
+  Description: An attack-move order directs the selected units to move to the indicated
+    location, pausing to engage any enemy units they encounter on the way.  To give
     an attack-move order, click the Attack-Move button or tap the hotkey, then click
     the desired location.
 --- !u!1 &1617705159
@@ -5456,7 +5409,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Title: Resetting the Camera
   Description: If you ever want to return the camera to its default tilt, roatation
-    and zoom, you can reset the camera.  Experiment witht he tilt, rotation, and
+    and zoom, you can reset the camera.  Experiment with the tilt, rotation, and
     zoom, then try resetting it.
 --- !u!1 &2082353762
 GameObject:
@@ -5935,6 +5888,26 @@ PrefabInstance:
     - target: {fileID: 1386373020355294243, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
       propertyPath: DefaultBattleConfig.Array.data[1].UnitClasses.Array.size
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1529056642322131655, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2251958119159419716, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 2837938017449159684, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_text
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3250088782512264583, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3439409820314694685, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
+      propertyPath: m_text
+      value: Title
       objectReference: {fileID: 0}
     - target: {fileID: 4275985406967617300, guid: d570a6725482cf34687b17a6c4fae046, type: 3}
       propertyPath: m_AnchorMax.y
