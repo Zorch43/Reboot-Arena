@@ -17,6 +17,7 @@ public class GameSetupController : MonoBehaviour
     public GameObject SettingsList;
     public TeamSettingController SettingsTemplate;
     public LoadingTransitionController LoadingTransition;
+    public bool UseCampaignSettings;
     #endregion
     #region private fields
 
@@ -77,6 +78,10 @@ public class GameSetupController : MonoBehaviour
                 setting.gameObject.SetActive(false);
             }
             setting.Refresh();
+            if (UseCampaignSettings)
+            {
+                setting.SetInteractive(false);
+            }
         }
 
         gameObject.SetActive(true);
@@ -86,16 +91,24 @@ public class GameSetupController : MonoBehaviour
     public void ActionPlay()
     {
         //transfer data to battle config
-        var config = new BattleConfigModel();
-        config.Players = new List<PlayerConfigModel>();
-        foreach(var s in Settings)
+        if (UseCampaignSettings)
         {
-            if(s.Data.Controller != PlayerConfigModel.ControlType.None)
-            {
-                config.Players.Add(s.Data);
-            }
+            GameController.BattleConfig = null;//use default map settings
         }
-        GameController.BattleConfig = config;
+        else
+        {
+            var config = new BattleConfigModel();
+            config.Players = new List<PlayerConfigModel>();
+            foreach (var s in Settings)
+            {
+                if (s.Data.Controller != PlayerConfigModel.ControlType.None)
+                {
+                    config.Players.Add(s.Data);
+                }
+            }
+            GameController.BattleConfig = config;
+        }
+        
         //load scene
         LoadingTransition.LoadScene(SceneName, null);
     }

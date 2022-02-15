@@ -10,13 +10,7 @@ public class HomeMenuController : MonoBehaviour
 
     #endregion
     #region public fields
-    public GameObject PlayView;
-    public GameObject InfoView;
-    public GameObject CreditsView;
     public ConfirmationMenuController ConfirmDialog;
-    public Button PlayButton;
-    public Button InfoButton;
-    public Button CreditsButton;
     public Button ExitButton;
     #endregion
     #region private fields
@@ -29,28 +23,10 @@ public class HomeMenuController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        PlayButton.onClick.AddListener(ActionPlay);
-        InfoButton.onClick.AddListener(ActionInfo);
-        CreditsButton.onClick.AddListener(ActionCredits);
         ExitButton.onClick.AddListener(ActionExit);
     }
     #endregion
     #region actions
-    public void ActionPlay()
-    {
-        PlayView.SetActive(true);
-        gameObject.SetActive(false);
-    }
-    public void ActionInfo()
-    {
-        InfoView.SetActive(true);
-        gameObject.SetActive(false);
-    }
-    public void ActionCredits()
-    {
-        CreditsView.SetActive(true);
-        gameObject.SetActive(false);
-    }
     public void ActionExit()
     {
         ConfirmDialog.GetConfirmation("Are you sure you want to quit?", Application.Quit);
