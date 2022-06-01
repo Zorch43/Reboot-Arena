@@ -6,11 +6,10 @@ using UnityEngine;
 public class UnitSlotManager : MonoBehaviour
 {
     #region constants
-    const int MAX_SLOT_COUNT = 9;
+    const int MAX_SLOT_COUNT = 6;
     #endregion
     #region public fields
     public UnitSlotController UnitSlotTemplate;
-    public ClassMenuController ClassMenu;
     #endregion
     #region private fields
 

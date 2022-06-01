@@ -21,12 +21,11 @@ public class CommandController : MonoBehaviour
     const float DOUBLE_TAP_TIME = 0.25f;
     #endregion
     #region public fields
+    public CameraController Cameras;
     public MapController Map;
     public UnitSlotManager UnitSlotUI;
-    public ActionPanelController UnitActionUI;
     public SelectionRectController SelectionRect;
     public GameMenuController GameMenuUI;
-    public CameraController Cameras;
     public Texture2D AttackMoveCursor;
     public Texture2D ForceAttackCursor;
     public Texture2D SetRallyPointCursor;
@@ -47,6 +46,7 @@ public class CommandController : MonoBehaviour
     //double-tap detection
     private float clickTimer;
     private bool clicked;
+    private Camera mainCamera;
     #endregion
     #region properties
     public SpecialCommands SelectedCommand { get; set; }
@@ -58,25 +58,26 @@ public class CommandController : MonoBehaviour
     void Start()
     {
         KeyBindConfigSettings.LoadFromFile();
-        MarkerTemplate.MainCamera = Cameras.MainCamera;
+        mainCamera = Cameras.MainCamera;
+        MarkerTemplate.MainCamera = mainCamera;
         isSpectating = GameController.BattleConfig.IsPlayerSpectator;
 
         //match keybinds with actions
         var keyBinds = KeyBindConfigSettings.KeyBinds;
-        keyBinds.AbilityGrenadeKey.BoundAction = ActionAbilityGrenade;
-        keyBinds.AbilityTurretKey.BoundAction = ActionAbilityTurret;
-        keyBinds.AbilityNanoPackKey.BoundAction = ActionAbilityNanoPack;
-        keyBinds.AttackMoveKey.BoundAction = ActionAttackMove;
-        keyBinds.AttackMoveModeKey.BoundAction = ActionAttackMoveMode;
-        keyBinds.ClassMenuToggle.BoundAction = ActionToggleClassMenu;
-        keyBinds.ClassSwitchFabricator.BoundAction = ActionSwitchClassFabricator;
-        keyBinds.ClassSwitchQuickFabricator.BoundAction = ActionSwitchClassFabricator;
-        keyBinds.ClassSwitchQuickTrooper.BoundAction = ActionSwitchClassTrooper;
-        keyBinds.ClassSwitchTrooper.BoundAction = ActionSwitchClassTrooper;
-        keyBinds.ClassSwitchQuickRanger.BoundAction = ActionSwitchClassRanger;
-        keyBinds.ClassSwitchRanger.BoundAction = ActionSwitchClassRanger;
-        keyBinds.ForceAttackKey.BoundAction = ActionForceAttack;
-        keyBinds.ForceAttackModeKey.BoundAction = ActionForceAtttackMode;
+        //keyBinds.AbilityGrenadeKey.BoundAction = ActionAbilityGrenade;
+        //keyBinds.AbilityTurretKey.BoundAction = ActionAbilityTurret;
+        //keyBinds.AbilityNanoPackKey.BoundAction = ActionAbilityNanoPack;
+        //keyBinds.AttackMoveKey.BoundAction = ActionAttackMove;
+        //keyBinds.AttackMoveModeKey.BoundAction = ActionAttackMoveMode;
+        //keyBinds.ClassMenuToggle.BoundAction = ActionToggleClassMenu;
+        //keyBinds.ClassSwitchFabricator.BoundAction = ActionSwitchClassFabricator;
+        //keyBinds.ClassSwitchQuickFabricator.BoundAction = ActionSwitchClassFabricator;
+        //keyBinds.ClassSwitchQuickTrooper.BoundAction = ActionSwitchClassTrooper;
+        //keyBinds.ClassSwitchTrooper.BoundAction = ActionSwitchClassTrooper;
+        //keyBinds.ClassSwitchQuickRanger.BoundAction = ActionSwitchClassRanger;
+        //keyBinds.ClassSwitchRanger.BoundAction = ActionSwitchClassRanger;
+        //keyBinds.ForceAttackKey.BoundAction = ActionForceAttack;
+        //keyBinds.ForceAttackModeKey.BoundAction = ActionForceAtttackMode;
         keyBinds.GameMenuKey.BoundAction = ActionGameMenu;
         keyBinds.SetRallyPointKey.BoundAction = ActionRally;
         keyBinds.SetRallyPointModeKey.BoundAction = ActionRallyMode;
@@ -91,17 +92,17 @@ public class CommandController : MonoBehaviour
         keyBinds.UnitSlot8Key.BoundAction = ActionSlot8;
         keyBinds.UnitSlot9Key.BoundAction = ActionSlot9;
         //camera binds
-        keyBinds.CameraPanDown.BoundAction = ActionPanCameraDown;
-        keyBinds.CameraPanLeft.BoundAction = ActionPanCameraLeft;
-        keyBinds.CameraPanRight.BoundAction = ActionPanCameraRight;
-        keyBinds.CameraPanUp.BoundAction = ActionPanCameraUp;
-        keyBinds.CameraRotateCCW.BoundAction = ActionCameraRotateCCW;
-        keyBinds.CameraRotateCW.BoundAction = ActionCameraRotateCW;
-        keyBinds.CameraTiltDown.BoundAction = ActionCameraTiltDown;
-        keyBinds.CameraTiltUp.BoundAction = ActionCameraTiltUp;
-        keyBinds.CameraZoomIn.BoundAction = ActionCameraZoomIn;
-        keyBinds.CameraZoomOut.BoundAction = ActionCameraZoomOut;
-        keyBinds.CameraReset.BoundAction = ActionCameraReset;
+        //keyBinds.CameraPanDown.BoundAction = ActionPanCameraDown;
+        //keyBinds.CameraPanLeft.BoundAction = ActionPanCameraLeft;
+        //keyBinds.CameraPanRight.BoundAction = ActionPanCameraRight;
+        //keyBinds.CameraPanUp.BoundAction = ActionPanCameraUp;
+        //keyBinds.CameraRotateCCW.BoundAction = ActionCameraRotateCCW;
+        //keyBinds.CameraRotateCW.BoundAction = ActionCameraRotateCW;
+        //keyBinds.CameraTiltDown.BoundAction = ActionCameraTiltDown;
+        //keyBinds.CameraTiltUp.BoundAction = ActionCameraTiltUp;
+        //keyBinds.CameraZoomIn.BoundAction = ActionCameraZoomIn;
+        //keyBinds.CameraZoomOut.BoundAction = ActionCameraZoomOut;
+        //keyBinds.CameraReset.BoundAction = ActionCameraReset;
 
         keyBinds.SelectAll.BoundAction = ActionSelectAll;
         //organize binds into lists and sort them
@@ -258,7 +259,7 @@ public class CommandController : MonoBehaviour
                 //selection
                 if (Input.GetMouseButtonDown(0))
                 {
-                    var ray = Cameras.MainCamera.ScreenPointToRay(mousePosition);
+                    var ray = mainCamera.ScreenPointToRay(mousePosition);
                     RaycastHit hit;
                     UnitController selectedUnit = null;
                     if (GetRayHit(ray, out hit, true))
@@ -326,23 +327,7 @@ public class CommandController : MonoBehaviour
         {
             DoBoundCommands(cameraKeyBinds, false);
         }
-        //left-click on minimap will always pan the camera to the clicked location
-        if (Cameras.IsPointInMiniMapBounds(Input.mousePosition) && Input.GetMouseButton(0))
-        {
-            if (GetMouseMapPosition(mousePosition, out mapPos))
-            {
-                Cameras.PanToMapLocation(mapPos);
-                //invoke events
-                if (Input.GetMouseButtonDown(0))
-                {
-                    EventList.GetEvent(EventList.EventNames.OnInputMouseMinimapJump).Invoke();
-                }
-                else
-                {
-                    EventList.GetEvent(EventList.EventNames.OnInputMouseMinimapDrag).Invoke();
-                }
-            }
-        }
+       
         //update double-tap timer
         if (clicked)
         {
@@ -395,11 +380,10 @@ public class CommandController : MonoBehaviour
                 }
             }
         }
-        UnitActionUI.PopulateAbilityButtons(selectedUnits);
     }
     public void GiveOrder(Vector3 targetLocation)
     {
-        var fromCamera = Cameras.GetCommandCamera(targetLocation);
+        var fromCamera = mainCamera;
 
         if(fromCamera != null)
         {
@@ -758,9 +742,9 @@ public class CommandController : MonoBehaviour
             selectedUnits = new List<UnitController>();
             foreach (var s in selectedSlots)
             {
-                if (s.Data.CurrentUnit != null)
+                if (s.Data.Unit != null)
                 {
-                    selectedUnits.Add(s.Data.CurrentUnit);
+                    selectedUnits.Add(s.Data.Unit);
                 }
             }
         }
@@ -771,40 +755,9 @@ public class CommandController : MonoBehaviour
     {
         return Map.Units;
     }
-    public void SetRespawnClass(UnitClassModel nextClass)
-    {
-        var slots = GetSelectedSlots();
-        foreach(var s in slots)
-        {
-            s.Data.NextUnitClass = nextClass;
-        }
-    }
     #endregion
     #region command actions
-    private void ActionAttackMove()
-    {
-        Vector3 mapPos;
-        if (GetMouseMapPosition(Input.mousePosition, out mapPos))
-        {
-            GiveAttackMoveOrder(mapPos);
-        }
-    }
-    private void ActionAttackMoveMode()
-    {
-        UnitActionUI.ActionMoveAttack();
-    }
-    private void ActionForceAttack()
-    {
-        Vector3 mapPos;
-        if (GetMouseMapPosition(Input.mousePosition, out mapPos))
-        {
-            GiveForceAttackOrder(mapPos);
-        }
-    }
-    private void ActionForceAtttackMode()
-    {
-        UnitActionUI.ActionForceAttack();
-    }
+
     private void ActionGameMenu()
     {
         GameMenuUI.ShowMenu();
@@ -819,7 +772,7 @@ public class CommandController : MonoBehaviour
     }
     private void ActionRallyMode()
     {
-        UnitActionUI.ActionSetRallyPoint();
+        //TODO: prepare to set rally point
     }
     private void ActionStop()
     {
@@ -861,86 +814,7 @@ public class CommandController : MonoBehaviour
     {
         UnitSlotUI.SelectSlot(9);
     }
-    private void ActionAbilityGrenade()
-    {
-        UnitActionUI.ActivateUnitAbility("Grenade");
-    }
-    private void ActionAbilityTurret()
-    {
-        UnitActionUI.ActivateUnitAbility("Turret");
-    }
-    private void ActionAbilityNanoPack()
-    {
-        UnitActionUI.ActivateUnitAbility("NanoPack");
-    }
-    private void ActionToggleClassMenu()
-    {
-        if(SelectedCommand == SpecialCommands.ClassMenu)
-        {
-            UnitActionUI.ClassMenu.ActionHideClassMenu();
-        }
-        else
-        {
-            UnitActionUI.ClassMenu.ShowClassMenu();
-        }
-    }
     
-    private void ActionSwitchClassFabricator()
-    {
-        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetFabricatorClass());
-    }
-    private void ActionSwitchClassTrooper()
-    {
-        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetTrooperClass());
-    }
-    private void ActionSwitchClassRanger()
-    {
-        UnitActionUI.ClassMenu.ActionSetClass(UnitClassTemplates.GetRangerClass());
-    }
-    private void ActionPanCameraDown()
-    {
-        Cameras.PanVector += new Vector2(0, -1);
-    }
-    private void ActionPanCameraUp()
-    {
-        Cameras.PanVector += new Vector2(0, 1);
-    }
-    private void ActionPanCameraLeft()
-    {
-        Cameras.PanVector += new Vector2(-1, 0);
-    }
-    private void ActionPanCameraRight()
-    {
-        Cameras.PanVector += new Vector2(1, 0);
-    }
-    private void ActionCameraRotateCCW()
-    {
-        Cameras.TiltVector += new Vector2(1, 0);
-    }
-    private void ActionCameraRotateCW()
-    {
-        Cameras.TiltVector += new Vector2(-1, 0);
-    }
-    private void ActionCameraTiltUp()
-    {
-        Cameras.TiltVector += new Vector2(0, 1);
-    }
-    private void ActionCameraTiltDown()
-    {
-        Cameras.TiltVector += new Vector2(0, -1);
-    }
-    private void ActionCameraZoomIn()
-    {
-        Cameras.ZoomDelta += 1;
-    }
-    private void ActionCameraZoomOut()
-    {
-        Cameras.ZoomDelta -= 1;
-    }
-    private void ActionCameraReset()
-    {
-        Cameras.ResetOrientation();
-    }
     private void ActionSelectAll()
     {
         SelectUnits(GetUnitsInRect(Cameras.MainViewRect), false);
@@ -968,7 +842,7 @@ public class CommandController : MonoBehaviour
         var allUnits = GetAllUnits();
         foreach (var u in allUnits)
         {
-            var unitPoint = Cameras.MainCamera.WorldToScreenPoint(u.transform.position);
+            var unitPoint = mainCamera.WorldToScreenPoint(u.transform.position);
             if (rect.Contains(unitPoint))
             {
                 var selectedUnit = u as UnitController;
@@ -1055,10 +929,8 @@ public class CommandController : MonoBehaviour
     }
     private bool GetMouseMapPosition(Vector2 mousePosition, out Vector3 mapPos)
     {
-        //auto-detect which camera to use (main or minimap) based on mouse position
-        var fromCamera = Cameras.GetCommandCamera(mousePosition);
 
-        return GetMapPositionFromScreen(mousePosition, out mapPos, fromCamera);
+        return GetMapPositionFromScreen(mousePosition, out mapPos, mainCamera);
     }
 
     private bool UpdateHologramVisibility(Vector2 mousePosition)

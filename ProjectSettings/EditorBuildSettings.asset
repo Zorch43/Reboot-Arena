@@ -8,9 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/MainMenu.unity
     guid: 79c0c41ad39824942a57b2a3e681fbac
-  - enabled: 0
-    path: Assets/Scenes/TestScene1.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Tutorial_Master.unity
+    guid: a13b613423e147645a24ed8babbca81a
   - enabled: 1
     path: Assets/Scenes/KotH_KnifeFight.unity
     guid: ba79353b8558f9a47945a14f7275f6fa

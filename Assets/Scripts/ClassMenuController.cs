@@ -29,7 +29,7 @@ public class ClassMenuController : MonoBehaviour
     #region actions
     public void ActionSetClass(UnitClassModel nextClass)
     {
-        CommandInterface.SetRespawnClass(nextClass);
+        
         ActionHideClassMenu();
     }
     public void ActionHideClassMenu()

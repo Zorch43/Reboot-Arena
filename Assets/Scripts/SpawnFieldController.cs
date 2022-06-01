@@ -14,12 +14,6 @@ public class SpawnFieldController : MonoBehaviour
             //heal unit and restore ammo
             unit.HealUnit(unit.Data.UnitClass.MaxHP);
             unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
-            //if set to respawn with a different class, immediately switch class
-            if (unit.SpawnSlot.ShouldChangeClass())
-            {
-                //despawn unit
-                unit.DeSpawn();
-            }
         }
 
     }

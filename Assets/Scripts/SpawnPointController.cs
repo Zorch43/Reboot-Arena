@@ -79,7 +79,7 @@ public class SpawnPointController : MonoBehaviour
                 if (open)
                 {
                     //spawn unit and stop looking for an open spot
-                    var spawnedUnit = Instantiate(unitSlot.GetNextUnitTemplate(), transform.parent);
+                    var spawnedUnit = Instantiate(unitSlot.UnitTemplate, transform.parent);
                     spawnedUnit.SpawnSetup(testPoint, _team, unitSlot, hideUI);
 
                     return spawnedUnit;
@@ -139,7 +139,7 @@ public class SpawnPointController : MonoBehaviour
                 }
                 var u = unitSlots[i];
                 //spawn unit and stop looking for an open spot
-                var spawnedUnit = Instantiate(u.GetNextUnitTemplate(), transform.parent);
+                var spawnedUnit = Instantiate(u.UnitTemplate, transform.parent);
                 spawnedUnit.SpawnSetup(startPoint, _team, u, hideUI);
                 startPoint += 2 * SEARCH_GRID_SIZE * new Vector3(0, 0, 1); 
             }

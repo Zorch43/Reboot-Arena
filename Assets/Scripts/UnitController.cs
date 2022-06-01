@@ -113,7 +113,7 @@ public class UnitController : DroneController
         //disable the agent while manually placing the unit?
         transform.position = new Vector3(position.x, 0, position.z);//TODO: figure out what's floating units on spawn
         SpawnSlot = slot;
-        SpawnSlot.CurrentUnit = this;
+        SpawnSlot.Unit = this;
         MinimapNumber.text = slot.SlotNumber.ToString();
         UnitNumber.text = slot.SlotNumber.ToString();
 

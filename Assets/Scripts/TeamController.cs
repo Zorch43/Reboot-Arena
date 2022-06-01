@@ -1,5 +1,6 @@
 using Assets.Scripts.Data_Models;
 using Assets.Scripts.Data_Templates;
+using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -42,7 +43,6 @@ public class TeamController : MonoBehaviour
         if (UnitSlotManager != null)
         {
             //setup class menu
-            UnitSlotManager.ClassMenu.Setup(UnitClasses);
             int slots = UnitSlotManager.UnitSlots.Count;
             //fill slots with first unit and spawn all slots
             for (int i = 0; i < slots; i++)
@@ -50,7 +50,7 @@ public class TeamController : MonoBehaviour
                 var s = UnitSlotManager.UnitSlots[i];
                 UnitSlots.Add(s.Data);
                 s.Data.SlotNumber = i + 1;
-                s.Data.NextUnitClass = UnitClasses[Mathf.Min(i / (slots / classes), classes - 1)];
+                s.Data.UnitTemplate = ResourceList.GetUnitTemplate(UnitClasses[Mathf.Min(i / (slots / classes), classes - 1)].ClassId);
                 s.Data.RespawnProgress = 1f;
             }
         }
@@ -62,7 +62,7 @@ public class TeamController : MonoBehaviour
                 var slot = new UnitSlotModel();
                 UnitSlots.Add(slot);
                 slot.SlotNumber = i + 1;
-                slot.NextUnitClass = UnitClasses[Mathf.Min(i / (slots / classes), classes - 1)];
+                slot.UnitTemplate = ResourceList.GetUnitTemplate(UnitClasses[Mathf.Min(i / (slots / classes), classes - 1)].ClassId);
                 slot.RespawnProgress = 1f;
             }
         }
@@ -78,7 +78,7 @@ public class TeamController : MonoBehaviour
         //advance respawn progress on all slots
         foreach(var s in UnitSlots)
         {
-            if(s.CurrentUnit == null)
+            if(s.Unit == null)
             {
                 s.RespawnProgress += deltaTime/BASE_RESPAWN_TIME;
                 if (s.RespawnProgress >= 1 && queueTime >= MIN_QUEUE_TIME)

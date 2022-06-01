@@ -22,9 +22,6 @@ public class CameraController : MonoBehaviour
     #region public fields
     public Camera MainCamera;
     public RectTransform ViewRect_Main;
-    public Camera MiniMapCamera;
-    public RectTransform ViewRect_Mini;
-    public LineRenderer ViewBounds;
     public MapController Map;
     public Transform RotationJoint;
     public Transform PanJoint;
@@ -33,7 +30,6 @@ public class CameraController : MonoBehaviour
     #endregion
     #region private fields
     private Rect viewRectMain;
-    private Rect viewRectMini;
     private Rect scrollRect;
     private Rect screenRect;
     private Bounds mapBox;
@@ -50,13 +46,6 @@ public class CameraController : MonoBehaviour
             return viewRectMain;
         }
     }
-    public Rect MiniViewRect
-    {
-        get
-        {
-            return viewRectMini;
-        }
-    }
     public Vector2 PanVector { get; set; }
     public Vector2 TiltVector { get; set; }
     public float ZoomDelta { get; set; }
@@ -68,7 +57,7 @@ public class CameraController : MonoBehaviour
         defaultRotation = RotationJoint.localEulerAngles.y;
         defaultTilt = TiltJoint.localEulerAngles.x;
 
-        bool isSpectating = GameController.BattleConfig.IsPlayerSpectator;
+        bool isSpectating = GameController.GetBattleConfig().IsPlayerSpectator;
         screenRect = new Rect(0, 0, Screen.width, Screen.height);
 
         //set non-scrollable screen area
@@ -85,153 +74,14 @@ public class CameraController : MonoBehaviour
             MainCamera.rect = new Rect(0, 0, 1, 1);//full screen
         }
 
-        //set minimap camera viewport dimensions
-        viewRectMini = SetupCameraSpace(MiniMapCamera, ViewRect_Mini);
-
         //set the map area that the camera can center on without revealing the edges
         mapBox = Map.Terrain.GetComponent<BoxCollider>().bounds;
-
-        //set minimap camera so that it can see the entire map
-        MiniMapCamera.orthographicSize = Mathf.Max(Map.Size.x, Map.Size.y);
-    }
-    private void Start()
-    {
-        RedrawViewBounds();
     }
 
     // Update is called once per frame
     void Update()
     {
-        float deltaTime = Time.deltaTime;
-        //if in border zone, scroll the camera
-        var mousePanVector = GetPanVector(Input.mousePosition);
-        var panVector =  mousePanVector + PanVector;
 
-        bool redrawEdge = false;
-        
-        //pan the camera
-        if (panVector.magnitude > 0)
-        {
-            bool movingUp = panVector.y > 0.4f;
-            bool movingDown = panVector.y < -0.4f;
-            bool movingLeft = panVector.x < -0.4f;
-            bool movingRight = panVector.x > 0.4f;
-            if (Input.GetKey(KeyCode.Space))
-            {
-                panVector = SUPER_PAN_SPEED * deltaTime * panVector;
-                //invoke events
-                if(mousePanVector.magnitude > 0)
-                {
-                    if (movingUp)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraUpFast).Invoke();
-                    }
-                    else if (movingDown)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraDownFast).Invoke();
-                    }
-                    if (movingLeft)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraLeftFast).Invoke();
-                    }
-                    else if (movingRight)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraRightFast).Invoke();
-                    }
-                }
-                else//TODO: add as regular keybind?
-                {
-                    if (movingUp)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraUpFast).Invoke();
-                    }
-                    else if (movingDown)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraDownFast).Invoke();
-                    }
-                    if (movingLeft)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraLeftFast).Invoke();
-                    }
-                    else if (movingRight)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputKeyCameraRightFast).Invoke();
-                    }
-                }
-            }
-            else
-            {
-                panVector = PAN_SPEED * deltaTime * panVector;
-
-                //invoke events
-                if(mousePanVector.magnitude > 0)
-                {
-                    if (movingUp)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraUp).Invoke();
-                    }
-                    else if (movingDown)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraDown).Invoke();
-                    }
-                    if (movingLeft)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraLeft).Invoke();
-                    }
-                    else if (movingRight)
-                    {
-                        EventList.GetEvent(EventList.EventNames.OnInputMouseCameraRight).Invoke();
-                    }
-                }
-            }
-            
-            var panVector3d = new Vector3(panVector.x, 0, panVector.y);
-            //pan the joint in its local space
-            PanJoint.localPosition += panVector3d;
-            //make the pan joint's parent move in world space, clamp that position within map bounds
-            PanJoint.parent.position = ClampCameraPosition(PanJoint.position);
-            //reset the pan joint's local position
-            PanJoint.localPosition = new Vector3();
-        }
-        //rotate the camera
-        if(Mathf.Abs(TiltVector.x) > 0)
-        {
-            var rotateDelta = TURN_SPEED * deltaTime * TiltVector.x;
-            //rotate the rotation joint around the y axis
-            RotationJoint.localEulerAngles += new Vector3(0, rotateDelta, 0);
-        }
-        //tilt the camera
-        if(Mathf.Abs(TiltVector.y) > 0)
-        {
-            var tiltDelta = TILT_SPEED * deltaTime * TiltVector.y;
-            //rotate the tilt joint around the x axis
-            //clamp the total angle
-            var tilt = Mathf.Clamp(tiltDelta + TiltJoint.localEulerAngles.x, MIN_TILT, MAX_TILT);
-            TiltJoint.localEulerAngles = new Vector3(tilt, 0, 0);
-            //update the edge renderer
-            redrawEdge = true;
-        }
-        //zoom the camera
-        if(Mathf.Abs(ZoomDelta) > 0)
-        {
-            var zoomDelta = ZOOM_SPEED * deltaTime * ZoomDelta;
-            //move the zoom joint's local z by the zoom amount
-            //clamp the zoom
-            var zoom = Mathf.Clamp(ZoomJoint.localPosition.z + zoomDelta, MIN_ZOOM, MAX_ZOOM);
-            ZoomJoint.localPosition = new Vector3(0, 0, zoom);
-            //update the edge renderer
-            redrawEdge = true;
-        }
-
-        //redraw view bounds
-        if (redrawEdge)
-        {
-            RedrawViewBounds();
-        }
-        
-        PanVector = new Vector2();
-        TiltVector = new Vector2();
-        ZoomDelta = 0;
     }
     #endregion
     #region public methods
@@ -252,7 +102,7 @@ public class CameraController : MonoBehaviour
         TiltJoint.localEulerAngles = new Vector3(tilt, 0, 0);
         if (redraw)
         {
-            RedrawViewBounds();
+           
         }
     }
     public void SetZoom(float zoom, bool redraw = true)
@@ -261,7 +111,7 @@ public class CameraController : MonoBehaviour
         ZoomJoint.localPosition = new Vector3(0, 0, zoom);
         if (redraw)
         {
-            RedrawViewBounds();
+            
         }
     }
     public void ResetOrientation()
@@ -269,27 +119,10 @@ public class CameraController : MonoBehaviour
         SetRotation(defaultRotation);
         SetTilt(defaultTilt, false);
         SetZoom(defaultZoom, false);
-        RedrawViewBounds();
-    }
-    public Camera GetCommandCamera(Vector2 mousePos)
-    {
-        if (IsPointInMiniMapBounds(mousePos))
-        {
-            return MiniMapCamera;
-        }
-        else if (IsPointInMainMapBounds(mousePos))
-        {
-            return MainCamera;
-        }
-        return null;
     }
     public bool IsPointInMainMapBounds(Vector2 screenPos)
     {
         return MainViewRect.Contains(screenPos);
-    }
-    public bool IsPointInMiniMapBounds(Vector2 screenPos)
-    {
-        return MiniViewRect.Contains(screenPos);
     }
     #endregion
     #region private methods
@@ -323,22 +156,7 @@ public class CameraController : MonoBehaviour
 
         return clampedLocation;
     }
-    private void RedrawViewBounds()
-    {
-        //get all corners of the main viewport
-        Vector3 p0 = GetMapPointFromScreenPoint(viewRectMain.min) - ViewBounds.transform.position;
-        Vector3 p1 = GetMapPointFromScreenPoint(new Vector2(viewRectMain.min.x, viewRectMain.max.y)) - ViewBounds.transform.position;
-        Vector3 p2 = GetMapPointFromScreenPoint(viewRectMain.max) - ViewBounds.transform.position;
-        Vector3 p3 = GetMapPointFromScreenPoint(new Vector2(viewRectMain.max.x, viewRectMain.min.y)) - ViewBounds.transform.position;
 
-        p0.y = EDGE_LINE_HEIGHT;
-        p1.y = EDGE_LINE_HEIGHT;
-        p2.y = EDGE_LINE_HEIGHT;
-        p3.y = EDGE_LINE_HEIGHT;
-
-        ViewBounds.SetPositions(new Vector3[] { p0, p1, p2, p3 });
-
-    }
     private Vector3 GetCameraOffset()
     {
         //project a ray from the center of the camera

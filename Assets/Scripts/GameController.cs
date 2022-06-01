@@ -23,13 +23,11 @@ public class GameController : MonoBehaviour
 
     public SpawnPointController[] SpawnPoints;//list of all starting spawn points
     public UnitSlotManager PlayerSlotManager;//need this referenced here to apply to player-controlled teams
-    public ActionPanelController PlayerUnitActions;
     public TeamController PlayerTeamTemplate;
     public TeamController AITeamTemplate;
 
     public MapController Map;
     public CommandController CommandInterface;
-    public CameraController Cameras;
     public MusicPlayerController MusicPlayer;
 
     public GameRulesBase GameRules;
@@ -54,9 +52,9 @@ public class GameController : MonoBehaviour
             {
                 foreach(var u in t.UnitSlots)
                 {
-                    if(u.CurrentUnit != null)
+                    if(u.Unit != null)
                     {
-                        units.Add(u.CurrentUnit);
+                        units.Add(u.Unit);
                     }
                 }
             }
@@ -72,9 +70,9 @@ public class GameController : MonoBehaviour
             {
                 foreach (var u in playerTeam.UnitSlots)
                 {
-                    if (u.CurrentUnit != null)
+                    if (u.Unit != null)
                     {
-                        units.Add(u.CurrentUnit);
+                        units.Add(u.Unit);
                     }
                 }
             }
@@ -85,13 +83,7 @@ public class GameController : MonoBehaviour
     #region unity methods
     private void Awake()
     {
-        if (BattleConfig == null)
-        {
-            BattleConfig = new BattleConfigModel()
-            {
-                Players = new List<PlayerConfigModel>(DefaultBattleConfig)
-            };
-        }
+        
     }
     // Start is called before the first frame update
     void Start()
@@ -129,8 +121,6 @@ public class GameController : MonoBehaviour
                     team.SetUnitClasses(teamConfig.UnitClasses);
                     playerTeam = team;
                     team.UnitSlotManager = PlayerSlotManager;
-                    PlayerUnitActions.Setup(team);
-                    Cameras.PanToMapLocation(SpawnPoints[i].transform.position);
                 }
                 team.Team = teamConfig.TeamId;
                 team.DefaultSpawnPoint = SpawnPoints[i];
@@ -143,7 +133,7 @@ public class GameController : MonoBehaviour
         }
         if (spectator)
         {
-            PlayerUnitActions.Setup(null);
+
         }
 
         GameRules.Setup();
@@ -220,6 +210,21 @@ public class GameController : MonoBehaviour
             victorySound.Play();
         }
         GameMenu.ShowMenu(true);
+    }
+
+    #endregion
+    #region static methods
+    public static BattleConfigModel GetBattleConfig()
+    {
+        if (BattleConfig == null)
+        {
+            var obj = FindObjectOfType(typeof(GameController)) as GameController;
+            BattleConfig = new BattleConfigModel()
+            {
+                Players = new List<PlayerConfigModel>(obj.DefaultBattleConfig)
+            };
+        }
+        return BattleConfig;
     }
     #endregion
     #region private methods
