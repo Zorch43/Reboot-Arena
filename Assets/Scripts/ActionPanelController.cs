@@ -107,7 +107,7 @@ public class ActionPanelController : MonoBehaviour
             foreach (var u in playerTeam.UnitClasses)
             {
                 var abilityButton = Instantiate(ButtonTemplate, transform);
-                var specialAbility = u.SpecialAbility;
+                var specialAbility = u.TargetedAbility;
                 abilityButton.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
                 //connect button event
                 //connect action to event
@@ -161,7 +161,7 @@ public class ActionPanelController : MonoBehaviour
         {
             if(u != null)
             {
-                var specialAbility = u.Data.UnitClass.SpecialAbility;
+                var specialAbility = u.Data.UnitClass.TargetedAbility;
                 foreach (var b in abilityButtons)
                 {
                     //if button for ability found
@@ -212,7 +212,7 @@ public class ActionPanelController : MonoBehaviour
         {
             foreach (var u in selectedUnits)
             {
-                if (u != null && u.Data.UnitClass.SpecialAbility.Name == abilityName && u.Data.MP >= u.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+                if (u != null && u.Data.UnitClass.TargetedAbility.Name == abilityName && u.Data.MP >= u.Data.UnitClass.TargetedAbility.AmmoCostInstant)
                 {
                     return true;
                 }

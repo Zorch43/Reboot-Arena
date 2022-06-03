@@ -49,7 +49,8 @@ namespace Assets.Scripts.Data_Templates
                 TurnSpeed = 12,
                 PrimaryWeapon = WeaponTemplates.CreateMachineGun(),
                 SecondaryWeapon = WeaponTemplates.CreateAssaultRifle(),
-                SpecialAbility = UnitAbilityTemplates.CreateFragGrenade(),
+                TargetedAbility = UnitAbilityTemplates.CreateFragGrenade(),
+                ActivatedAbility = UnitAbilityTemplates.CreateNanoPack(),
                 AttackerWeight = 2,
                 DefenderWeight = 1
             };
@@ -70,7 +71,8 @@ namespace Assets.Scripts.Data_Templates
                 TurnSpeed = 6,
                 PrimaryWeapon = WeaponTemplates.CreateMunitionsPrinter(),
                 SecondaryWeapon = WeaponTemplates.CreatePlasmaGun(),
-                SpecialAbility = UnitAbilityTemplates.CreateTurretDrone(),
+                TargetedAbility = UnitAbilityTemplates.CreateTurretDrone(),
+                ActivatedAbility = UnitAbilityTemplates.CreateNanoPack(),
                 IsAmbidextrous = true,
                 IncompatibleAmmo = true,
                 AmmoRegenRate = 10,
@@ -114,7 +116,8 @@ namespace Assets.Scripts.Data_Templates
                 HealthPickupEfficiency = 2,
                 AmmoPickupEfficiency = 2,
                 PrimaryWeapon = WeaponTemplates.CreateLaserPistols(),
-                SpecialAbility = UnitAbilityTemplates.CreateNanoPack(),
+                TargetedAbility = UnitAbilityTemplates.CreateFragGrenade(),
+                ActivatedAbility = UnitAbilityTemplates.CreateNanoPack(),
                 AttackerWeight = 2,
                 SupportWeight = 1
             };

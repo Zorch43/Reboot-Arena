@@ -1347,6 +1347,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 5902809430216448456, guid: 0e5e05227ae63ba41bad3a946e6994dc, type: 3}
+      propertyPath: m_NormalizedViewPortRect.y
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5902809430216448456, guid: 0e5e05227ae63ba41bad3a946e6994dc, type: 3}
+      propertyPath: m_NormalizedViewPortRect.width
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5902809430216448456, guid: 0e5e05227ae63ba41bad3a946e6994dc, type: 3}
+      propertyPath: m_NormalizedViewPortRect.height
+      value: 0.8
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0e5e05227ae63ba41bad3a946e6994dc, type: 3}
 --- !u!114 &1578594784 stripped
@@ -2204,6 +2216,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2b9a5c457d079545a003a673670047d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CommandInterface: {fileID: 1640796455}
   UnitSlotTemplate: {fileID: 4272607519066483124, guid: 69b65a55cdd0fd4479a48efdea8c9919, type: 3}
 --- !u!222 &38824756558172142
 CanvasRenderer:

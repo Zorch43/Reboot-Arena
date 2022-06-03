@@ -462,7 +462,7 @@ public class DroneController : MonoBehaviour
     {
         Data.UnitClass.PrimaryWeapon.DoCooldown(time);
         Data.UnitClass.SecondaryWeapon?.DoCooldown(time);
-        Data.UnitClass.SpecialAbility?.AbilityWeapon?.DoCooldown(time);
+        Data.UnitClass.TargetedAbility?.AbilityWeapon?.DoCooldown(time);
     }
 
     protected DroneController GetAutoAttackTarget(bool autoAttackOnly = true)

@@ -25,8 +25,9 @@ namespace Assets.Scripts.Data_Models
         //weapons
         public WeaponModel PrimaryWeapon { get; set; }
         public WeaponModel SecondaryWeapon { get; set; }
-        //special ability
-        public UnitAbilityModel SpecialAbility { get; set; }
+        //special abilities
+        public UnitAbilityModel TargetedAbility { get; set; }
+        public UnitAbilityModel ActivatedAbility { get; set; }
         #endregion
         #region abilities
         //passive abilities

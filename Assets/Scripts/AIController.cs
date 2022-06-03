@@ -319,9 +319,9 @@ public class AIController : MonoBehaviour
         float score = 0;
         float internalScore = 0;
         
-        if (unit.Data.UnitClass.SpecialAbility.Name == "Grenade" && unit.Data.MP >= unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+        if (unit.Data.UnitClass.TargetedAbility.Name == "Grenade" && unit.Data.MP >= unit.Data.UnitClass.TargetedAbility.AmmoCostInstant)
         {
-            var abilityWeapon = unit.Data.UnitClass.SpecialAbility.AbilityWeapon;
+            var abilityWeapon = unit.Data.UnitClass.TargetedAbility.AbilityWeapon;
 
             float engageDistance = Mathf.Min(Config.Speed, 2) * unit.Data.UnitClass.MoveSpeed + abilityWeapon.MaxRange;
             foreach (var u in allDrones)
@@ -347,7 +347,7 @@ public class AIController : MonoBehaviour
                     {
                         if (o.Data.Team != Team.Team && o != u && o.Data.IsDamageable
                             && Vector3.Distance(u.transform.position, o.transform.position)
-                            <= unit.Data.UnitClass.SpecialAbility.AbilityWeapon.ExplosionSize)
+                            <= unit.Data.UnitClass.TargetedAbility.AbilityWeapon.ExplosionSize)
                         {
                             targetsHit += 1f;
                             if (abilityWeapon.HealthDamage >= o.Data.HP)
@@ -406,7 +406,7 @@ public class AIController : MonoBehaviour
         float score = -1;
         float internalScore = 0;
         buildSite = new Vector3();
-        if(unit.Data.UnitClass.SpecialAbility.Name == "Turret" && unit.Data.MP > unit.Data.UnitClass.SpecialAbility.AmmoCostInstant)
+        if(unit.Data.UnitClass.TargetedAbility.Name == "Turret" && unit.Data.MP > unit.Data.UnitClass.TargetedAbility.AmmoCostInstant)
         {
             //search area near unit for valid build sites
 
@@ -484,7 +484,7 @@ public class AIController : MonoBehaviour
     private float ScoreThrowNanoPack(UnitController unit, DroneController[] allDrones)
     {
         float score = 0;
-        var specialAbility = unit.Data.UnitClass.SpecialAbility;
+        var specialAbility = unit.Data.UnitClass.TargetedAbility;
         if (specialAbility.Name == "NanoPack" && unit.Data.MP > specialAbility.AmmoCostInstant)
         {
             foreach (var d in allDrones)

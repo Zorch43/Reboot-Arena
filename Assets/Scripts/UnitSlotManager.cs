@@ -6,9 +6,10 @@ using UnityEngine;
 public class UnitSlotManager : MonoBehaviour
 {
     #region constants
-    const int MAX_SLOT_COUNT = 6;
+    public const int MAX_SLOT_COUNT = 6;
     #endregion
     #region public fields
+    public CommandController CommandInterface;
     public UnitSlotController UnitSlotTemplate;
     #endregion
     #region private fields
@@ -16,7 +17,6 @@ public class UnitSlotManager : MonoBehaviour
     #endregion
     #region properties
     public List<UnitSlotController> UnitSlots { get; private set; } = new List<UnitSlotController>();
-    public int SlotCount { get; set; } = MAX_SLOT_COUNT;
     #endregion
     #region unity methods
     // Start is called before the first frame update
@@ -28,7 +28,7 @@ public class UnitSlotManager : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < SlotCount; i++)
+            for (int i = 0; i < MAX_SLOT_COUNT; i++)
             {
                 var unitSlot = Instantiate(UnitSlotTemplate, transform);
                 unitSlot.Manager = this;

@@ -562,7 +562,7 @@ public class CommandController : MonoBehaviour
         //get valid units
         foreach(var u in selectedUnits)
         {
-            var unitAbility = u.Data.UnitClass.SpecialAbility;
+            var unitAbility = u.Data.UnitClass.TargetedAbility;
             //unit must have the ability
             //unit must be able to pay for the ability
             if (unitAbility.Name == ability.Name && u.Data.MP >= ability.AmmoCostInstant)
@@ -573,7 +573,7 @@ public class CommandController : MonoBehaviour
         //activate ability for valid units
         foreach(var u in validUnits)
         {
-            var unitAbility = u.Data.UnitClass.SpecialAbility;
+            var unitAbility = u.Data.UnitClass.TargetedAbility;
 
             //if the ability is group activation, all units do the ability
             //if there is only one valid unit selected, skip evaluation
@@ -600,7 +600,7 @@ public class CommandController : MonoBehaviour
     {
         float score = 0;
 
-        var specialAbility = unit.Data.UnitClass.SpecialAbility;
+        var specialAbility = unit.Data.UnitClass.TargetedAbility;
         //if unit already has an ability target, heavily de-prioritize it
         if(unit.AbilityTarget != null)
         {

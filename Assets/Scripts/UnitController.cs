@@ -58,7 +58,7 @@ public class UnitController : DroneController
         hitBoxSize = collider.radius;
 
         //cache drone template
-        droneTemplate = Resources.Load<DroneController>(Data.UnitClass.SpecialAbility.DroneTemplate);
+        droneTemplate = Resources.Load<DroneController>(Data.UnitClass.TargetedAbility.DroneTemplate);
 
         //set movement graph
         if (Data.UnitClass.HasJumpBoost)
@@ -175,7 +175,7 @@ public class UnitController : DroneController
     }
     public void DoSpecialAbility(Vector3 location, IActionTracker actionTracker = null)
     {
-        var specialAbility = Data.UnitClass.SpecialAbility;
+        var specialAbility = Data.UnitClass.TargetedAbility;
         if (!specialAbility.IsNonInterrupting)
         {
             CancelOrders();
@@ -433,7 +433,7 @@ public class UnitController : DroneController
         {
             weaponMount = SecondaryWeaponMount;
         }
-        else if (activeWeapon == Data.UnitClass.SpecialAbility.AbilityWeapon)
+        else if (activeWeapon == Data.UnitClass.TargetedAbility.AbilityWeapon)
         {
             weaponMount = AbilityWeaponMount;
         }
@@ -446,7 +446,7 @@ public class UnitController : DroneController
             var weaponMount = GetWeaponController(activeWeapon);
 
             bool success = true;
-            var specialAbility = Data.UnitClass.SpecialAbility;
+            var specialAbility = Data.UnitClass.TargetedAbility;
             if (activeWeapon == specialAbility.AbilityWeapon)
             {
                 if (specialAbility.IsBuildAbility)
@@ -478,9 +478,9 @@ public class UnitController : DroneController
     }
     protected override WeaponModel GetActiveWeapon(DroneController target, bool isMoving, bool isAutoAttack)
     {
-        if (AbilityTarget != null && Data.UnitClass.SpecialAbility.IsWeaponAbility)
+        if (AbilityTarget != null && Data.UnitClass.TargetedAbility.IsWeaponAbility)
         {
-            var abilityWeapon = Data.UnitClass.SpecialAbility.AbilityWeapon;
+            var abilityWeapon = Data.UnitClass.TargetedAbility.AbilityWeapon;
             if (CanAttackWithWeapon(abilityWeapon, target, isMoving, isAutoAttack))
             {
                 return abilityWeapon;
@@ -495,9 +495,9 @@ public class UnitController : DroneController
     }
     protected override WeaponModel GetActiveWeapon(Vector3 target, bool isMoving, bool isAutoAttack)
     {
-        if (AbilityTarget != null && Data.UnitClass.SpecialAbility.IsWeaponAbility)
+        if (AbilityTarget != null && Data.UnitClass.TargetedAbility.IsWeaponAbility)
         {
-            var abilityWeapon = Data.UnitClass.SpecialAbility.AbilityWeapon;
+            var abilityWeapon = Data.UnitClass.TargetedAbility.AbilityWeapon;
             if (CanAttackWithWeapon(abilityWeapon, target, isMoving, isAutoAttack))
             {
                 return abilityWeapon;
@@ -514,7 +514,7 @@ public class UnitController : DroneController
     {
         base.UpdateTooltip();
         var stats = new List<string>(ToolTip.Stats);
-        stats.Add(string.Format("Special Ability: {0}", Data.UnitClass.SpecialAbility.Name));
+        stats.Add(string.Format("Special Ability: {0}", Data.UnitClass.TargetedAbility.Name));
         ToolTip.Stats = stats.ToArray();
     }
     #endregion

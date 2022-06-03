@@ -12,7 +12,7 @@ public class TeamController : MonoBehaviour
     public const float MIN_QUEUE_TIME = 0.1f;//minimum time between spawns
     #endregion
     #region public fields
-    public UnitSlotManager UnitSlotManager;//9 unit slots
+    public UnitSlotManager UnitSlotManager;
     public SpawnPointController DefaultSpawnPoint;//starting spawnpoint
     public int Team;
     #endregion
@@ -56,7 +56,7 @@ public class TeamController : MonoBehaviour
         }
         else
         {
-            int slots = 9;
+            int slots = UnitSlotManager.MAX_SLOT_COUNT;
             for (int i = 0; i < 9; i++)
             {
                 var slot = new UnitSlotModel();

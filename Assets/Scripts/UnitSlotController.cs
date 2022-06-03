@@ -1,4 +1,5 @@
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Data_Templates;
 using Assets.Scripts.Utility;
 using System.Collections;
 using System.Collections.Generic;
@@ -66,14 +67,13 @@ public class UnitSlotController : MonoBehaviour
     //}
     #endregion
     #region unity methods
-    // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        Data.Controller = this;
+
         SelectionButton.onClick.AddListener(ActionClickSlot);
 
         maxWidth = ((RectTransform)(RespawnFilter.transform)).rect.width;
-
-        Data.Controller = this;
     }
 
     // Update is called once per frame
@@ -93,9 +93,6 @@ public class UnitSlotController : MonoBehaviour
             //update health and ammo values
             HealthBar.UpdateBar(unitData.HP, unitData.UnitClass.MaxHP);
             AmmoBar.UpdateBar(unitData.MP, unitData.UnitClass.MaxMP);
-            //update current unit name, portrait and symbol
-            ClassNameLabel.text = unitData.UnitClass.Name;
-            ClassPortrait.sprite = Data.Unit.Portrait;
            
             //update tooltip
             ToolTip.Clear();
@@ -189,8 +186,55 @@ public class UnitSlotController : MonoBehaviour
         ((RectTransform)(RespawnFilter.transform)).SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left,
             maxWidth * progress, maxWidth * (1 - progress));
     }
+    public void SetUnitTemplate(UnitController template)
+    {
+        var templateData = new UnitModel(UnitClassTemplates.GetClassByName(template.UnitClass));
+        ClassNameLabel.text = templateData.UnitClass.Name;
+        ClassPortrait.sprite = template.Portrait;
+        //setup abilities
+        //targeted ability
+        SetupAbilityButton(TargetedAbilityButton, templateData.UnitClass.TargetedAbility);
+        //activated ability
+        SetupAbilityButton(ActivatedAbilityButton, templateData.UnitClass.ActivatedAbility);
+
+    }
+
+    #endregion
+    #region actions
+    public void ActionNormalize()
+    {
+        //TODO: reset the targeting state of all buttons
+    }
+    public void ActionUnitAbility(UnitAbilityModel ability)
+    {
+        //activate the special ability in the command interface
+        Manager.CommandInterface.StartSpecialOrder(ability, ActionNormalize);
+    }
     #endregion
     #region private methods
+    private void SetupAbilityButton(TextButtonController button, UnitAbilityModel specialAbility)
+    {
+        button.Text.text = specialAbility.Name;
 
+        button.Button.image.sprite = Resources.Load<Sprite>(specialAbility.Icon);
+
+        //tooltip
+        button.ToolTip.Header = specialAbility.Name;
+        button.ToolTip.Body = specialAbility.Description;
+
+        //TODO: if the ability is targeted, set shortcut to targeted ability
+        //else set hotkey to activated ability
+        //connect button event
+        //connect action to event
+        var buttonEvent = EventList.GetEvent(specialAbility.EventNameUI);
+        buttonEvent.AddListener(() =>
+        {
+            ActionUnitAbility(specialAbility);
+        });
+        button.Button.onClick.AddListener(buttonEvent.Invoke);
+
+        
+        button.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
+    }
     #endregion
 }

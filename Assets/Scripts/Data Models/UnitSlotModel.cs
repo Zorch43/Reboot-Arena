@@ -21,7 +21,21 @@ namespace Assets.Scripts.Data_Models
         #region properties
         public UnitSlotController Controller { get; set; }//UI element this model is connected to
         public UnitController Unit { get; set; }//displays shorthand unit status of current unit
-        public UnitController UnitTemplate { get; set; }
+        public UnitController UnitTemplate
+        {
+            get
+            {
+                return _unitTemplate;
+            }
+            set
+            {
+                _unitTemplate = value;
+                if(Controller != null)
+                {
+                    Controller.SetUnitTemplate(value);
+                }
+            }
+        }
         public int SlotNumber
         {
             get
