@@ -18,7 +18,7 @@ public class CommandController : MonoBehaviour
         ClassMenu,
         SpecialAbility
     }
-    const float DOUBLE_TAP_TIME = 0.25f;
+    public const float DOUBLE_TAP_TIME = 0.25f;
     #endregion
     #region public fields
     public CameraController Cameras;
@@ -230,7 +230,7 @@ public class CommandController : MonoBehaviour
                     command = true;
                 }
             }
-            //if special ability command is active, and needs a target, lmb sets the target, rmb cancels the order
+            //if targeted ability command is active, and needs a target, lmb sets the target, rmb cancels the order
             else if (SelectedCommand == SpecialCommands.SpecialAbility)
             {
                 if (Input.GetMouseButtonDown(0))
@@ -271,8 +271,10 @@ public class CommandController : MonoBehaviour
                             bool shift = Input.GetKey(KeyCode.LeftShift);
                             if(clicked && clickTimer < DOUBLE_TAP_TIME)
                             {
-                                //select all units of the selected unit's type
-                                SelectUnitsOfClassInView(selectedUnit.Data.UnitClass.ClassId);
+                                ////select all units of the selected unit's type
+                                //SelectUnitsOfClassInView(selectedUnit.Data.UnitClass.ClassId);
+                                //NEW: activate non-targeted ability
+                                StartSpecialOrder(selectedUnit.Data.UnitClass.ActivatedAbility, () => { });
                                 //reset double-tap detection
                                 clicked = false;
                                 clickTimer = 0;
@@ -312,7 +314,33 @@ public class CommandController : MonoBehaviour
                 //perform contextual action
                 else if (Input.GetMouseButtonDown(1))
                 {
-                    GiveOrder(mousePosition);
+                    if (Input.GetKey(KeyCode.LeftControl))
+                    {
+                        //get the selected unit that can activate its targeted ability with the lowest slot number
+                        var selectedUnits = GetSelectedUnits();
+                        UnitController selectedUnit = null;
+                        foreach(var u in selectedUnits)
+                        {
+                            if((selectedUnit == null
+                                || u.SpawnSlot.SlotNumber < selectedUnit.SpawnSlot.SlotNumber)
+                                &&  u.Data.MP >= u.Data.UnitClass.TargetedAbility.AmmoCostInstant)
+                            {
+                                selectedUnit = u;
+                            }
+                        }
+                        //then activate the targeted ability, targeting clicked location
+                        if(selectedUnit != null)
+                        {
+                            SpecialAbility = selectedUnit.Data.UnitClass.TargetedAbility;
+                            GetMouseMapPosition(mousePosition, out mapPos);
+                            GiveSpecialAbilityOrder(mapPos, selectedUnit);
+                        }
+                    }
+                    else
+                    {
+                        GiveOrder(mousePosition);
+                    }
+                    
                 }
                 
             }
@@ -530,26 +558,35 @@ public class CommandController : MonoBehaviour
         }
         EndSpecialOrder();
     }
-    public void GiveSpecialAbilityOrder(Vector3 location, List<UnitController> selectedUnits = null)
+    public void GiveSpecialAbilityOrder(Vector3 location, UnitController user = null)
     {
-        var abilityUnits = GetAbilityUnits(SpecialAbility, location);
-        bool firstResponse = false;
-        foreach(var u in abilityUnits)
+        if(user == null)
         {
-            //do special ability
-            u.DoSpecialAbility(location, currentHologram);
-            if (!firstResponse)
+            var users = GetAbilityUnits(SpecialAbility, location);
+            if(users.Count > 0)
             {
-                if (SpecialAbility.IsTargetedAbility)
-                {
-                    EventList.GetEvent(SpecialAbility.EventNameSet).Invoke();
-                }
-                firstResponse = true;
-                MarkerTemplate.Instantiate(Resources.Load<Sprite>(SpecialAbility.Marker), Map.transform, location, false);
-                //give special ability response
-                u.UnitVoice.PlayAbilityResponse();
+                user = users[0];
             }
         }
+        user.DoSpecialAbility(SpecialAbility, location, currentHologram);
+        //var abilityUnits = GetAbilityUnits(SpecialAbility, location);
+        //bool firstResponse = false;
+        //foreach(var u in abilityUnits)
+        //{
+        //    //do special ability
+        //    u.DoSpecialAbility(location, currentHologram);
+        //    if (!firstResponse)
+        //    {
+        //        if (SpecialAbility.IsTargetedAbility)
+        //        {
+        //            EventList.GetEvent(SpecialAbility.EventNameSet).Invoke();
+        //        }
+        //        firstResponse = true;
+        //        MarkerTemplate.Instantiate(Resources.Load<Sprite>(SpecialAbility.Marker), Map.transform, location, false);
+        //        //give special ability response
+        //        u.UnitVoice.PlayAbilityResponse();
+        //    }
+        //}
         EndSpecialOrder();
     }
     public List<UnitController> GetAbilityUnits(UnitAbilityModel ability, Vector3 target)
@@ -562,39 +599,41 @@ public class CommandController : MonoBehaviour
         //get valid units
         foreach(var u in selectedUnits)
         {
-            var unitAbility = u.Data.UnitClass.TargetedAbility;
+            var unitAbility1 = u.Data.UnitClass.TargetedAbility;
+            var unitAbility2 = u.Data.UnitClass.ActivatedAbility;
             //unit must have the ability
             //unit must be able to pay for the ability
-            if (unitAbility.Name == ability.Name && u.Data.MP >= ability.AmmoCostInstant)
+            if ((unitAbility1.Name == ability.Name || unitAbility2.Name == ability.Name) && u.Data.MP >= ability.AmmoCostInstant)
             {
-                validUnits.Add(u);
+                return new List<UnitController>() { u };
             }
         }
-        //activate ability for valid units
-        foreach(var u in validUnits)
-        {
-            var unitAbility = u.Data.UnitClass.TargetedAbility;
+        ////activate ability for valid units
+        //foreach(var u in validUnits)
+        //{
+        //    var unitAbility = u.Data.UnitClass.TargetedAbility;
 
-            //if the ability is group activation, all units do the ability
-            //if there is only one valid unit selected, skip evaluation
-            if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.All || validUnits.Count == 1)
-            {
-                bestUnits.Add(u);
-            }
-            //if the ability is single activation, find the best unit to activate the ability
-            else if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.Single)
-            {
-                float score = ScoreUnitForAbility(u, target);
-                //update best score and best unit
-                if (score > bestScore || bestUnits.Count == 0)
-                {
-                    bestUnits = new List<UnitController>() { u };
-                    bestScore = score;
-                }
-            }
-        }
+        //    //if the ability is group activation, all units do the ability
+        //    //if there is only one valid unit selected, skip evaluation
+        //    if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.All || validUnits.Count == 1)
+        //    {
+        //        bestUnits.Add(u);
+        //    }
+        //    //if the ability is single activation, find the best unit to activate the ability
+        //    else if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.Single)
+        //    {
+        //        float score = ScoreUnitForAbility(u, target);
+        //        //update best score and best unit
+        //        if (score > bestScore || bestUnits.Count == 0)
+        //        {
+        //            bestUnits = new List<UnitController>() { u };
+        //            bestScore = score;
+        //        }
+        //    }
+        //}
 
-        return bestUnits;
+        //return bestUnits;
+        return null;
     }
     public float ScoreUnitForAbility(UnitController unit, Vector3 target)
     {

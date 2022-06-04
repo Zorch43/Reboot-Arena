@@ -173,9 +173,8 @@ public class UnitController : DroneController
         //set force-attack target
         ForceTarget = location;
     }
-    public void DoSpecialAbility(Vector3 location, IActionTracker actionTracker = null)
+    public void DoSpecialAbility(UnitAbilityModel specialAbility, Vector3 location, IActionTracker actionTracker = null)
     {
-        var specialAbility = Data.UnitClass.TargetedAbility;
         if (!specialAbility.IsNonInterrupting)
         {
             CancelOrders();

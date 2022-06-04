@@ -29,42 +29,13 @@ public class UnitSlotController : MonoBehaviour
     #region private fields
 
     private float maxWidth;
-    private bool shouldUpdate;
-    private int slotNumber;
-    private float respawnProgress;
+    private bool clicked;
+    private float clickTimer;
     #endregion
     #region properties
     public UnitSlotModel Data { get; set; } = new UnitSlotModel();
     public UnitSlotManager Manager { get; set; }
-    //public UnitController Unit { get; set; }
-    //public UnitController UnitTemplate { get; set; }
-    //public int SlotNumber { get; set; }
-    //public float RespawnProgress
-    //{
-    //    get
-    //    {
-    //        return respawnProgress;
-    //    }
-    //    set
-    //    {
-    //        respawnProgress = value;
-    //        ((RectTransform)(RespawnFilter.transform)).SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left,
-    //            maxWidth * respawnProgress, maxWidth * (1 - respawnProgress));
-    //    }
-    //}
-    //public Vector3? RallyPoint { get; set; }
-    //public bool FolowRallyPoint { get; set; } = true;
-    //public bool IsSelected
-    //{
-    //    get
-    //    {
-    //        return SelectionIndicator.activeSelf;
-    //    }
-    //    set
-    //    {
-    //        SelectionIndicator.SetActive(value);
-    //    }
-    //}
+    
     #endregion
     #region unity methods
     private void Awake()
@@ -119,6 +90,16 @@ public class UnitSlotController : MonoBehaviour
             {
                 string.Format("Respawning... {0}%", (int)Mathf.Min(Data.RespawnProgress * 100, 100))
             };
+        }
+        //double-click/double-tap timeout
+        if (clicked)
+        {
+            clickTimer += Time.deltaTime;
+            if(clickTimer > CommandController.DOUBLE_TAP_TIME)
+            {
+                clicked = false;
+                clickTimer = 0;
+            }
         }
     }
     #endregion
@@ -178,7 +159,17 @@ public class UnitSlotController : MonoBehaviour
         }
         if (Data.IsSelected && Data.Unit != null)
         {
-            Data.Unit.UnitVoice.PlaySelectionResponse();
+            if (clicked)
+            {
+                clicked = false;
+                clickTimer = 0;
+                ActionActivatedAbility();
+            }
+            else
+            {
+                clicked = true;
+                Data.Unit.UnitVoice.PlaySelectionResponse();
+            }
         }
     }
     public void UpdateRespawnProgress(float progress)
@@ -201,14 +192,13 @@ public class UnitSlotController : MonoBehaviour
 
     #endregion
     #region actions
-    public void ActionNormalize()
+    public void ActionTargetedAbility()
     {
-        //TODO: reset the targeting state of all buttons
+        Manager.CommandInterface.StartSpecialOrder(Data.Unit.Data.UnitClass.TargetedAbility, () => { });
     }
-    public void ActionUnitAbility(UnitAbilityModel ability)
+    public void ActionActivatedAbility()
     {
-        //activate the special ability in the command interface
-        Manager.CommandInterface.StartSpecialOrder(ability, ActionNormalize);
+        Manager.CommandInterface.StartSpecialOrder(Data.Unit.Data.UnitClass.ActivatedAbility, () => { });
     }
     #endregion
     #region private methods
@@ -226,15 +216,17 @@ public class UnitSlotController : MonoBehaviour
         //else set hotkey to activated ability
         //connect button event
         //connect action to event
-        var buttonEvent = EventList.GetEvent(specialAbility.EventNameUI);
-        buttonEvent.AddListener(() =>
+        if(button == TargetedAbilityButton)
         {
-            ActionUnitAbility(specialAbility);
-        });
-        button.Button.onClick.AddListener(buttonEvent.Invoke);
+            button.Button.onClick.AddListener(ActionTargetedAbility);
+            //TODO: set shortcut tooltip
+        }
+        else
+        {
+            button.Button.onClick.AddListener(ActionActivatedAbility);
+            //TODO: set shortcut tooltip
+        }
 
-        
-        button.ToolTip.MainShortcut = KeyBindConfigSettings.KeyBinds.GetKeyBindByName(specialAbility.Name);
     }
     #endregion
 }

@@ -57,7 +57,7 @@ public class TeamController : MonoBehaviour
         else
         {
             int slots = UnitSlotManager.MAX_SLOT_COUNT;
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < slots; i++)
             {
                 var slot = new UnitSlotModel();
                 UnitSlots.Add(slot);

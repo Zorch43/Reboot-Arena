@@ -105,7 +105,7 @@ public class AIController : MonoBehaviour
             //3.1: if facing a group of enemies, fire grenade if able
             if (grenadeScore > 0 && grenadeScore > attackScore && roll < Config.Difficulty + Config.SpecialMod)
             {
-                selectedUnit.DoSpecialAbility(grenadeTarget);
+                selectedUnit.DoSpecialAbility(selectedUnit.Data.UnitClass.TargetedAbility, grenadeTarget);
             }
             //3.2: restore ammo to allies
             else if (restoreAmmoScore > 0 && roll < Config.Difficulty + Config.SupportMod)
@@ -115,12 +115,12 @@ public class AIController : MonoBehaviour
             //3.3: build turret
             else if (buildScore > 0 && selectedUnit.Data.MP > 300 && roll < Config.Difficulty + Config.SpecialMod)
             {
-                selectedUnit.DoSpecialAbility(buildTarget);
+                selectedUnit.DoSpecialAbility(selectedUnit.Data.UnitClass.TargetedAbility, buildTarget);
             }
             //3.4: Throw nanopack
             else if (ScoreThrowNanoPack(selectedUnit, allDrones) > 0 && roll < Config.Difficulty + Config.SpecialMod)
             {
-                selectedUnit.DoSpecialAbility(new Vector3());
+                selectedUnit.DoSpecialAbility(selectedUnit.Data.UnitClass.ActivatedAbility, new Vector3());
             }
             //4: shoot the closest enemy with the lowest health in range, in true line-of-sight
             else if (attackScore > 0 && roll < Config.Difficulty + Config.AttackMod)
@@ -484,7 +484,7 @@ public class AIController : MonoBehaviour
     private float ScoreThrowNanoPack(UnitController unit, DroneController[] allDrones)
     {
         float score = 0;
-        var specialAbility = unit.Data.UnitClass.TargetedAbility;
+        var specialAbility = unit.Data.UnitClass.ActivatedAbility;
         if (specialAbility.Name == "NanoPack" && unit.Data.MP > specialAbility.AmmoCostInstant)
         {
             foreach (var d in allDrones)
