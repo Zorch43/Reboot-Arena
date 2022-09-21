@@ -33,6 +33,25 @@ namespace Assets.Scripts.Data_Templates
             };
             return ability;
         }
+        public static UnitAbilityModel CreateReload()
+        {
+            var ability = new UnitAbilityModel()
+            {
+                Name = "Reload",
+                Description = "Stop to restore your ammo.  You can't do anything else while reloading.",
+                Icon = ResourceList.ICON_RELOAD,
+                IsTargetedAbility = false,
+                
+                //TODO: shortcuts?
+            };
+            //upon activation, apply reload condition
+            ability.OnActivation += (sender, a) =>
+            {
+                var unit = sender as UnitController;
+                unit.ApplyCondition(ConditionTemplates.CreateReloadCondition());
+            };
+            return ability;
+        }
         public static UnitAbilityModel CreateTurretDrone()
         {
             var ability = new UnitAbilityModel()
@@ -79,5 +98,7 @@ namespace Assets.Scripts.Data_Templates
             };
             return ability;
         }
+
+        
     }
 }

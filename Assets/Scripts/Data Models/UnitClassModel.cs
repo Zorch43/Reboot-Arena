@@ -37,7 +37,6 @@ namespace Assets.Scripts.Data_Models
         public float AmmoPickupEfficiency { get; set; } = 1;//effectiveness multiplier for ammo pickups
         public float SpeedBoostPower { get; set; }//speed boost while unit has ammo.  set negative to burden unit with ammo
         public float FuelConsumption { get; set; }//how much ammo is consumed while moving, per distance unit moved
-        public bool HasJumpBoost { get; set; }//whether this unit can jump low obstacles
         public bool IncompatibleAmmo { get; set; }//if true, can't gain ammo from weapons or abilities
         public float AmmoRegenRate { get; set; }//rate at which this unit gains or loses ammo, regardless of other factors.
         #endregion

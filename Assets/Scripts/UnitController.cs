@@ -36,6 +36,7 @@ public class UnitController : DroneController
     public Vector3? AttackMoveDestination { get; set; }
     public IActionTracker ActionTracker { get; set; }
     public UnitSlotModel SpawnSlot { get; set; }
+    
     public override bool IsMoving
     {
         get
@@ -50,9 +51,9 @@ public class UnitController : DroneController
         //base
         base.OnStart();
         //set agent speed
-        Locomotion.Speed = Data.UnitClass.MoveSpeed;
+        Locomotion.Speed = GetMoveSpeed();
         //set agent turn speed
-        Locomotion.TurnSpeed = (float)(Data.UnitClass.TurnSpeed * 180 / Math.PI);
+        Locomotion.TurnSpeed = (float)(GetTurnSpeed() * 180 / Math.PI);
 
         collider = GetComponent<SphereCollider>();
         hitBoxSize = collider.radius;
@@ -61,7 +62,7 @@ public class UnitController : DroneController
         droneTemplate = Resources.Load<DroneController>(Data.UnitClass.TargetedAbility.DroneTemplate);
 
         //set movement graph
-        if (Data.UnitClass.HasJumpBoost)
+        if (GetJumpBoost())//TODO: allow for changing property
         {
             Locomotion.CanJump = true;
         }
@@ -81,11 +82,11 @@ public class UnitController : DroneController
         //update boosted movement speed
         if(Data.MP > 0)
         {
-            Locomotion.Speed = Data.UnitClass.MoveSpeed + Data.UnitClass.SpeedBoostPower;
+            Locomotion.Speed = GetMoveSpeed() + Data.UnitClass.SpeedBoostPower;
         }
         else
         {
-            Locomotion.Speed = Data.UnitClass.MoveSpeed;
+            Locomotion.Speed = GetMoveSpeed();
         }
         //consume fuel
         bool isMoving = IsMoving;
@@ -255,6 +256,47 @@ public class UnitController : DroneController
     public override void StopMoving()
     {
         Locomotion.Stop();
+    }
+    public void ApplyCondition(UnitConditionModel condition)
+    {
+        //check conditions for pre-existing instance of conition
+        UnitConditionModel foundCondition = null;
+        for (int i = 0; i < Conditions.Count; i++)
+        {
+            if (Conditions[i].Name == condition.Name)
+            {
+                foundCondition = Conditions[i];
+            }
+        }
+        //if found, stack condition, trigger stack event
+        if (foundCondition != null)
+        {
+            foundCondition.DoConditionStack(this, condition);
+        }
+        //else add condition to list and trigger application event
+        else
+        {
+            Conditions.Add(condition);
+            condition.DoConditionStart(this, condition);
+        }
+        
+    }
+    public void RemoveCondition(UnitConditionModel condition)
+    {
+        //check that condition is applied
+        UnitConditionModel foundCondition = null;
+        for (int i = 0; i < Conditions.Count; i++)
+        {
+            if (Conditions[i].Name == condition.Name)
+            {
+                foundCondition = Conditions[i];
+            }
+        }
+        if (foundCondition != null)
+        {
+            Conditions.Remove(foundCondition);
+            foundCondition.DoConditionEnd(this, condition);
+        }
     }
     #endregion
     #region private methods
@@ -471,7 +513,7 @@ public class UnitController : DroneController
             {
                 weaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
                 activeWeapon.StartCooldown();
-                Data.MP -= activeWeapon.AmmoCost;
+                Data.MP -= GetWeaponAmmoCost(activeWeapon);
             }
         }
     }

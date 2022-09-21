@@ -83,18 +83,19 @@ public class WeaponController : MonoBehaviour
     #endregion
     #region private methods
     //only makes sense for beams and non-arcing projectiles
-    private Vector3 CalcFiringSolution(WeaponModel data, Vector3 perfectTarget, int projectileNumber = 0)
+    private Vector3 CalcFiringSolution(WeaponModel weapon, Vector3 perfectTarget, int projectileNumber = 0)
     {
+        float inaccuracy = weapon.Owner.GetWeaponInaccuracy(weapon);
         //get angle deviation from perfect
         float totalDeviation = 0;
-        if(data.ProjectileBurstSize > 1 && data.ProjectileBurstSpread > 0.1f)
+        if(weapon.ProjectileBurstSize > 1 && weapon.ProjectileBurstSpread > 0.1f)
         {
             //calculate burst deviation, based on burst size, spread, and the projectile number
-            totalDeviation += projectileNumber * data.ProjectileBurstSpread / data.ProjectileBurstSize - data.ProjectileBurstSpread / 2;
+            totalDeviation += projectileNumber * weapon.ProjectileBurstSpread / weapon.ProjectileBurstSize - weapon.ProjectileBurstSpread / 2;
         }
-        if(data.InAccuracy > 0.1f)
+        if(inaccuracy > 0.1f)
         {
-            totalDeviation += Random.Range(-data.InAccuracy, data.InAccuracy);
+            totalDeviation += Random.Range(-inaccuracy, inaccuracy);
         }
         if(Mathf.Abs(totalDeviation) > 0.1f)
         {

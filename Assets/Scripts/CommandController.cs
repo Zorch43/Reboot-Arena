@@ -645,6 +645,7 @@ public class CommandController : MonoBehaviour
         {
             score -= 1000;
         }
+        float maxRange = unit.GetWeaponMaxRange(specialAbility.AbilityWeapon);
 
         //TODO: consider weighting these values
         if (specialAbility.ConsiderLeastAmmoInGroup)
@@ -657,11 +658,11 @@ public class CommandController : MonoBehaviour
         }
         if (specialAbility.ConsiderLeastMoveDistanceToTarget)
         {
-            score += -(Mathf.Max((target - unit.transform.position).magnitude - specialAbility.AbilityWeapon.MaxRange, 0)/unit.Data.UnitClass.MoveSpeed);
+            score += -(Mathf.Max((target - unit.transform.position).magnitude - maxRange, 0)/unit.GetMoveSpeed());
         }
         if (specialAbility.ConsiderLeastTotalDistanceToTarget)
         {
-            score += -((target - unit.transform.position).magnitude - specialAbility.AbilityWeapon.MaxRange)/ specialAbility.AbilityWeapon.MaxRange;
+            score += -((target - unit.transform.position).magnitude - maxRange)/ maxRange;
         }
         if (specialAbility.ConsiderMostAmmoInGroup)
         {

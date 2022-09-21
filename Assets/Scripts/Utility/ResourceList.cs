@@ -36,6 +36,8 @@ namespace Assets.Scripts.Utility
         public const string CURSOR_FRAG_GRENADE = CURSOR_ABILITY_ATTACK;
         public const string MARKER_FRAG_GRENADE = MARKER_ABILITY_ATTACK;
 
+        public const string ICON_RELOAD = ICONS + "ReloadIcon";
+
         public const string ICON_BUILD_TURRET = ICONS + "BuildTurretIcon";
         public const string CURSOR_BUILD_TURRET = CURSORS + "BuildTurretCursor";
         public const string MARKER_BUILD_TURRET = MARKERS + "BuildTurretMarker";

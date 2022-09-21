@@ -1,0 +1,18 @@
+Asset forge Pallet (Since I apparently can't save them)
+Default: #FFFFFF, no texture, 0.35, 0.25
+Dark: #202020, no texture, 0.35, 0
+MetalOrange (Team Color): #C00000, circuit texture, 0.5, 0.2
+MetalDark:#404040, Galvanized texture, 0.35, 0.5
+MetalPurple: #606060, Scratched texture, 0.75, 0.75
+Shield: Glowy color
+MetalLight: #FFFFFF, Scratched Texture, 0.35, 0.25
+Metal: #808080, Galvanized texture, 0.35, 0.25
+
+Pallet guidelines: 
+Weapon barrels: Dark
+Weapon body: Metal, DarkMetal, MetalOrange
+Viewports: default
+Glowy bits: shield
+Highlights: MetalLight, MetalPurple
+Details: Metal, MetalDark, MetalLight
+Undercarriage: Dark, MetalDark

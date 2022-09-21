@@ -23,6 +23,12 @@ public class ProjectileController : MonoBehaviour
     private float currentBeamDuration;
     private Vector3 initialVelocity;
     private float projectileSizeFactor;
+    private float maxRange;
+    private float projectileSpeed;
+    private bool pierceWalls;
+    private bool pierceUnits;
+    private float healthDamage;
+    private float ammoDamage;
     #endregion
     #region properties
     public WeaponModel Weapon { get; set; }//the weapon that is firing this projectile
@@ -34,6 +40,13 @@ public class ProjectileController : MonoBehaviour
     void Start()
     {
         targetPos = TargetLocation; //TODO: apply inaccuracy for arcing attacks
+        //calculate and cache relevant weapon stats
+        maxRange = Weapon.Owner.GetWeaponProjectileSpeed(Weapon);
+        projectileSpeed = Weapon.Owner.GetWeaponProjectileSpeed(Weapon);
+        pierceWalls = Weapon.Owner.GetWeaponPiercesWalls(Weapon);
+        pierceUnits = Weapon.Owner.GetWeaponPiercesUnits(Weapon);
+        healthDamage = Weapon.Owner.GetWeaponHealthDamage(Weapon);
+        ammoDamage = Weapon.Owner.GetWeaponAmmoDamage(Weapon);
         //face towards target
         firingVector = (targetPos - transform.position).normalized;
         transform.forward = firingVector;
@@ -42,13 +55,13 @@ public class ProjectileController : MonoBehaviour
         {
             initialVelocity = TrajectoryTools.GetInitialVelocity(transform.position, targetPos, TrajectoryTools.MIN_ARC_HEIGHT, -Physics.gravity.y);
         }
-        if(Weapon.ProjectileSpeed < 0.1)
+        if(projectileSpeed < 0.1 )
         {
             FireBeam(firingVector);
         }
         else
         {
-            projectileSizeFactor = (Weapon.ProjectileEndSize - Weapon.ProjectileStartSize) / Weapon.MaxRange;
+            projectileSizeFactor = (Weapon.ProjectileEndSize - Weapon.ProjectileStartSize) / maxRange;
             SetProjectileSize(Weapon.ProjectileStartSize);
         }
     }
@@ -73,16 +86,16 @@ public class ProjectileController : MonoBehaviour
 
             //projectile will destroy itself when it hits a unit, an obstacle, or the ground
         }
-        else if (Weapon.ProjectileSpeed > 0.1f)
+        else if (projectileSpeed > 0.1f)
         {
-            var distance = Weapon.ProjectileSpeed * elapsedTime * firingVector;
+            var distance = projectileSpeed * elapsedTime * firingVector;
             transform.position += distance;
             
             //update total distance travelled.
             distanceTravelled += distance.magnitude;
             SetProjectileSize();
             //if distance exceeds weapon range, destroy this projectile
-            if(distanceTravelled > Weapon.MaxRange)
+            if(distanceTravelled > maxRange)
             {
                 DoMaxRangeReached();
             }
@@ -138,7 +151,7 @@ public class ProjectileController : MonoBehaviour
         }
 
         //return whether the projectile should continue
-        return Weapon.PiercesWalls;
+        return pierceWalls;
     }
     private bool DoImpact(Vector3 impactPosition, DroneController unit)
     {
@@ -152,19 +165,19 @@ public class ProjectileController : MonoBehaviour
         //otherwise damage the unit
         else
         {
-            unit.DamageUnit(Weapon.HealthDamage / Weapon.ProjectileBurstSize);
-            unit.DrainUnit(Weapon.AmmoDamage / Weapon.ProjectileBurstSize);
+            unit.DamageUnit(healthDamage / Weapon.ProjectileBurstSize);
+            unit.DrainUnit(ammoDamage / Weapon.ProjectileBurstSize);
         }
 
         //return whether the projectile should continue
-        return Weapon.PiercesUnits;
+        return pierceUnits;
     }
     private void DoMaxRangeReached()
     {
         //if projectile explodes, explode
         if (Weapon.Explodes)
         {
-            DoExplosion(firingVector * Weapon.MaxRange);
+            DoExplosion(firingVector * maxRange);
         }
         //destroy the projectile
         Destroy(gameObject);
@@ -180,8 +193,8 @@ public class ProjectileController : MonoBehaviour
             var unit = h.GetComponent<DroneController>();
             if (unit != null && unit.Data.Team != AllyTeam)
             {
-                unit.DamageUnit(Weapon.HealthDamage / Weapon.ProjectileBurstSize);
-                unit.DrainUnit(Weapon.AmmoDamage / Weapon.ProjectileBurstSize);
+                unit.DamageUnit(healthDamage / Weapon.ProjectileBurstSize);
+                unit.DrainUnit(ammoDamage / Weapon.ProjectileBurstSize);
             }
         }
         //play explosion effect
@@ -191,12 +204,12 @@ public class ProjectileController : MonoBehaviour
     private void FireBeam(Vector3 direction)
     {
         //pulse a (sphere)raycast, getting all colliders in path of beam
-        var beamHits = Physics.SphereCastAll(transform.position, Weapon.ProjectileStartSize/2, direction, Weapon.MaxRange);
+        var beamHits = Physics.SphereCastAll(transform.position, Weapon.ProjectileStartSize/2, direction, maxRange);
         //TODO: sort hits by distance
         var sortedBeamHits = SortHitsByDistance(beamHits);
         //for each object in the path of the beam, determine whether the beam can continue
         //if it can, draw the line out to that collision point
-        var beamLength = Weapon.MaxRange;
+        var beamLength = maxRange;
         DroneController target = null;
         foreach (var h in sortedBeamHits)
         {

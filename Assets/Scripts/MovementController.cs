@@ -202,7 +202,7 @@ public class MovementController : MonoBehaviour, IMove
         //isStopped = false;
         NormalizeBody();
         PathfinderSeeker.StartPath(transform.position, destination, OnPathComplete);
-        if (Controller.Data.UnitClass.HasJumpBoost)
+        if (Controller.GetJumpBoost())
         {
             Body.constraints = ~RigidbodyConstraints.FreezePositionY & Body.constraints;
         }

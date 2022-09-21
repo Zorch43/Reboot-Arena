@@ -40,6 +40,7 @@ public class DroneController : MonoBehaviour
     #endregion
     #region properties
     public UnitModel Data { get; set; }
+    public List<UnitConditionModel> Conditions { get; set; } = new List<UnitConditionModel>();
     public DroneController AutoTarget1 { get; set; }
     public DroneController AutoTarget2 { get; set; }
     public List<Action> DeathActions { get; set; } = new List<Action>();
@@ -75,6 +76,24 @@ public class DroneController : MonoBehaviour
         }
 
         initialRotation = UnitEffects.transform.rotation;
+
+        //set ownership of weapons
+        if (Data.UnitClass.PrimaryWeapon != null)
+        {
+            Data.UnitClass.PrimaryWeapon.Owner = this;
+        }
+        if (Data.UnitClass.SecondaryWeapon != null)
+        {
+            Data.UnitClass.SecondaryWeapon.Owner = this;
+        }
+        if (Data.UnitClass.TargetedAbility?.AbilityWeapon != null)
+        {
+            Data.UnitClass.TargetedAbility.AbilityWeapon.Owner = this;
+        }
+        if (Data.UnitClass.ActivatedAbility?.AbilityWeapon != null)
+        {
+            Data.UnitClass.ActivatedAbility.AbilityWeapon.Owner = this;
+        }
 
         //TEMP: set team from public property
         if (Team >= 0)
@@ -267,6 +286,209 @@ public class DroneController : MonoBehaviour
         }
         return true;
     }
+    #region stat calculators
+    public float GetMoveSpeed()
+    {
+        float flat = 0;
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            flat += c.UnitMoveSpeedFlat;
+            prop += c.UnitMoveSpeedProp;
+        }
+        return Data.UnitClass.MoveSpeed * prop + flat;
+    }
+    public float GetTurnSpeed()
+    {
+        float flat = 0;
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            flat += c.UnitTurnSpeedFlat;
+            prop += c.UnitTurnSpeedProp;
+        }
+        return Data.UnitClass.TurnSpeed * prop + flat;
+    }
+    public bool GetJumpBoost()
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.UnitHasJumpBoost)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool GetTargetedAbilityDisabled()
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.UnitTargetedAbilityDisabled)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public bool GetActivatedAbilityDisabled()
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.UnitActivatedAbilityDisabled)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    public float GetWeaponMaxRange(WeaponModel weapon)
+    {
+        float flat = 0;
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            flat += c.WeaponMaxRangeFlat * c.Intensity;
+            prop += c.WeaponMaxRangeProp * c.Intensity;
+        }
+        return weapon.MaxRange * prop + flat;
+    }
+    public float GetWeaponMinRange(WeaponModel weapon)
+    {
+        float flat = 0;
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            flat += c.WeaponMinRangeFlat * c.Intensity;
+            prop += c.WeaponMinRangeProp * c.Intensity;
+        }
+        return weapon.MinRange * prop + flat;
+    }
+    public float GetWeaponProjectileSpeed(WeaponModel weapon)
+    {
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            prop += c.WeaponProjectileSpeedProp * c.Intensity;
+        }
+        return weapon.ProjectileSpeed * prop;
+    }
+    public float GetWeaponCoolDown(WeaponModel weapon)
+    {
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            prop += c.WeaponCooldownProp * c.Intensity;
+        }
+        return weapon.Cooldown * prop;
+    }
+    public float GetWeaponHealthDamage(WeaponModel weapon)
+    {
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            prop += c.WeaponHealthDamageProp * c.Intensity;
+        }
+        return weapon.HealthDamage * prop;
+    }
+    public float GetWeaponAmmoDamage(WeaponModel weapon)
+    {
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            prop += c.WeaponAmmoDamageProp * c.Intensity;
+        }
+        return weapon.AmmoDamage * prop;
+    }
+    public float GetWeaponInaccuracy(WeaponModel weapon)
+    {
+        float flat = 0;
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            flat += c.WeaponInaccuracyFlat * c.Intensity;
+            prop += c.WeaponInaccuracyProp * c.Intensity;
+        }
+        return weapon.InAccuracy * prop + flat;
+    }
+    public bool GetWeaponPiercesWalls(WeaponModel weapon)
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.WeaponPiercesWalls)
+            {
+                return true;
+            }
+        }
+        return weapon.PiercesWalls;
+    }
+    public bool GetWeaponPiercesUnits(WeaponModel weapon)
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.WeaponPiercesUnits)
+            {
+                return true;
+            }
+        }
+        return weapon.PiercesUnits;
+    }
+    public float GetWeaponAmmoCost(WeaponModel weapon)
+    {
+        float flat = 0;
+        float prop = 1;
+        //get sum of flat and proportional modifiers from conditions
+        foreach (var c in Conditions)
+        {
+            flat += c.WeaponAmmoCostFlat * c.Intensity;
+            prop += c.WeaponAmmoCostProp * c.Intensity;
+        }
+        return weapon.AmmoCost * prop + flat;
+    }
+    public bool GetCanAutoAttack(WeaponModel weapon)
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.WeaponDisableAutoAttack)
+            {
+                return false;
+            }
+        }
+        return weapon.CanAutoAttack;
+    }
+    public bool GetCantargetAttack(WeaponModel weapon)
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.WeaponDisableTargetAttack)
+            {
+                return false;
+            }
+        }
+        return weapon.CanTargetAttack;
+    }
+    public bool GetCanFireWhileMoving(WeaponModel weapon)
+    {
+        foreach (var c in Conditions)
+        {
+            if (c.WeaponDisableFireWhileMoving)
+            {
+                return false;
+            }
+        }
+        return weapon.FireWhileMoving;
+    }
+
+    #endregion
     #endregion
     #region private methods
     protected virtual void DoUnitAction()
@@ -371,7 +593,7 @@ public class DroneController : MonoBehaviour
             var remainingAngle = Quaternion.Angle(targetRotation, transform.rotation);
             if (!Data.UnitClass.IsAmbidextrous || activeWeapon.FiringArc/2 < remainingAngle)
             {
-                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(Data.UnitClass.TurnSpeed * Time.deltaTime, 1));
+                transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Mathf.Min(GetTurnSpeed() * Time.deltaTime, 1));
             }
         }
         var weaponMount = GetWeaponController(activeWeapon);
@@ -405,7 +627,7 @@ public class DroneController : MonoBehaviour
 
             weaponMount.Fire(this, activeWeapon, transform.parent.gameObject, target);
             activeWeapon.StartCooldown();
-            Data.MP -= activeWeapon.AmmoCost;
+            Data.MP -= GetWeaponAmmoCost(activeWeapon);
         }
     }
     protected bool CanAttackWithWeapon(WeaponModel weapon, DroneController target, bool isMoving, bool isAutoAttack)
@@ -414,13 +636,13 @@ public class DroneController : MonoBehaviour
             && target != null
             && target != this
             && target.Data.IsTargetable
-            && (!isMoving || weapon.FireWhileMoving)
-            && (!isAutoAttack || weapon.CanAutoAttack)
-            && (weapon.AmmoCost <= Data.MP)
+            && (!isMoving || GetCanFireWhileMoving(weapon))
+            && (!isAutoAttack || GetCanAutoAttack(weapon))
+            && (GetWeaponAmmoCost(weapon) <= Data.MP)
             && (Data.Team == target.Data.Team == weapon.TargetsAllies())
             && (weapon.AmmoDamage >= 0 || (!target.Data.UnitClass.IncompatibleAmmo && target.Data.UnitClass.MaxMP - target.Data.MP > -weapon.AmmoDamage))
             && (weapon.HealthDamage >= 0 || target.Data.HP < target.Data.UnitClass.MaxHP)
-            && (weapon.MaxRange >= Vector3.Distance(target.transform.position, transform.position))
+            && (GetWeaponMaxRange(weapon) >= Vector3.Distance(target.transform.position, transform.position))
             && (!weapon.NeedsLineOfSight() || HasLineOfSight(target.TargetingPosition));
     }
     protected bool CanAttackWithWeapon(WeaponModel weapon, Vector3 target, bool isMoving, bool isAutoAttack)
@@ -428,8 +650,8 @@ public class DroneController : MonoBehaviour
         return weapon != null
             && (!isMoving || weapon.FireWhileMoving)
             && (!isAutoAttack || weapon.CanAutoAttack)
-            && (weapon.AmmoCost <= Data.MP)
-            && (weapon.MaxRange >= Vector3.Distance(target, transform.position))
+            && (GetWeaponAmmoCost(weapon) <= Data.MP)
+            && (GetWeaponMaxRange(weapon) >= Vector3.Distance(target, transform.position))
             && (!weapon.NeedsLineOfSight() || HasLineOfSight(target));
     }
     protected virtual WeaponModel GetActiveWeapon(DroneController target, bool isMoving, bool isAutoAttack)
@@ -492,7 +714,7 @@ public class DroneController : MonoBehaviour
     protected DroneController GetAutoAttackTarget(WeaponModel weapon, DroneController target, bool isMoving, bool autoAttackOnly = true, Quaternion otherRotation = new Quaternion(), float otherArc = 360)
     {
         //if doing autoattack (and not an attack-move or defense), only weapons that can autoattack get targets
-        if(weapon == null || (autoAttackOnly && !weapon.CanAutoAttack))
+        if(weapon == null || (autoAttackOnly && !GetCanAutoAttack(weapon)))
         {
             return null;
         }

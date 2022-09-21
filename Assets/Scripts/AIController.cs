@@ -194,8 +194,11 @@ public class AIController : MonoBehaviour
         {
             activeWeapon = unit.Data.UnitClass.SecondaryWeapon;
         }
-        float engageDistance = activeWeapon.MaxRange;
-        
+        float engageDistance = unit.GetWeaponMaxRange(activeWeapon);
+        float inaccuracy = unit.GetWeaponInaccuracy(activeWeapon);
+        float healthDamage = unit.GetWeaponHealthDamage(activeWeapon);
+        float cooldown = unit.GetWeaponCoolDown(activeWeapon);
+
         foreach (var u in allDrones)
         {
             if(u.Data.Team != Team.Team && u.Data.IsDamageable && u.Data.IsTargetable)
@@ -210,8 +213,9 @@ public class AIController : MonoBehaviour
                 {
                     continue;
                 }
+                
                 //prefer close units (account for inaccuracy, spread, falloff, slow projectiles, etc)
-                float damageReduction = Mathf.Max(1, 1/(Mathf.Tan(activeWeapon.InAccuracy) * distanceToTarget * 2));
+                float damageReduction = Mathf.Max(1, 1/(Mathf.Tan(inaccuracy) * distanceToTarget * 2));
                 //targetScore += (engageDistance - Vector3.Distance(u.transform.position, unit.transform.position))/engageDistance;
                 ////prefer units close to the objective
                 //targetScore += (CAPTURE_DISTANCE - Vector3.Distance(u.transform.position, GameObjective.GetAIObjective())) / CAPTURE_DISTANCE;
@@ -219,12 +223,12 @@ public class AIController : MonoBehaviour
                 targetInternalScore -= u.Data.HP / 100;
                 //prefer units near death
                 float unitsKilled = 0;
-                if (activeWeapon.HealthDamage/activeWeapon.Cooldown >= u.Data.HP)
+                if (healthDamage/cooldown >= u.Data.HP)
                 {
                     unitsKilled += 1;
                 }
 
-                targetScore += unitsKilled + (activeWeapon.HealthDamage / activeWeapon.Cooldown) / 100 * damageReduction;
+                targetScore += unitsKilled + (healthDamage / cooldown) / 100 * damageReduction;
                 //targetScore -= primaryWeapon.AmmoCost / primaryWeapon.Cooldown;
 
                 if (targetDrone == null || targetScore + targetInternalScore > score + internalScore)
@@ -258,7 +262,9 @@ public class AIController : MonoBehaviour
 
         if(activeWeapon != null)
         {
-            float engageDistance = activeWeapon.MaxRange;// activeWeapon.MaxRange;//TODO: add engage distance to weapons/unit
+            float engageDistance = unit.GetWeaponMaxRange(activeWeapon);//TODO: add engage distance to weapons/unit
+            float ammoDamage = unit.GetWeaponAmmoDamage(activeWeapon);
+            float cooldown = unit.GetWeaponCoolDown(activeWeapon);
 
             foreach (var u in allDrones)
             {
@@ -281,7 +287,7 @@ public class AIController : MonoBehaviour
                     targetScore += (u.Data.UnitClass.MaxMP - u.Data.MP) / 100;
                     
 
-                    targetScore += (-activeWeapon.AmmoDamage / activeWeapon.Cooldown) / 100;
+                    targetScore += (-ammoDamage / cooldown) / 100;
                     if (u.CompareTag("Drone"))
                     {
                         //prefer drones with missing health
@@ -322,8 +328,10 @@ public class AIController : MonoBehaviour
         if (unit.Data.UnitClass.TargetedAbility.Name == "Grenade" && unit.Data.MP >= unit.Data.UnitClass.TargetedAbility.AmmoCostInstant)
         {
             var abilityWeapon = unit.Data.UnitClass.TargetedAbility.AbilityWeapon;
+            float maxRange = unit.GetWeaponMaxRange(abilityWeapon);
 
-            float engageDistance = Mathf.Min(Config.Speed, 2) * unit.Data.UnitClass.MoveSpeed + abilityWeapon.MaxRange;
+            float engageDistance = Mathf.Min(Config.Speed, 2) * unit.GetMoveSpeed() + maxRange;
+            float healthDamage = unit.GetWeaponHealthDamage(abilityWeapon);
             foreach (var u in allDrones)
             {
                 if (u.Data.Team != Team.Team && u.Data.IsDamageable)
@@ -350,7 +358,7 @@ public class AIController : MonoBehaviour
                             <= unit.Data.UnitClass.TargetedAbility.AbilityWeapon.ExplosionSize)
                         {
                             targetsHit += 1f;
-                            if (abilityWeapon.HealthDamage >= o.Data.HP)
+                            if (healthDamage >= o.Data.HP)
                             {
                                 unitsKilled += 1f;
                             }
@@ -361,7 +369,7 @@ public class AIController : MonoBehaviour
                         continue;
                     }
                     //prefer targets already within range
-                    if (distanceToTarget < abilityWeapon.MaxRange)
+                    if (distanceToTarget < maxRange)
                     {
                         targetInternalScore += 1;
                     }
@@ -370,7 +378,7 @@ public class AIController : MonoBehaviour
                     targetInternalScore -= u.Data.HP / 100;
                     //prefer units near death
                     
-                    if(abilityWeapon.HealthDamage >= u.Data.HP)
+                    if(healthDamage >= u.Data.HP)
                     {
                         unitsKilled += 1;
                     }
@@ -380,7 +388,7 @@ public class AIController : MonoBehaviour
                     {
                         targetInternalScore += 1;
                     }
-                    targetScore += targetsHit * abilityWeapon.HealthDamage / 100 + unitsKilled;
+                    targetScore += targetsHit * healthDamage / 100 + unitsKilled;
                     //targetScore -= abilityWeapon.AmmoCost;
 
                     if (!hasTarget || targetScore + targetInternalScore > score + internalScore)
@@ -558,7 +566,7 @@ public class AIController : MonoBehaviour
                 //score health
                 float targetScore = 0;
                 //prioritize proximity (by movement speed)
-                float moveScore = Vector3.Distance(unit.transform.position, d.transform.position) / unit.Data.UnitClass.MoveSpeed;
+                float moveScore = Vector3.Distance(unit.transform.position, d.transform.position) / unit.GetMoveSpeed();
                 //prioritize magnitude - up to max missing health
                 targetScore += Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, d.PackCount * 100) / 100 / Mathf.Pow(Mathf.Max(moveScore, Config.Speed), 2);
                 
@@ -577,7 +585,7 @@ public class AIController : MonoBehaviour
             //score health
             float targetScore = 0;
             //prioritize proximity (by movement speed)
-            float moveScore = Vector3.Distance(unit.transform.position, p.transform.position) / unit.Data.UnitClass.MoveSpeed;
+            float moveScore = Vector3.Distance(unit.transform.position, p.transform.position) / unit.GetMoveSpeed();
             //prioritize magnitude - up to max missing health
             targetScore += Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, 100) / 100 / Mathf.Pow(Mathf.Max(moveScore, Config.Speed), 2);
 
@@ -591,7 +599,7 @@ public class AIController : MonoBehaviour
         //score retreat
         //prioritize proximity (by movement speed)
         var spawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
-        float retreatTime = Vector3.Distance(unit.transform.position, spawnPoint) / unit.Data.UnitClass.MoveSpeed;
+        float retreatTime = Vector3.Distance(unit.transform.position, spawnPoint) / unit.GetMoveSpeed();
         //prioritize magnitude - up to max missing health
         float retreatScore = (unit.Data.UnitClass.MaxHP - unit.Data.HP) / 100 / Mathf.Pow(Mathf.Max(retreatTime, Config.Speed), 2);
         if(!hasTarget || retreatScore > score)
@@ -620,7 +628,7 @@ public class AIController : MonoBehaviour
                 //score health
                 float targetScore = 0;
                 //prioritize proximity (by movement speed)
-                float moveScore = Vector3.Distance(unit.transform.position, d.transform.position) / unit.Data.UnitClass.MoveSpeed;
+                float moveScore = Vector3.Distance(unit.transform.position, d.transform.position) / unit.GetMoveSpeed();
                 //prioritize magnitude - up to max missing health
                 targetScore += Mathf.Min(unit.Data.UnitClass.MaxMP - unit.Data.MP, d.PackCount * 100) / 100 / Mathf.Pow(Mathf.Max(moveScore, Config.Speed), 2);
 
@@ -639,7 +647,7 @@ public class AIController : MonoBehaviour
             //score health
             float targetScore = 0;
             //prioritize proximity (by movement speed)
-            float moveScore = Vector3.Distance(unit.transform.position, p.transform.position) / unit.Data.UnitClass.MoveSpeed;
+            float moveScore = Vector3.Distance(unit.transform.position, p.transform.position) / unit.GetMoveSpeed();
             //prioritize magnitude - up to max missing health
             targetScore += Mathf.Min(unit.Data.UnitClass.MaxMP - unit.Data.MP, 100) / 100 / Mathf.Pow(Mathf.Max(moveScore, Config.Speed), 2);
 
@@ -653,7 +661,7 @@ public class AIController : MonoBehaviour
         //score retreat
         //prioritize proximity (by movement speed)
         var spawnPoint = GameObjective.GetAISpawnPoint(Team.Team);
-        float retreatTime = Vector3.Distance(unit.transform.position, spawnPoint) / unit.Data.UnitClass.MoveSpeed;
+        float retreatTime = Vector3.Distance(unit.transform.position, spawnPoint) / unit.GetMoveSpeed();
         //prioritize magnitude - up to max missing health
         float retreatScore = (unit.Data.UnitClass.MaxMP - unit.Data.MP) / 100 / Mathf.Pow(Mathf.Max(retreatTime, Config.Speed), 2);
         if (!hasTarget || retreatScore > score)
@@ -686,7 +694,7 @@ public class AIController : MonoBehaviour
             }
             var distanceToPoint = Vector3.Distance(currentObjective.Objective.transform.position, u.transform.position);
             var moveDistance = Mathf.Min(distanceToPoint - CAPTURE_DISTANCE, 0);
-            var travelTime = moveDistance / u.Data.UnitClass.MoveSpeed;
+            var travelTime = moveDistance / u.GetMoveSpeed();
             if (u.Data.Team == Team.Team)
             {
                 if (travelTime < 1)
@@ -764,7 +772,7 @@ public class AIController : MonoBehaviour
     {
         var objectivePoint = currentObjective.Objective.transform.position;
         var distanceFromPoint = Vector3.Distance(objectivePoint, unit.transform.position);
-        var timeToPoint = (distanceFromPoint - 2) / unit.Data.UnitClass.MoveSpeed;
+        var timeToPoint = (distanceFromPoint - 2) / unit.GetMoveSpeed();
         
         if(distanceFromPoint > 2)
         {

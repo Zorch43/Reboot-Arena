@@ -41,6 +41,7 @@ namespace Assets.Scripts.Data_Models
         public float AmmoCost { get; set; }//ammo cost, if any, to fire this weapon
         public bool FireWhileMoving { get; set; }//whether this weapon can be fired while moving
         public bool CanAutoAttack { get; set; }//whether this weapon can be used on autoattack targets
+        public bool CanTargetAttack { get; set; } = true;//whether this weapon can be targeted
         public float FiringArc { get; set; }//the range of traversal (in degrees) this weapon has
         public float TraversalSpeed { get; set; }//speed that the weapon rotates to face targets
         //TODO: what effects to apply on hit
@@ -48,6 +49,7 @@ namespace Assets.Scripts.Data_Models
         #region dynamic properties
 
         //dynamic properties
+        public DroneController Owner { get; set; }
         public float RemainingCooldown { get; set; }
         #endregion
         #region public methods
@@ -64,7 +66,7 @@ namespace Assets.Scripts.Data_Models
         }
         public void StartCooldown()
         {
-            RemainingCooldown += Cooldown;
+            RemainingCooldown += Owner.GetWeaponCoolDown(this);
         }
         public bool IsCooledDown()
         {
@@ -72,7 +74,7 @@ namespace Assets.Scripts.Data_Models
         }
         public bool NeedsLineOfSight()
         {
-            return !(ArcingAttack || PiercesWalls);
+            return !(ArcingAttack || Owner.GetWeaponPiercesWalls(this));
         }
         public bool TargetsAllies()
         {

@@ -50,7 +50,7 @@ namespace Assets.Scripts.Data_Templates
                 PrimaryWeapon = WeaponTemplates.CreateMachineGun(),
                 SecondaryWeapon = WeaponTemplates.CreateAssaultRifle(),
                 TargetedAbility = UnitAbilityTemplates.CreateFragGrenade(),
-                ActivatedAbility = UnitAbilityTemplates.CreateNanoPack(),
+                ActivatedAbility = UnitAbilityTemplates.CreateReload(),
                 AttackerWeight = 2,
                 DefenderWeight = 1
             };
@@ -110,11 +110,11 @@ namespace Assets.Scripts.Data_Templates
                 MaxMP = 200,
                 MoveSpeed = 3,//non-boosted speed
                 TurnSpeed = 9,
-                HasJumpBoost = true,
-                SpeedBoostPower = 5,//boosted speed bonus
-                FuelConsumption = 10,//fuel cost per second while moving
-                HealthPickupEfficiency = 2,
-                AmmoPickupEfficiency = 2,
+                //HasJumpBoost = true, //TODO: replace with passive ability
+                SpeedBoostPower = 5,//boosted speed bonus//TODO: replace with passive ability
+                FuelConsumption = 10,//fuel cost per second while moving//TODO: replace with passive ability
+                HealthPickupEfficiency = 2,//TODO: replace with passive ability
+                AmmoPickupEfficiency = 2,//TODO: replace with passive ability
                 PrimaryWeapon = WeaponTemplates.CreateLaserPistols(),
                 TargetedAbility = UnitAbilityTemplates.CreateFragGrenade(),
                 ActivatedAbility = UnitAbilityTemplates.CreateNanoPack(),
