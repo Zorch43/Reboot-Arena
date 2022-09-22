@@ -40,7 +40,7 @@ namespace Assets.Scripts.Data_Templates
                 Name = "Reload",
                 Description = "Stop to restore your ammo.  You can't do anything else while reloading.",
                 Icon = ResourceList.ICON_RELOAD,
-                IsTargetedAbility = false,
+                IsTargetedAbility = false
                 
                 //TODO: shortcuts?
             };

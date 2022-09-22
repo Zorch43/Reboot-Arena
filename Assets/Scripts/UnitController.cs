@@ -207,7 +207,7 @@ public class UnitController : DroneController
                 //self heal
                 HealUnit(specialAbility.SelfHeal);
                 //drop loot
-                if (specialAbility.LootDrop.Length > 0)
+                if (specialAbility.LootDrop?.Length > 0)
                 {
                     foreach (var p in specialAbility.LootDrop)
                     {
@@ -219,6 +219,8 @@ public class UnitController : DroneController
             }
             
         }
+        //trigger activation event
+        specialAbility.DoActivation(this, specialAbility);
         
     }
     //cancel all orders given to this unit
@@ -257,47 +259,7 @@ public class UnitController : DroneController
     {
         Locomotion.Stop();
     }
-    public void ApplyCondition(UnitConditionModel condition)
-    {
-        //check conditions for pre-existing instance of conition
-        UnitConditionModel foundCondition = null;
-        for (int i = 0; i < Conditions.Count; i++)
-        {
-            if (Conditions[i].Name == condition.Name)
-            {
-                foundCondition = Conditions[i];
-            }
-        }
-        //if found, stack condition, trigger stack event
-        if (foundCondition != null)
-        {
-            foundCondition.DoConditionStack(this, condition);
-        }
-        //else add condition to list and trigger application event
-        else
-        {
-            Conditions.Add(condition);
-            condition.DoConditionStart(this, condition);
-        }
-        
-    }
-    public void RemoveCondition(UnitConditionModel condition)
-    {
-        //check that condition is applied
-        UnitConditionModel foundCondition = null;
-        for (int i = 0; i < Conditions.Count; i++)
-        {
-            if (Conditions[i].Name == condition.Name)
-            {
-                foundCondition = Conditions[i];
-            }
-        }
-        if (foundCondition != null)
-        {
-            Conditions.Remove(foundCondition);
-            foundCondition.DoConditionEnd(this, condition);
-        }
-    }
+    
     #endregion
     #region private methods
     protected override void DoUnitAction()

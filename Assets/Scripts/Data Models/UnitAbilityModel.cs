@@ -62,7 +62,7 @@ namespace Assets.Scripts.Data_Models
 
         public void DoActivation(object sender, UnitAbilityModel ability)
         {
-            OnActivation.Invoke(sender, ability);
+            OnActivation?.Invoke(sender, ability);
         }
     }
 }

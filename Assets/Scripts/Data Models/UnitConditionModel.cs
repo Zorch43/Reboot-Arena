@@ -18,7 +18,7 @@ namespace Assets.Scripts.Data_Models
 
         //condition duration properties
         public float Duration { get; set; }
-        public float RemainingDuration { get; set; }
+        public float DurationElapsed { get; set; }
         //condition intensity properties
         public float Intensity { get; set; } = 1;
         public float CurrentIntensity { get; set; }
@@ -76,19 +76,19 @@ namespace Assets.Scripts.Data_Models
         //event invokers (can't do it outside class?)
         public void DoTimeElapsed(object sender, float deltaTime)
         {
-            OnTimeElapsed.Invoke(sender, deltaTime);
+            OnTimeElapsed?.Invoke(sender, deltaTime);
         }
         public void DoConditionStart(object sender, UnitConditionModel condition)
         {
-            OnConditionStart.Invoke(sender, condition);
+            OnConditionStart?.Invoke(sender, condition);
         }
         public void DoConditionStack(object sender, UnitConditionModel condition)
         {
-            OnConditionStack.Invoke(sender, condition);
+            OnConditionStack?.Invoke(sender, condition);
         }
         public void DoConditionEnd(object sender, UnitConditionModel condition)
         {
-            OnConditionEnd.Invoke(sender, condition);
+            OnConditionEnd?.Invoke(sender, condition);
         }
         //private methods
         //decrease the remaining duration as time passes
@@ -97,14 +97,15 @@ namespace Assets.Scripts.Data_Models
         {
             if(Duration > 0)
             {
-                if (RemainingDuration <= 0)
+                if (DurationElapsed >= Duration)
                 {
                     //expire
-                    //TODO: direct hosting unit to remove this condition
+                    var unit = sender as DroneController;
+                    unit.RemoveCondition(this);
                 }
                 else
                 {
-                    RemainingDuration -= deltaTime;
+                    DurationElapsed += deltaTime;
                 }
             }
             

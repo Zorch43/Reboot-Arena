@@ -563,38 +563,18 @@ public class CommandController : MonoBehaviour
         if(user == null)
         {
             var users = GetAbilityUnits(SpecialAbility, location);
-            if(users.Count > 0)
+            if(users?.Count > 0)
             {
                 user = users[0];
             }
         }
         user.DoSpecialAbility(SpecialAbility, location, currentHologram);
-        //var abilityUnits = GetAbilityUnits(SpecialAbility, location);
-        //bool firstResponse = false;
-        //foreach(var u in abilityUnits)
-        //{
-        //    //do special ability
-        //    u.DoSpecialAbility(location, currentHologram);
-        //    if (!firstResponse)
-        //    {
-        //        if (SpecialAbility.IsTargetedAbility)
-        //        {
-        //            EventList.GetEvent(SpecialAbility.EventNameSet).Invoke();
-        //        }
-        //        firstResponse = true;
-        //        MarkerTemplate.Instantiate(Resources.Load<Sprite>(SpecialAbility.Marker), Map.transform, location, false);
-        //        //give special ability response
-        //        u.UnitVoice.PlayAbilityResponse();
-        //    }
-        //}
+
         EndSpecialOrder();
     }
     public List<UnitController> GetAbilityUnits(UnitAbilityModel ability, Vector3 target)
     {
         var selectedUnits = GetSelectedUnits();
-        List<UnitController> validUnits = new List<UnitController>();
-        List<UnitController> bestUnits = new List<UnitController>();
-        float bestScore = 0;
 
         //get valid units
         foreach(var u in selectedUnits)
@@ -608,31 +588,7 @@ public class CommandController : MonoBehaviour
                 return new List<UnitController>() { u };
             }
         }
-        ////activate ability for valid units
-        //foreach(var u in validUnits)
-        //{
-        //    var unitAbility = u.Data.UnitClass.TargetedAbility;
 
-        //    //if the ability is group activation, all units do the ability
-        //    //if there is only one valid unit selected, skip evaluation
-        //    if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.All || validUnits.Count == 1)
-        //    {
-        //        bestUnits.Add(u);
-        //    }
-        //    //if the ability is single activation, find the best unit to activate the ability
-        //    else if (unitAbility.GroupActivationRule == UnitAbilityModel.GroupActivationType.Single)
-        //    {
-        //        float score = ScoreUnitForAbility(u, target);
-        //        //update best score and best unit
-        //        if (score > bestScore || bestUnits.Count == 0)
-        //        {
-        //            bestUnits = new List<UnitController>() { u };
-        //            bestScore = score;
-        //        }
-        //    }
-        //}
-
-        //return bestUnits;
         return null;
     }
     public float ScoreUnitForAbility(UnitController unit, Vector3 target)

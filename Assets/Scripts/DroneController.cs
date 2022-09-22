@@ -132,7 +132,12 @@ public class DroneController : MonoBehaviour
         {
             Kill();
         }
-
+        //update conditions
+        var tempConditions = new List<UnitConditionModel>(Conditions);
+        foreach (var c in tempConditions)
+        {
+            c.DoTimeElapsed(this, deltaTime);
+        }
         //update continuous passive abiities
         //do ammo regen
         DoAmmoRegen(deltaTime);
@@ -286,6 +291,47 @@ public class DroneController : MonoBehaviour
         }
         return true;
     }
+    public void ApplyCondition(UnitConditionModel condition)
+    {
+        //check conditions for pre-existing instance of conition
+        UnitConditionModel foundCondition = null;
+        for (int i = 0; i < Conditions.Count; i++)
+        {
+            if (Conditions[i].Name == condition.Name)
+            {
+                foundCondition = Conditions[i];
+            }
+        }
+        //if found, stack condition, trigger stack event
+        if (foundCondition != null)
+        {
+            foundCondition.DoConditionStack(this, condition);
+        }
+        //else add condition to list and trigger application event
+        else
+        {
+            Conditions.Add(condition);
+            condition.DoConditionStart(this, condition);
+        }
+
+    }
+    public void RemoveCondition(UnitConditionModel condition)
+    {
+        //check that condition is applied
+        UnitConditionModel foundCondition = null;
+        for (int i = 0; i < Conditions.Count; i++)
+        {
+            if (Conditions[i].Name == condition.Name)
+            {
+                foundCondition = Conditions[i];
+            }
+        }
+        if (foundCondition != null)
+        {
+            Conditions.Remove(foundCondition);
+            foundCondition.DoConditionEnd(this, condition);
+        }
+    }
     #region stat calculators
     public float GetMoveSpeed()
     {
@@ -422,24 +468,32 @@ public class DroneController : MonoBehaviour
     }
     public bool GetWeaponPiercesWalls(WeaponModel weapon)
     {
-        foreach (var c in Conditions)
+        if (!weapon.PiercesWalls)
         {
-            if (c.WeaponPiercesWalls)
+            foreach (var c in Conditions)
             {
-                return true;
+                if (c.WeaponPiercesWalls)
+                {
+                    return true;
+                }
             }
         }
+        
         return weapon.PiercesWalls;
     }
     public bool GetWeaponPiercesUnits(WeaponModel weapon)
     {
-        foreach (var c in Conditions)
+        if (!weapon.PiercesUnits)
         {
-            if (c.WeaponPiercesUnits)
+            foreach (var c in Conditions)
             {
-                return true;
+                if (c.WeaponPiercesUnits)
+                {
+                    return true;
+                }
             }
         }
+        
         return weapon.PiercesUnits;
     }
     public float GetWeaponAmmoCost(WeaponModel weapon)
@@ -456,35 +510,47 @@ public class DroneController : MonoBehaviour
     }
     public bool GetCanAutoAttack(WeaponModel weapon)
     {
-        foreach (var c in Conditions)
+        if (weapon.CanAutoAttack)
         {
-            if (c.WeaponDisableAutoAttack)
+            foreach (var c in Conditions)
             {
-                return false;
+                if (c.WeaponDisableAutoAttack)
+                {
+                    return false;
+                }
             }
         }
+        
         return weapon.CanAutoAttack;
     }
-    public bool GetCantargetAttack(WeaponModel weapon)
+    public bool GetCanTargetAttack(WeaponModel weapon)
     {
-        foreach (var c in Conditions)
+        if (weapon.CanTargetAttack)
         {
-            if (c.WeaponDisableTargetAttack)
+            foreach (var c in Conditions)
             {
-                return false;
+                if (c.WeaponDisableTargetAttack)
+                {
+                    return false;
+                }
             }
         }
+        
         return weapon.CanTargetAttack;
     }
     public bool GetCanFireWhileMoving(WeaponModel weapon)
     {
-        foreach (var c in Conditions)
+        if (weapon.FireWhileMoving)
         {
-            if (c.WeaponDisableFireWhileMoving)
+            foreach (var c in Conditions)
             {
-                return false;
+                if (c.WeaponDisableFireWhileMoving)
+                {
+                    return false;
+                }
             }
         }
+        
         return weapon.FireWhileMoving;
     }
 
@@ -638,6 +704,7 @@ public class DroneController : MonoBehaviour
             && target.Data.IsTargetable
             && (!isMoving || GetCanFireWhileMoving(weapon))
             && (!isAutoAttack || GetCanAutoAttack(weapon))
+            && (isAutoAttack || GetCanTargetAttack(weapon))
             && (GetWeaponAmmoCost(weapon) <= Data.MP)
             && (Data.Team == target.Data.Team == weapon.TargetsAllies())
             && (weapon.AmmoDamage >= 0 || (!target.Data.UnitClass.IncompatibleAmmo && target.Data.UnitClass.MaxMP - target.Data.MP > -weapon.AmmoDamage))
@@ -649,7 +716,8 @@ public class DroneController : MonoBehaviour
     {
         return weapon != null
             && (!isMoving || weapon.FireWhileMoving)
-            && (!isAutoAttack || weapon.CanAutoAttack)
+            && (!isAutoAttack || GetCanAutoAttack(weapon))
+            && (isAutoAttack || GetCanTargetAttack(weapon))
             && (GetWeaponAmmoCost(weapon) <= Data.MP)
             && (GetWeaponMaxRange(weapon) >= Vector3.Distance(target, transform.position))
             && (!weapon.NeedsLineOfSight() || HasLineOfSight(target));

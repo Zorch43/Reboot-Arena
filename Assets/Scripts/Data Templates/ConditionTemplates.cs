@@ -17,20 +17,17 @@ namespace Assets.Scripts.Data_Templates
                 //unit can't move while reloading (-100% speed)
                 UnitMoveSpeedProp = -1,
                 //unit can't attack while reloading
-                WeaponDisableAutoAttack = false,
-                WeaponDisableTargetAttack = false,
+                WeaponDisableAutoAttack = true,
+                WeaponDisableTargetAttack = true,
                 //unit can't use abilities while reloading
-                UnitActivatedAbilityDisabled = false,
-                UnitTargetedAbilityDisabled = false
+                UnitActivatedAbilityDisabled = true,
+                UnitTargetedAbilityDisabled = true
             };
             //add expiration effect
             template.OnConditionEnd += (sender, condition) =>
             {
-                if(condition == template && condition.RemainingDuration <= 0)
-                {
-                    var unit = sender as UnitController;
-                    unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
-                }
+                var unit = sender as DroneController;
+                unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
             };
             //TODO: set battlefield visual effect
             //TODO: set portrait visual effect
@@ -55,11 +52,11 @@ namespace Assets.Scripts.Data_Templates
         }
         private static void StackRefreshDuration(object sender, UnitConditionModel condition)
         {
-            condition.RemainingDuration = condition.Duration;
+            condition.DurationElapsed = condition.Duration;
         }
         private static void StackDuration(object sender, UnitConditionModel condition)
         {
-            condition.RemainingDuration += condition.Duration;
+            condition.DurationElapsed += condition.Duration;
         }
     }
 }
