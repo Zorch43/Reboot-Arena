@@ -16,7 +16,6 @@ public class DroneController : MonoBehaviour
     public UnitClassTemplates.UnitClasses UnitClass;
     public GameObject UnitAppearance;
     public Animator Animations;
-    public SpriteRenderer MiniMapIcon;
     public GameObject UnitEffects;
     public ResourceBarController HealthBar;
     public ResourceBarController AmmoBar;
@@ -37,10 +36,12 @@ public class DroneController : MonoBehaviour
     #endregion
     #region private fields
     protected Quaternion initialRotation;
+    protected List<GameObject> conditionEffects = new List<GameObject>();
     #endregion
     #region properties
     public UnitModel Data { get; set; }
     public List<UnitConditionModel> Conditions { get; set; } = new List<UnitConditionModel>();
+    
     public DroneController AutoTarget1 { get; set; }
     public DroneController AutoTarget2 { get; set; }
     public List<Action> DeathActions { get; set; } = new List<Action>();
@@ -102,7 +103,6 @@ public class DroneController : MonoBehaviour
         }
         //TEMP: set teamcolor
         Recolor(Data.Team);
-        MiniMapIcon.color = TeamTools.GetTeamColor(Data.Team);
     }
     // Update is called once per frame
     void Update()
@@ -117,7 +117,6 @@ public class DroneController : MonoBehaviour
         DoUnitAction();
 
         UnitEffects.transform.rotation = Camera.main.transform.rotation;//orient unit UI towards camera
-        MiniMapIcon.transform.rotation = initialRotation;//reset rotation of minimap icon
 
         //update unit status
         //update resource bars
@@ -311,13 +310,20 @@ public class DroneController : MonoBehaviour
         else
         {
             Conditions.Add(condition);
+            //generate and register visual effect
             condition.DoConditionStart(this, condition);
+            if (!string.IsNullOrWhiteSpace(condition.VisualEffectName))
+            {
+                var visualEffect = Resources.Load<GameObject>(condition.VisualEffectName);
+                condition.VisualEffectController = Instantiate(visualEffect, UnitEffects.transform);
+                conditionEffects.Add(condition.VisualEffectController);
+            }
 
             //if valid, add  console status
             var unit = this as UnitController;
-            if (unit?.SpawnSlot?.Controller != null && !string.IsNullOrWhiteSpace(condition.ConsoleLine))
+            if (unit?.SpawnSlot?.Controller != null && !string.IsNullOrWhiteSpace(condition.ConsoleEffectName))
             {
-                condition.ConsoleLineController = unit.SpawnSlot.Controller.StatusConsole.CreateStatusLine(condition.ConsoleLine);
+                condition.ConsoleEffectController = unit.SpawnSlot.Controller.StatusConsole.CreateStatusLine(condition.ConsoleEffectName);
             }
         }
 
@@ -335,15 +341,21 @@ public class DroneController : MonoBehaviour
         }
         if (foundCondition != null)
         {
+            //remove visual effet, if it exists
+            if (foundCondition.VisualEffectController != null)
+            {
+                conditionEffects.Remove(foundCondition.VisualEffectController);
+                Destroy(foundCondition.VisualEffectController);
+            }
             //if relevant, remove console status
             var unit = this as UnitController;
             if (unit?.SpawnSlot?.Controller != null)
             {
-                unit.SpawnSlot.Controller.StatusConsole.RemoveStatusLine(condition.ConsoleLineController);
+                unit.SpawnSlot.Controller.StatusConsole.RemoveStatusLine(foundCondition.ConsoleEffectController);
             }
 
             Conditions.Remove(foundCondition);
-            foundCondition.DoConditionEnd(this, condition);
+            foundCondition.DoConditionEnd(this, foundCondition);
         }
     }
     #region stat calculators

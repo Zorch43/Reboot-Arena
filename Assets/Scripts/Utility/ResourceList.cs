@@ -23,6 +23,7 @@ namespace Assets.Scripts.Utility
         const string DRONES = "Drones/";
         const string HOLOGRAMS = DRONES + "Holograms/";
         const string PICKUPS = "Pickups/";
+        const string EFFECTS = "Effects/";
         #endregion
         #region resources
         public const string CURSOR_ABILITY_ATTACK = CURSORS + "SpecialAttackCursor";
@@ -37,6 +38,7 @@ namespace Assets.Scripts.Utility
         public const string MARKER_FRAG_GRENADE = MARKER_ABILITY_ATTACK;
 
         public const string ICON_RELOAD = ICONS + "ReloadIcon";
+        public const string EFFECT_RELOAD = EFFECTS + "ReloadAbilityEffect";
 
         public const string ICON_BUILD_TURRET = ICONS + "BuildTurretIcon";
         public const string CURSOR_BUILD_TURRET = CURSORS + "BuildTurretCursor";
@@ -60,6 +62,8 @@ namespace Assets.Scripts.Utility
 
         public const string PICKUP_NANOPACK = PICKUPS + "HealthPack";
         public const string PICKUP_AMMOPACK = PICKUPS + "AmmoPack";
+
+        
         #endregion
         #endregion
         #region public methods

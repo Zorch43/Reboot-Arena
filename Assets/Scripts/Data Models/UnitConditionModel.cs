@@ -15,9 +15,11 @@ namespace Assets.Scripts.Data_Models
         public UnitController Owner { get; set; }//which unit applied this condition
         public UnitController Host { get; set; }//which unit has this condition
         //condition visual properties
-        public string ConsoleLine { get; set; }
-        public TextMeshProUGUI ConsoleLineController { get; set; }
-        //TODO: battlefield visuals
+        public string ConsoleEffectName { get; set; }
+        public TextMeshProUGUI ConsoleEffectController { get; set; }
+        //battlefield visuals
+        public string VisualEffectName { get; set; }
+        public GameObject VisualEffectController { get; set; }
 
         //condition duration properties
         public float Duration { get; set; }

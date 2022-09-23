@@ -15,7 +15,6 @@ public class UnitController : DroneController
     #endregion
     #region public fields
     public MovementController Locomotion;
-    public TextMeshPro MinimapNumber;
     public TextMeshPro UnitNumber;
     public SpriteRenderer Selector;
     public WeaponController AbilityWeaponMount;
@@ -117,12 +116,10 @@ public class UnitController : DroneController
         transform.position = new Vector3(position.x, 0, position.z);//TODO: figure out what's floating units on spawn
         SpawnSlot = slot;
         SpawnSlot.Unit = this;
-        MinimapNumber.text = slot.SlotNumber.ToString();
         UnitNumber.text = slot.SlotNumber.ToString();
 
         if (hideUI)
         {
-            MinimapNumber.gameObject.SetActive(false);
             UnitNumber.gameObject.SetActive(false);
             AmmoBar.gameObject.SetActive(false);
         }

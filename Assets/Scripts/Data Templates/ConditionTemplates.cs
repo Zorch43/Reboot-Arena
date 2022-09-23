@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Assets.Scripts.Data_Models;
+using Assets.Scripts.Utility;
 
 namespace Assets.Scripts.Data_Templates
 {
@@ -14,7 +15,8 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitConditionModel()
             {
                 Duration = 5,
-                ConsoleLine = "Reloading",
+                ConsoleEffectName = "Reloading",
+                VisualEffectName = ResourceList.EFFECT_RELOAD,
                 //unit can't move while reloading (-100% speed)
                 UnitMoveSpeedProp = -1,
                 //unit can't attack while reloading
@@ -31,7 +33,6 @@ namespace Assets.Scripts.Data_Templates
                 unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
             };
             CreateConsoleProgress_RemainingTime(template, false);
-            //TODO: set battlefield visual effect
 
             return template;
         }
@@ -41,7 +42,7 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitConditionModel()
             {
                 Duration = 5,
-                ConsoleLine = "Kill Streak",
+                ConsoleEffectName = "Kill Streak",
                 //increase weapon damage
                 WeaponHealthDamageProp = 0.2f,//+20% weapon damage per stack
             };
@@ -67,15 +68,15 @@ namespace Assets.Scripts.Data_Templates
         {
             condition.OnTimeElapsed += (sender, deltaTime) =>
             {
-                if (condition.ConsoleLineController != null && condition.Duration > 0)
+                if (condition.ConsoleEffectController != null && condition.Duration > 0)
                 {
                     string stacks = "";
                     if (showStacks)
                     {
                         stacks = string.Format(" x{0:d}", condition.Intensity);
                     }
-                    condition.ConsoleLineController.text = String.Format("{0}{1}: {2:f1}s", 
-                        condition.ConsoleLine, stacks, condition.Duration - condition.DurationElapsed);
+                    condition.ConsoleEffectController.text = String.Format("{0}{1}: {2:f1}s", 
+                        condition.ConsoleEffectName, stacks, condition.Duration - condition.DurationElapsed);
                 }
             };
         }
