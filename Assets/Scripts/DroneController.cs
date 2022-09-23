@@ -312,6 +312,13 @@ public class DroneController : MonoBehaviour
         {
             Conditions.Add(condition);
             condition.DoConditionStart(this, condition);
+
+            //if valid, add  console status
+            var unit = this as UnitController;
+            if (unit?.SpawnSlot?.Controller != null && !string.IsNullOrWhiteSpace(condition.ConsoleLine))
+            {
+                condition.ConsoleLineController = unit.SpawnSlot.Controller.StatusConsole.CreateStatusLine(condition.ConsoleLine);
+            }
         }
 
     }
@@ -328,6 +335,13 @@ public class DroneController : MonoBehaviour
         }
         if (foundCondition != null)
         {
+            //if relevant, remove console status
+            var unit = this as UnitController;
+            if (unit?.SpawnSlot?.Controller != null)
+            {
+                unit.SpawnSlot.Controller.StatusConsole.RemoveStatusLine(condition.ConsoleLineController);
+            }
+
             Conditions.Remove(foundCondition);
             foundCondition.DoConditionEnd(this, condition);
         }

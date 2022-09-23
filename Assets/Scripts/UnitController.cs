@@ -104,6 +104,8 @@ public class UnitController : DroneController
         {
             BoostEffect.Stop();
         }
+        //update slot console
+        SpawnSlot?.Controller?.StatusConsole.UpdateConsole(deltaTime);
     }
     #endregion
     #region public methods

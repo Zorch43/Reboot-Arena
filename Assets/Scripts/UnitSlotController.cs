@@ -17,6 +17,7 @@ public class UnitSlotController : MonoBehaviour
     public GameObject RespawnFilter;
     public GameObject SelectionIndicator;
     public TextMeshProUGUI SlotNumberLabel;
+    public UnitSlotConsole StatusConsole;
     public UIStatusBarController HealthBar;
     public UIStatusBarController AmmoBar;
     public ToolTipContentController ToolTip;

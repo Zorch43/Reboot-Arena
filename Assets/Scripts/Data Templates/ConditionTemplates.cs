@@ -14,6 +14,7 @@ namespace Assets.Scripts.Data_Templates
             var template = new UnitConditionModel()
             {
                 Duration = 5,
+                ConsoleLine = "Reloading",
                 //unit can't move while reloading (-100% speed)
                 UnitMoveSpeedProp = -1,
                 //unit can't attack while reloading
@@ -29,23 +30,27 @@ namespace Assets.Scripts.Data_Templates
                 var unit = sender as DroneController;
                 unit.ReloadUnit(unit.Data.UnitClass.MaxMP);
             };
+            CreateConsoleProgress_RemainingTime(template, false);
             //TODO: set battlefield visual effect
-            //TODO: set portrait visual effect
+
             return template;
         }
+
         public static UnitConditionModel CreateKillStreakCondition()
         {
             var template = new UnitConditionModel()
             {
                 Duration = 5,
+                ConsoleLine = "Kill Streak",
                 //increase weapon damage
                 WeaponHealthDamageProp = 0.2f,//+20% weapon damage per stack
             };
             template.OnConditionStack += StackIntensity;
             template.OnConditionStack += StackRefreshDuration;
+            CreateConsoleProgress_RemainingTime(template, true);
             return template;
         }
-
+        #region event builders
         private static void StackIntensity(object sender, UnitConditionModel condition)
         {
             condition.CurrentIntensity += condition.Intensity;
@@ -58,5 +63,23 @@ namespace Assets.Scripts.Data_Templates
         {
             condition.DurationElapsed += condition.Duration;
         }
+        private static void CreateConsoleProgress_RemainingTime(UnitConditionModel condition, bool showStacks)
+        {
+            condition.OnTimeElapsed += (sender, deltaTime) =>
+            {
+                if (condition.ConsoleLineController != null && condition.Duration > 0)
+                {
+                    string stacks = "";
+                    if (showStacks)
+                    {
+                        stacks = string.Format(" x{0:d}", condition.Intensity);
+                    }
+                    condition.ConsoleLineController.text = String.Format("{0}{1}: {2:f1}s", 
+                        condition.ConsoleLine, stacks, condition.Duration - condition.DurationElapsed);
+                }
+            };
+        }
+        #endregion
+
     }
 }

@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TMPro;
 using UnityEngine;
 
 namespace Assets.Scripts.Data_Models
 {
     public class UnitConditionModel
     {
-
         //basic condition properties
         public string Name { get; set; }
         public UnitController Owner { get; set; }//which unit applied this condition
         public UnitController Host { get; set; }//which unit has this condition
-        //TODO: condition visual properties
+        //condition visual properties
+        public string ConsoleLine { get; set; }
+        public TextMeshProUGUI ConsoleLineController { get; set; }
+        //TODO: battlefield visuals
 
         //condition duration properties
         public float Duration { get; set; }
