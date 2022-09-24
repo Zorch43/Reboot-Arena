@@ -51,6 +51,7 @@ public class UnitSlotController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        float deltaTime = Time.deltaTime;
         //update unit status
         //if the current unit is active (alive)
         if (Data.Unit != null)
@@ -95,13 +96,15 @@ public class UnitSlotController : MonoBehaviour
         //double-click/double-tap timeout
         if (clicked)
         {
-            clickTimer += Time.deltaTime;
+            clickTimer += deltaTime;
             if(clickTimer > CommandController.DOUBLE_TAP_TIME)
             {
                 clicked = false;
                 clickTimer = 0;
             }
         }
+        //update slot console
+        StatusConsole.UpdateConsole(deltaTime);
     }
     #endregion
     #region actions

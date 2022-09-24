@@ -51,6 +51,7 @@ namespace Assets.Scripts.Utility
         public const string UNIT_TROOPER = UNITS + "UnitTrooper";
         public const string PORTRAIT_TROOPER = PORTRAITS + "PortraitTrooper";
         public const string SYMBOL_TROOPER = SYMBOLS + "SymbolTrooper";
+        public const string EFFECT_KILLSTREAK = EFFECTS + "KillStreakConditionEffect";
 
         public const string UNIT_FABRICATOR = UNITS + "UnitFabricator";
         public const string PORTRAIT_FABRICATOR = PORTRAITS + "PortraitFabricator";

@@ -31,6 +31,7 @@ namespace Assets.Scripts.Data_Models
         #endregion
         #region abilities
         //passive abilities
+        //TODO: replace these with passive conditions when possible
         public bool IsAmbidextrous { get; set; }//whether the unit can fire primary and secondary weapons simultaneously, conditions permitting
         public float AutoRepairStrength { get; set; }//how much to heal per second, so long as unit can spend ammo
         public float HealthPickupEfficiency { get; set; } = 1;//effectiveness multiplier for heath pickups
@@ -39,6 +40,7 @@ namespace Assets.Scripts.Data_Models
         public float FuelConsumption { get; set; }//how much ammo is consumed while moving, per distance unit moved
         public bool IncompatibleAmmo { get; set; }//if true, can't gain ammo from weapons or abilities
         public float AmmoRegenRate { get; set; }//rate at which this unit gains or loses ammo, regardless of other factors.
+        public List<UnitConditionModel> PassiveConditions { get; set; } = new List<UnitConditionModel>();
         #endregion
         #region AI helpers
         public float AttackerWeight { get; set; }//how good this class is at taking objectives and removing defenders from the point

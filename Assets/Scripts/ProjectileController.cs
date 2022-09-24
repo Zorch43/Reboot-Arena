@@ -167,6 +167,11 @@ public class ProjectileController : MonoBehaviour
         {
             unit.DamageUnit(healthDamage / Weapon.ProjectileBurstSize);
             unit.DrainUnit(ammoDamage / Weapon.ProjectileBurstSize);
+
+            if (unit.Data.HP <= 0)
+            {
+                Weapon.Owner.DoKillEnemy(Weapon.Owner, unit);
+            }
         }
 
         //return whether the projectile should continue
@@ -195,6 +200,11 @@ public class ProjectileController : MonoBehaviour
             {
                 unit.DamageUnit(healthDamage / Weapon.ProjectileBurstSize);
                 unit.DrainUnit(ammoDamage / Weapon.ProjectileBurstSize);
+
+                if (unit.Data.HP <= 0)
+                {
+                    Weapon.Owner.DoKillEnemy(Weapon.Owner, unit);
+                }
             }
         }
         //play explosion effect

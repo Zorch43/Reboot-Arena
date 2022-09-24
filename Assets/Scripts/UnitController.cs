@@ -69,6 +69,7 @@ public class UnitController : DroneController
         DeathActions.Add(() =>
         {
             CancelOrders();
+
         });
     }
     protected override void OnUpdate()
@@ -103,8 +104,7 @@ public class UnitController : DroneController
         {
             BoostEffect.Stop();
         }
-        //update slot console
-        SpawnSlot?.Controller?.StatusConsole.UpdateConsole(deltaTime);
+        
     }
     #endregion
     #region public methods
@@ -195,11 +195,13 @@ public class UnitController : DroneController
             {
                 AbilityTarget = location;
             }
+            //play activation response
+            UnitVoice.PlayTargetedAbilityResponse();
         }
         else
         {
             //pay cost now
-            if(Data.MP >= specialAbility.AmmoCostInstant)
+            if(Data.MP >= specialAbility.AmmoCostInstant)//is this check needed?
             {
                 DrainUnit(specialAbility.AmmoCostInstant);
                 //do non-targeted parts of the ability
@@ -215,11 +217,12 @@ public class UnitController : DroneController
                         loot.ThrowPack();
                     }
                 }
+                //trigger activation event
+                specialAbility.DoActivation(this, specialAbility);
+                //play activation response
+                UnitVoice.PlayActivatedAbilityResponse();
             }
-            
         }
-        //trigger activation event
-        specialAbility.DoActivation(this, specialAbility);
         
     }
     //cancel all orders given to this unit

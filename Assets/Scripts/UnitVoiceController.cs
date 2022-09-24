@@ -16,7 +16,8 @@ public class UnitVoiceController : MonoBehaviour
     public AudioClip[] MoveResponses;
     public AudioClip[] AttackResponses;
     public AudioClip[] SupportResponses;
-    public AudioClip[] AbilityResponses;
+    public AudioClip[] TargetedAbilityResponses;
+    public AudioClip[] ActivatedAbilityResponses;
     //reports are played automatically. always on private channel
     //only one report may be playing at the same time
     public AudioClip[] UnderAttackReport;//played when a unit comes under significant dps
@@ -59,9 +60,13 @@ public class UnitVoiceController : MonoBehaviour
     {
         PlayClip(SupportResponses, MoveResponses, PrivateChannel);
     }
-    public void PlayAbilityResponse()
+    public void PlayTargetedAbilityResponse()
     {
-        PlayClip(AbilityResponses, PrivateChannel);
+        PlayClip(TargetedAbilityResponses, PrivateChannel);
+    }
+    public void PlayActivatedAbilityResponse()
+    {
+        PlayClip(ActivatedAbilityResponses, PrivateChannel);
     }
     public void PlayUnderAttackReport()
     {

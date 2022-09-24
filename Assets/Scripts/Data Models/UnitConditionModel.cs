@@ -25,8 +25,7 @@ namespace Assets.Scripts.Data_Models
         public float Duration { get; set; }
         public float DurationElapsed { get; set; }
         //condition intensity properties
-        public float Intensity { get; set; } = 1;
-        public float CurrentIntensity { get; set; }
+        public int Stacks { get; set; } = 1;
 
         //unit stat modifiers
         public float UnitMoveSpeedFlat { get; set; }//result is sum of unit stat and all condition modifiers
@@ -69,8 +68,8 @@ namespace Assets.Scripts.Data_Models
         public event EventHandler<UnitConditionModel> OnConditionStart;//triggered when this condition is applied, but not stacked
         public event EventHandler<UnitConditionModel> OnConditionStack;//triggered whent this condition is stacked
         public event EventHandler<UnitConditionModel> OnConditionEnd;//condition when condition ends
-        //TODO: unit triggers
-        
+        //unit triggers
+        public event EventHandler<DroneController> OnKillEnemy;
 
         //constructor
         public UnitConditionModel()
@@ -94,6 +93,10 @@ namespace Assets.Scripts.Data_Models
         public void DoConditionEnd(object sender, UnitConditionModel condition)
         {
             OnConditionEnd?.Invoke(sender, condition);
+        }
+        public void DoKillEnemy(object sender, DroneController target)
+        {
+            OnKillEnemy?.Invoke(sender, target);
         }
         //private methods
         //decrease the remaining duration as time passes

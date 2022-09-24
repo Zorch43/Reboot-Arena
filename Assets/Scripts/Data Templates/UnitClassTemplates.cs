@@ -54,6 +54,7 @@ namespace Assets.Scripts.Data_Templates
                 AttackerWeight = 2,
                 DefenderWeight = 1
             };
+            template.PassiveConditions.Add(ConditionTemplates.CreateKillStreakPassive());
             return template;
         }
         public static UnitClassModel GetFabricatorClass()

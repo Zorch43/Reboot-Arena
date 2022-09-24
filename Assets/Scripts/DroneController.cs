@@ -103,6 +103,12 @@ public class DroneController : MonoBehaviour
         }
         //TEMP: set teamcolor
         Recolor(Data.Team);
+
+        //apply passive conditions
+        foreach (var c in Data.UnitClass.PassiveConditions)
+        {
+            ApplyCondition(c);
+        }
     }
     // Update is called once per frame
     void Update()
@@ -144,6 +150,18 @@ public class DroneController : MonoBehaviour
         DoAutoRepair(deltaTime);
     }
 
+    #endregion
+    #region events
+    public event EventHandler<DroneController> OnKillEnemy;
+    public void DoKillEnemy(object sender, DroneController target)
+    {
+        OnKillEnemy?.Invoke(sender, target);
+        var tempList = new List<UnitConditionModel>(Conditions);
+        foreach (var c in tempList)
+        {
+            c.DoKillEnemy(sender, target);
+        }
+    }
     #endregion
     #region public methods
     public void Kill()
@@ -423,8 +441,8 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            flat += c.WeaponMaxRangeFlat * c.Intensity;
-            prop += c.WeaponMaxRangeProp * c.Intensity;
+            flat += c.WeaponMaxRangeFlat * c.Stacks;
+            prop += c.WeaponMaxRangeProp * c.Stacks;
         }
         return weapon.MaxRange * prop + flat;
     }
@@ -435,8 +453,8 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            flat += c.WeaponMinRangeFlat * c.Intensity;
-            prop += c.WeaponMinRangeProp * c.Intensity;
+            flat += c.WeaponMinRangeFlat * c.Stacks;
+            prop += c.WeaponMinRangeProp * c.Stacks;
         }
         return weapon.MinRange * prop + flat;
     }
@@ -446,7 +464,7 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            prop += c.WeaponProjectileSpeedProp * c.Intensity;
+            prop += c.WeaponProjectileSpeedProp * c.Stacks;
         }
         return weapon.ProjectileSpeed * prop;
     }
@@ -456,7 +474,7 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            prop += c.WeaponCooldownProp * c.Intensity;
+            prop += c.WeaponCooldownProp * c.Stacks;
         }
         return weapon.Cooldown * prop;
     }
@@ -466,7 +484,7 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            prop += c.WeaponHealthDamageProp * c.Intensity;
+            prop += c.WeaponHealthDamageProp * c.Stacks;
         }
         return weapon.HealthDamage * prop;
     }
@@ -476,7 +494,7 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            prop += c.WeaponAmmoDamageProp * c.Intensity;
+            prop += c.WeaponAmmoDamageProp * c.Stacks;
         }
         return weapon.AmmoDamage * prop;
     }
@@ -487,8 +505,8 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            flat += c.WeaponInaccuracyFlat * c.Intensity;
-            prop += c.WeaponInaccuracyProp * c.Intensity;
+            flat += c.WeaponInaccuracyFlat * c.Stacks;
+            prop += c.WeaponInaccuracyProp * c.Stacks;
         }
         return weapon.InAccuracy * prop + flat;
     }
@@ -529,8 +547,8 @@ public class DroneController : MonoBehaviour
         //get sum of flat and proportional modifiers from conditions
         foreach (var c in Conditions)
         {
-            flat += c.WeaponAmmoCostFlat * c.Intensity;
-            prop += c.WeaponAmmoCostProp * c.Intensity;
+            flat += c.WeaponAmmoCostFlat * c.Stacks;
+            prop += c.WeaponAmmoCostProp * c.Stacks;
         }
         return weapon.AmmoCost * prop + flat;
     }

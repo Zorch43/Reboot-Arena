@@ -107,6 +107,8 @@ namespace Assets.Scripts.Data_Models
             IsSelected = false;
             //start respawning
             RespawnProgress = 0;
+            //remove all console status lines
+            Controller?.StatusConsole.ClearConsole();
         }
         #endregion
     }

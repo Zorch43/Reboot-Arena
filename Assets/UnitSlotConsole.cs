@@ -44,12 +44,26 @@ public class UnitSlotConsole : MonoBehaviour
     }
     public void RemoveStatusLine(TextMeshProUGUI line)
     {
-        RemovalQueue.Add(line);
+        if (line != null)
+        {
+            RemovalQueue.Add(line);
+        }
     }
     public void UpdateConsole(float deltaTime)
     {
         UpdateAdditions(deltaTime);
         UpdateRemovals(deltaTime);
+    }
+    public void ClearConsole()
+    {
+        foreach (var line in StatusLineList)
+        {
+            if (!RemovalQueue.Contains(line))
+            {
+                RemovalQueue.Add(line);
+            }
+        }
+        AdditionQueue.Clear();
     }
     #endregion
     #region private methods
