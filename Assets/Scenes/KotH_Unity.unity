@@ -769,14 +769,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 464223626}
     - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: AITeam
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: Cameras
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
       propertyPath: GameMenu
       value: 
       objectReference: {fileID: 38824758020500182}
@@ -789,14 +781,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 6054618057612510287}
     - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: Objective
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: PlayerTeam
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
       propertyPath: GameStateUI
       value: 
       objectReference: {fileID: 38824756734682699}
@@ -804,14 +788,6 @@ PrefabInstance:
       propertyPath: MusicPlayer
       value: 
       objectReference: {fileID: 1343136896}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: DefeatStateUI
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: AITeamTemplate
-      value: 
-      objectReference: {fileID: 6008542786956288765, guid: 86e547ea7fc66624fa921d20b493665d, type: 3}
     - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
       propertyPath: VictoryStateUI
       value: 
@@ -824,18 +800,6 @@ PrefabInstance:
       propertyPath: PlayerSlotManager
       value: 
       objectReference: {fileID: 38824756558172132}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: PlayerUnitActions
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: PlayerTeamTemplate
-      value: 
-      objectReference: {fileID: 1328601134668224854, guid: 5369597ca53d10443a69dff5a74cefeb, type: 3}
-    - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
-      propertyPath: SpawnPoints.Array.size
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 3292926658998600975, guid: 21d4e20c2d232f548abf08589a455adf, type: 3}
       propertyPath: SpawnPoints.Array.data[0]
       value: 

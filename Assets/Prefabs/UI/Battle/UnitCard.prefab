@@ -1262,6 +1262,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ActivatedAbility
       objectReference: {fileID: 0}
+    - target: {fileID: 3492312257154594657, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3492312257154594670, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -1576,6 +1580,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2217306956793561924, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
+      propertyPath: m_PreserveAspect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3492312257154594657, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_Name
       value: TargetedAbility
@@ -1610,7 +1618,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3492312257154594670, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 75
+      value: 150
       objectReference: {fileID: 0}
     - target: {fileID: 3492312257154594670, guid: 0574ec9cf955fa841bddc4d904b22743, type: 3}
       propertyPath: m_SizeDelta.y

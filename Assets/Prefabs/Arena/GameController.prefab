@@ -46,22 +46,23 @@ MonoBehaviour:
   GameMenu: {fileID: 0}
   GameStateUI: {fileID: 0}
   VictoryStateUI: {fileID: 0}
-  SpawnPoints: []
+  SpawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
   PlayerSlotManager: {fileID: 0}
-  PlayerUnitActions: {fileID: 0}
-  PlayerTeamTemplate: {fileID: 0}
-  AITeamTemplate: {fileID: 0}
+  PlayerTeamTemplate: {fileID: 1328601134668224854, guid: 5369597ca53d10443a69dff5a74cefeb, type: 3}
+  AITeamTemplate: {fileID: 6008542786956288765, guid: 86e547ea7fc66624fa921d20b493665d, type: 3}
   Map: {fileID: 0}
   CommandInterface: {fileID: 0}
-  Cameras: {fileID: 0}
   MusicPlayer: {fileID: 0}
   GameRules: {fileID: 0}
+  Tutorial: {fileID: 0}
   DefaultBattleConfig:
   - TeamId: 0
     Controller: 1
     AIIndex: 0
-    UnitClasses: 000000000200000001000000
+    UnitClasses: 0000000001000000
   - TeamId: 1
     Controller: 2
     AIIndex: 2
-    UnitClasses: 000000000200000001000000
+    UnitClasses: 0000000001000000

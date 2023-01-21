@@ -190,7 +190,7 @@ public class UnitSlotController : MonoBehaviour
         //targeted ability
         SetupAbilityButton(TargetedAbilityButton, templateData.UnitClass.TargetedAbility);
         //activated ability
-        SetupAbilityButton(ActivatedAbilityButton, templateData.UnitClass.ActivatedAbility);
+        //SetupAbilityButton(ActivatedAbilityButton, templateData.UnitClass.ActivatedAbility);
 
     }
 
@@ -198,6 +198,7 @@ public class UnitSlotController : MonoBehaviour
     #region actions
     public void ActionTargetedAbility()
     {
+        ActionClickSlot();
         Manager.CommandInterface.StartSpecialOrder(Data.Unit.Data.UnitClass.TargetedAbility, () => { });
     }
     public void ActionActivatedAbility()
