@@ -30,10 +30,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: ee06045eb6f24464bb9db8959c874ab5, type: 3}
   - {fileID: 8300000, guid: 55ad44966e854e24a8cc25e72a1c50fe, type: 3}
   - {fileID: 8300000, guid: 3167d530beeb74c4ca013654ef9a9713, type: 3}
-  AbilityResponses:
-  - {fileID: 8300000, guid: caaa475dc1c14bb41b49f085f438d431, type: 3}
-  - {fileID: 8300000, guid: d531ac7130c574b49984093c988d1971, type: 3}
+  TargetedAbilityResponses:
   - {fileID: 8300000, guid: f0fd8655c136fee4d9f981e271608c34, type: 3}
+  - {fileID: 8300000, guid: d531ac7130c574b49984093c988d1971, type: 3}
+  - {fileID: 8300000, guid: caaa475dc1c14bb41b49f085f438d431, type: 3}
+  ActivatedAbilityResponses: []
   UnderAttackReport: []
   LowHealthReport: []
   LowAmmoReport: []
@@ -51,7 +52,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2581559549039295094, guid: ec1302161bc9c594590f4371ac489c2d, type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2581559549039295094, guid: ec1302161bc9c594590f4371ac489c2d, type: 3}
       propertyPath: m_LocalPosition.x

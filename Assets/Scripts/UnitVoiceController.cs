@@ -37,9 +37,17 @@ public class UnitVoiceController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if(PrivateChannel == null)
+        if(PublicChannel == null)
         {
-            PrivateChannel = Camera.main.GetComponent<AudioSource>();
+            PublicChannel = Camera.main.GetComponent<AudioSource>();
+        }
+        if (PrivateChannel == null)
+        {
+            var unit = GetComponent<UnitController>();
+            if (unit?.SpawnSlot?.Controller != null)
+            {
+                PrivateChannel = Camera.main.GetComponent<AudioSource>();
+            }
         }
     }
     #endregion
@@ -90,9 +98,12 @@ public class UnitVoiceController : MonoBehaviour
     {
         if(clips.Length > 0)
         {
-            var randClip = clips[Random.Range(0, clips.Length)];
-            channel.clip = randClip;
-            channel.PlayOneShot(randClip);
+            if(channel != null)
+            {
+                var randClip = clips[Random.Range(0, clips.Length)];
+                channel.clip = randClip;
+                channel.PlayOneShot(randClip);
+            }
         }
         else
         {

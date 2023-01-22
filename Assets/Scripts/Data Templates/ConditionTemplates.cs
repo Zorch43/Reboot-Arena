@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Assets.Scripts.Data_Models;
 using Assets.Scripts.Utility;
+using UnityEngine;
 
 namespace Assets.Scripts.Data_Templates
 {
@@ -64,6 +65,43 @@ namespace Assets.Scripts.Data_Templates
             OnStack_StackIntensity(template, 1, 0);
             OnStack_RefreshDuration(template);
             UpdateConsoleProgress_RemainingTime(template, true);
+            return template;
+        }
+        public static UnitConditionModel CreateAutoRepairPassive(float healSpeed, float ammoCostRatio)
+        {
+            var template = new UnitConditionModel()
+            {
+                Name = "AutoRepair"
+            };
+            template.OnTimeElapsed += (sender, deltaTime) =>
+            {
+                var unit = sender as DroneController;
+
+                if (unit.Data.MP > 0 && unit.Data.HP < unit.Data.UnitClass.MaxHP)
+                {
+                    var maxHeal = Mathf.Min(unit.Data.UnitClass.MaxHP - unit.Data.HP, healSpeed * deltaTime);
+                    var maxDrain = Mathf.Min(unit.Data.MP, maxHeal*ammoCostRatio);
+                    var drain = unit.DrainUnit(maxDrain);
+                    unit.HealUnit(maxDrain/ammoCostRatio);
+                }
+            };
+            return template;
+        }
+        public static UnitConditionModel CreateAmmoRegenPassive(float regen)
+        {
+            var template = new UnitConditionModel()
+            {
+                Name = "AmmoRegen"
+            };
+            template.OnTimeElapsed += (sender, deltaTime) =>
+            {
+                var unit = sender as DroneController;
+
+                if (unit.Data.MP < unit.Data.UnitClass.MaxMP)
+                {
+                    unit.ReloadUnit(regen * deltaTime);
+                }
+            };
             return template;
         }
         #region event builders

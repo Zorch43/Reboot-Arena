@@ -76,10 +76,10 @@ namespace Assets.Scripts.Data_Templates
                 ActivatedAbility = UnitAbilityTemplates.CreateNanoPack(),
                 IsAmbidextrous = true,
                 IncompatibleAmmo = true,
-                AmmoRegenRate = 10,
                 DefenderWeight = 1,
                 SupportWeight = 2
             };
+            template.PassiveConditions.Add(ConditionTemplates.CreateAmmoRegenPassive(10));
             return template;
         }
         public static UnitClassModel GetTurretDroneClass()
@@ -93,9 +93,9 @@ namespace Assets.Scripts.Data_Templates
                 MaxMP = 800,
                 PrimaryWeapon = WeaponTemplates.CreatePlasmaTurret(),
                 SecondaryWeapon = WeaponTemplates.CreateWeakPlasmaTurret(),
-                AutoRepairStrength = 40,
                 DefenderWeight = 1
             };
+            template.PassiveConditions.Add(ConditionTemplates.CreateAutoRepairPassive(40, 1));
             return template;
         }
         public static UnitClassModel GetRangerClass()

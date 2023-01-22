@@ -143,11 +143,6 @@ public class DroneController : MonoBehaviour
         {
             c.DoTimeElapsed(this, deltaTime);
         }
-        //update continuous passive abiities
-        //do ammo regen
-        DoAmmoRegen(deltaTime);
-        //do autoRepair
-        DoAutoRepair(deltaTime);
     }
 
     #endregion
@@ -917,17 +912,6 @@ public class DroneController : MonoBehaviour
         };
         ToolTip.AmmoCost = Data.MP + "/" + Data.UnitClass.MaxMP;
         ToolTip.HealthCost = Data.HP + "/" + Data.UnitClass.MaxHP;
-    }
-    private void DoAutoRepair(float deltaTime)
-    {
-        var maxHeal = Mathf.Min(Data.UnitClass.MaxHP - Data.HP, Data.UnitClass.AutoRepairStrength * deltaTime);
-        var maxDrain = Mathf.Min(Data.MP, maxHeal);
-        var drain = DrainUnit(maxDrain);
-        HealUnit(drain);
-    }
-    private void DoAmmoRegen(float deltaTime)
-    {
-        ReloadUnit(Data.UnitClass.AmmoRegenRate * deltaTime);
     }
     #endregion
 

@@ -41,7 +41,7 @@ public class ProjectileController : MonoBehaviour
     {
         targetPos = TargetLocation; //TODO: apply inaccuracy for arcing attacks
         //calculate and cache relevant weapon stats
-        maxRange = Weapon.Owner.GetWeaponProjectileSpeed(Weapon);
+        maxRange = Weapon.Owner.GetWeaponMaxRange(Weapon);
         projectileSpeed = Weapon.Owner.GetWeaponProjectileSpeed(Weapon);
         pierceWalls = Weapon.Owner.GetWeaponPiercesWalls(Weapon);
         pierceUnits = Weapon.Owner.GetWeaponPiercesUnits(Weapon);
@@ -234,7 +234,8 @@ public class ProjectileController : MonoBehaviour
                         break;
                     }
                 }
-                else if (unit != null && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
+                else if (unit != null && unit != Weapon.Owner 
+                    && unit.Data.Team == AllyTeam == Weapon.TargetsAllies())
                 {
                     if (!DoImpact(h.point, unit))
                     {
